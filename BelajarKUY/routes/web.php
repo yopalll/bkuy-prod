@@ -1,85 +1,60 @@
 <?php
 
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\Backend\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Backend\Instructor\DashboardController as InstructorDashboardController;
-use App\Http\Controllers\Backend\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
-// ============================================================
-// PUBLIC ROUTES
-// ============================================================
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\AdminCourseController;
+use App\Http\Controllers\Admin\AdminInstructorController;
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminSliderController;
+use App\Http\Controllers\Admin\AdminInfoBoxController;
+use App\Http\Controllers\Admin\AdminPartnerController;
+use App\Http\Controllers\Admin\AdminSiteSettingController;
+use App\Http\Controllers\Admin\AdminReviewController;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('home');
+});
 
-// ============================================================
-// AUTH — Google OAuth (Socialite)
-// ============================================================
-
-Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
-Route::get('/auth/google-callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
-
-// ============================================================
-// AUTHENTICATED — Shared Profile Routes
-// ============================================================
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Generic /dashboard → redirect ke dashboard sesuai role
-    Route::get('/dashboard', function () {
-        return match (Auth::user()->role) {
-            'admin'      => redirect()->route('admin.dashboard'),
-            'instructor' => redirect()->route('instructor.dashboard'),
-            default      => redirect()->route('student.dashboard'),
-        };
-    })->name('dashboard');
 });
 
-// ============================================================
-// STUDENT (role: 'user') — F09 Student Panel
-// PIC: Vascha U
-// ============================================================
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
 
-Route::middleware(['auth', 'role:user'])
-    ->prefix('student')
-    ->name('student.')
-    ->group(function () {
-        Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
-        // TODO: enrolled courses, profile, progress — Phase P9
-    });
+    Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::resource('sub-categories', SubCategoryController::class)->except(['show']);
+    
+    Route::resource('courses', AdminCourseController::class)->only(['index', 'show']);
+    Route::patch('courses/{course}/status', [AdminCourseController::class, 'updateStatus'])->name('courses.update-status');
 
-// ============================================================
-// INSTRUCTOR (role: 'instructor') — F08 Instructor Panel
-// PIC: Albariqi Tarigan
-// ============================================================
+    Route::resource('instructors', AdminInstructorController::class)->only(['index', 'show']);
+    Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
+    Route::resource('users', AdminUserController::class)->only(['index']);
+    Route::resource('sliders', AdminSliderController::class)->except(['show']);
+    Route::resource('info-boxes', AdminInfoBoxController::class)->except(['show']);
+    Route::resource('partners', AdminPartnerController::class)->except(['show']);
+    
+    Route::get('reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::patch('reviews/{review}/status', [AdminReviewController::class, 'updateStatus'])->name('reviews.update-status');
 
-Route::middleware(['auth', 'role:instructor'])
-    ->prefix('instructor')
-    ->name('instructor.')
-    ->group(function () {
-        Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('dashboard');
-        // TODO: course CRUD, section/lecture CRUD — Phase P5, P6
-    });
+    Route::get('settings', [AdminSiteSettingController::class, 'index'])->name('settings.index');
+    Route::put('settings', [AdminSiteSettingController::class, 'update'])->name('settings.update');
+});
 
-// ============================================================
-// ADMIN (role: 'admin') — F07 Admin Panel
-// PIC: Quinsha Ilmi
-// ============================================================
-
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        // TODO: category, course, user, order, CMS management — Phase P12
-    });
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google-callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
 
 require __DIR__.'/auth.php';
-

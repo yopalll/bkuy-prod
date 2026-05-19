@@ -13,13 +13,13 @@ class InfoBox extends Model
         'title',
         'description',
         'icon',
-        'sort_order',
+        'order_position',
     ];
 
     protected function casts(): array
     {
         return [
-            'sort_order' => 'integer',
+            'order_position' => 'integer',
         ];
     }
 }

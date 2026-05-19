@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,23 +11,16 @@ class Partner extends Model
 
     protected $fillable = [
         'name',
-        'image',
-        'status',
-        'sort_order',
+        'link',
+        'logo_url',
+        'logo_public_id',
+        'order_position',
     ];
 
     protected function casts(): array
     {
         return [
-            'status' => 'boolean',
-            'sort_order' => 'integer',
+            'order_position' => 'integer',
         ];
-    }
-
-    // ============================ SCOPES =============================
-
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('status', true)->orderBy('sort_order');
     }
 }

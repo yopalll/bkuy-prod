@@ -12,19 +12,19 @@ class Slider extends Model
 
     protected $fillable = [
         'title',
-        'description',
-        'image',
-        'button_text',
-        'button_url',
+        'sub_title',
+        'link',
+        'image_url',
+        'image_public_id',
         'status',
-        'sort_order',
+        'order_position',
     ];
 
     protected function casts(): array
     {
         return [
             'status' => 'boolean',
-            'sort_order' => 'integer',
+            'order_position' => 'integer',
         ];
     }
 
@@ -32,6 +32,6 @@ class Slider extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', true)->orderBy('sort_order');
+        return $query->where('status', true)->orderBy('order_position');
     }
 }

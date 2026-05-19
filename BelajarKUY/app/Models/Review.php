@@ -22,7 +22,6 @@ class Review extends Model
     protected function casts(): array
     {
         return [
-            'status' => 'boolean',
             'rating' => 'integer',
         ];
     }
@@ -46,6 +45,6 @@ class Review extends Model
      */
     public function scopeApproved(Builder $query): Builder
     {
-        return $query->where('status', true);
+        return $query->where('status', 'approved');
     }
 }
