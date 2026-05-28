@@ -1,9 +1,58 @@
-# 🛡️ F07: Admin Panel
+# 🛡️ F07: Admin Panel (Filament v5)
 
 > Dashboard dan management panel untuk administrator.
 > **Scope:** Sesuai ADR-005 (no payout) dan ADR-006 (no instructor approval).
+> **Implementasi:** Menggunakan **Filament v5** sebagai admin panel builder.
 
 ---
+
+## Arsitektur Filament
+
+Admin panel dibangun menggunakan **Filament v5** — sebuah admin panel builder berbasis Livewire yang menyediakan UI modern, form builder, table builder, dan dashboard widgets secara out-of-the-box.
+
+### Komponen Utama
+
+| Komponen | Lokasi | Fungsi |
+|----------|--------|--------|
+| `AdminPanelProvider` | `app/Providers/Filament/AdminPanelProvider.php` | Konfigurasi panel: path `/admin`, warna, middleware, resource discovery |
+| Filament Resources | `app/Filament/Resources/` | CRUD untuk setiap model (form, table, pages) |
+| User Model | `app/Models/User.php` | Implements `FilamentUser` — method `canAccessPanel()` mengecek `role === 'admin'` |
+
+### Akses Kontrol
+
+```php
+// app/Models/User.php
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+
+class User extends Authenticatable implements FilamentUser
+{
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->role === 'admin';
+    }
+}
+```
+
+### Resources yang Sudah Dibuat
+
+| Resource | Model | Fitur | Halaman |
+|----------|-------|-------|---------|
+| `UserResource` | `User` | CRUD + View | List, Create, Edit, View |
+| `ProductResource` | `Product` | CRUD + View | List, Create, Edit, View |
+
+### Resources yang Perlu Dibuat (TBD)
+
+Resource berikut akan di-migrate dari custom Blade ke Filament Resources:
+- `CategoryResource` — CRUD categories + images (Cloudinary)
+- `SubCategoryResource` — CRUD sub-categories
+- `CourseResource` — List + approve/reject
+- `SliderResource` — CRUD hero slider
+- `InfoBoxResource` — CRUD info boxes
+- `PartnerResource` — CRUD partner logos
+- `ReviewResource` — Moderasi review
+- `OrderResource` — View-only orders
+- `SiteSettingResource` — Key-value site settings
 
 ## Halaman Admin
 
@@ -183,12 +232,46 @@ public function store(StoreCategoryRequest $request): RedirectResponse
 
 ## UI Design
 
-- **Sidebar gelap** (`bg-slate-900`) dengan menu group berdasarkan kategori
-- **Content area putih** dengan card-based layout
-- **Stats cards** di dashboard dengan icon + angka besar
-- **Tables dengan pagination** (15 per page default)
-- **SweetAlert2** untuk confirm delete
-- **Toast notification** untuk flash messages
+Filament v5 menyediakan UI admin modern secara built-in:
+
+- **Sidebar** dengan navigasi otomatis berdasarkan Resources yang terdaftar
+- **Dark mode** toggle built-in
+- **Responsive** — mobile-friendly out-of-the-box
+- **Form builder** — text input, select, toggle, file upload, rich editor, dll
+- **Table builder** — sortable, searchable, filterable, bulk actions
+- **Dashboard widgets** — stats overview, charts, account info
+- **Warna primer** dikonfigurasi via `AdminPanelProvider` (default: Amber)
+- **SweetAlert2/Toast** tetap digunakan untuk custom notifications di luar Filament
+- Login page built-in di `/admin/login`
+
+---
+
+## File Structure
+
+```
+app/
+├── Filament/
+│   └── Resources/
+│       ├── Users/
+│       │   ├── UserResource.php
+│       │   └── Pages/
+│       │       ├── ListUsers.php
+│       │       ├── CreateUser.php
+│       │       ├── EditUser.php
+│       │       └── ViewUser.php
+│       └── Products/
+│           ├── ProductResource.php
+│           └── Pages/
+│               ├── ListProducts.php
+│               ├── CreateProduct.php
+│               ├── EditProduct.php
+│               └── ViewProduct.php
+├── Providers/
+│   └── Filament/
+│       └── AdminPanelProvider.php
+└── Models/
+    └── User.php  (implements FilamentUser)
+```
 
 ---
 

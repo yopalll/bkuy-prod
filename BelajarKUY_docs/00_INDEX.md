@@ -3,7 +3,7 @@
 > **Project:** BelajarKUY — Platform E-Learning Indonesia (Udemy Clone)
 > **Tech Stack:** Laravel 12 + MySQL/SQLite + Midtrans Sandbox + TailwindCSS v4 + Alpine.js + Cloudinary + Meilisearch + Laravel Reverb + Resend
 > **Team:** 5 Anggota | **Deadline:** Tugas Besar Kuliah
-> **Created:** 12 Mei 2026 | **Last Updated:** 14 Mei 2026
+> **Created:** 12 Mei 2026 | **Last Updated:** 28 Mei 2026
 
 ---
 
@@ -112,7 +112,7 @@ BelajarKUY_docs/
 
 ---
 
-## 📈 Current Status (14 Mei 2026)
+## 📈 Current Status (28 Mei 2026)
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -120,9 +120,11 @@ BelajarKUY_docs/
 | P1: Database (Migrations + Models) | 🟢 Done | 19 tables, 19 models |
 | P1b: Seeders + Factories | 🟢 Done | 896 records seeded |
 | P2: Auth System | 🔜 Next | Breeze + RoleMiddleware + Google OAuth |
-| P3+: Remaining Features | 🔴 Pending | Lihat `04_plans/MASTER_ROADMAP.md` |
+| P3: Commerce | 🔴 Pending | Cart, wishlist, Midtrans, coupon |
+| P4: Admin Panel | 🟡 In Progress | **Filament v5 terinstall** — UserResource & ProductResource ready. Remaining resources TBD. |
+| P5: Polish | 🔴 Pending | Review, settings, testing, deploy |
 
-**Overall:** ~15% complete.
+**Overall:** ~20% complete.
 
 Lihat `06_reports/PROGRESS_TRACKER.md` untuk detail live.
 

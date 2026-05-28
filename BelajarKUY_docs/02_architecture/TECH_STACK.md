@@ -13,6 +13,7 @@
 | Database | MySQL | 8.x | Reliable, widely supported |
 | Frontend | Blade + TailwindCSS | v4 | SSR rendering, utility-first CSS |
 | JS Interactivity | Alpine.js | ^3.x | Lightweight, "Tailwind for JS", TALL stack |
+| **Admin Panel** | **Filament** | **v5.x** | **Livewire-based admin panel builder, auto-generated CRUD, form/table builder, dashboard widgets** |
 | Build | Vite | Latest | Fast HMR, native Laravel support |
 | Payment | Midtrans Snap | v2 | Payment gateway Indonesia, sandbox gratis |
 | Media Storage | Cloudinary | Latest | Auto-compress, resize, CDN, free tier besar |
@@ -35,6 +36,7 @@
         "laravel/socialite": "^5.0",
         "laravel/scout": "^10.0",
         "laravel/tinker": "^2.9",
+        "filament/filament": "^5.6",
         "midtrans/midtrans-php": "^2.5",
         "intervention/image": "^3.0",
         "cloudinary-labs/cloudinary-laravel": "^2.0",
@@ -57,6 +59,7 @@
 | `laravel/breeze` | Authentication scaffolding (login, register, password reset) |
 | `laravel/socialite` | Google OAuth login |
 | `laravel/scout` | Full-text search driver untuk Meilisearch |
+| `filament/filament` | Admin panel builder — auto-generated CRUD, form builder, table builder, dashboard widgets. Menggunakan Livewire secara internal. |
 | `midtrans/midtrans-php` | Midtrans payment SDK |
 | `intervention/image` | Image resize & manipulation (thumbnail) |
 | `cloudinary-labs/cloudinary-laravel` | Upload media ke Cloudinary CDN |

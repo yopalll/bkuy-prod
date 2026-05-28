@@ -5,6 +5,28 @@
 
 ---
 
+## [2026-05-28] — Filament v5 Admin Panel Integration
+
+Instalasi **Filament v5.6.6** sebagai admin panel builder untuk menggantikan custom Blade admin panel.
+
+### ➕ Added
+
+- **`filament/filament` v5.6.6** — Admin panel builder (Composer package + dependencies: Livewire, blade-heroicons, spatie packages, dll)
+- **`app/Providers/Filament/AdminPanelProvider.php`** — Konfigurasi panel admin (path: `/admin`, login page, warna Amber)
+- **`app/Filament/Resources/Users/UserResource.php`** — CRUD Resource untuk User (List, Create, Edit, View pages)
+- **`app/Filament/Resources/Products/ProductResource.php`** — CRUD Resource untuk Product (List, Create, Edit, View pages)
+- **`public/js/filament/`**, **`public/css/filament/`**, **`public/fonts/filament/`** — Published Filament assets
+- `bootstrap/providers.php` — `AdminPanelProvider` auto-registered
+
+### 🔧 Changed
+
+- **`app/Models/User.php`** — Implements `FilamentUser` interface, menambah method `canAccessPanel(Panel $panel)` yang mengecek `role === 'admin'`
+- **`PRD_BelajarKUY.md`** — Versi 1.1: Tech stack tambah Filament, F07 updated, routes admin updated, roadmap P4 updated
+- **`02_architecture/TECH_STACK.md`** — Tambah Filament v5 di Core Stack dan Composer Packages
+- **`03_features/F07_ADMIN_PANEL.md`** — Rewrite: arsitektur Filament, akses kontrol, resource list, file structure, UI design updated
+
+---
+
 ## [2026-05-14] — Documentation Cleanup (Audit Remediation)
 
 Mayor cleanup berdasarkan audit di `07_extras/AUDIT_DOCS_REVIEW.md`.

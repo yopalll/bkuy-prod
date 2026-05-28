@@ -1,8 +1,8 @@
 # 📄 PRD — BelajarKUY (Product Requirements Document)
 
 > **Produk:** BelajarKUY — Platform E-Learning Indonesia (Udemy-style marketplace kursus)
-> **Versi PRD:** 1.0
-> **Disusun:** 28 Mei 2026
+> **Versi PRD:** 1.1
+> **Disusun:** 28 Mei 2026 | **Terakhir diupdate:** 28 Mei 2026
 > **Sumber kebenaran:** Disarikan dari `BelajarKUY_docs/` (00_INDEX, 01_guides, 02_architecture, 03_features, 04_plans) + implementasi aktual di `app/` & `resources/views/`.
 > **Status proyek:** Tugas Besar Kuliah — 5 anggota tim. Phase 1 (Foundation) selesai, Phase 2+ berjalan.
 
@@ -97,6 +97,7 @@ Sistem memakai **satu tabel `users`** dengan kolom `role` enum: `user | instruct
 | Framework | Laravel 12.x (PHP 8.3+) |
 | Database | MySQL 8.x (default dev: SQLite) |
 | Frontend | Blade + TailwindCSS v4 + Alpine.js v3 (TALL, tanpa Livewire — ADR-002) |
+| **Admin Panel** | **Filament v5.x** (Livewire-based admin panel builder) |
 | Build | Vite |
 | Pembayaran | Midtrans Snap v2 (sandbox — ADR-001, ADR-004) |
 | Media | Cloudinary (CDN, auto-compress) |
@@ -108,6 +109,8 @@ Sistem memakai **satu tabel `users`** dengan kolom `role` enum: `user | instruct
 | UI utils | SweetAlert2 (toast/konfirmasi), Lucide & Heroicons (ikon) |
 
 > Detail versi & env vars: `02_architecture/TECH_STACK.md`.
+>
+> **Catatan:** Filament menggunakan Livewire secara internal untuk admin panel, tapi halaman publik tetap menggunakan Blade + Alpine.js (ADR-002).
 
 ---
 
@@ -165,21 +168,26 @@ URL utama berasal dari `routes/web.php`, F08, dan F13. **Dualitas peran:** prefi
 | My Orders (sales) | `/instructor/orders` |
 | Profile / Settings | `/instructor/profile`, `/instructor/setting` |
 
-### 6.6 Panel Admin (`role:admin`, prefix `/admin`)
-| Halaman | Route |
-|---------|-------|
-| Dashboard | `admin.dashboard` |
-| Categories (CRUD) | `admin.categories.*` |
-| Sub Categories (CRUD) | `admin.sub-categories.*` |
-| Sliders (CRUD) | `admin.sliders.*` |
-| Info Boxes (CRUD) | `admin.info-boxes.*` |
-| Partners (CRUD) | `admin.partners.*` |
-| Course Management (lihat + ubah status) | `admin.courses.index/show`, `admin.courses.update-status` |
-| Instructors (lihat) | `admin.instructors.index/show` |
-| Order Management (lihat) | `admin.orders.index/show` |
-| User Management (lihat) | `admin.users.index` |
-| Reviews (moderasi) | `admin.reviews.index`, `admin.reviews.update-status` |
-| Site Settings | `admin.settings.index/update` |
+### 6.6 Panel Admin — Filament (`role:admin`, prefix `/admin`)
+
+> **Implementasi:** Panel admin dibangun menggunakan **Filament v5** sebagai admin panel builder. Filament menyediakan UI modern dengan fitur CRUD otomatis, form builder, table builder, dan dashboard widgets. Akses dikontrol via `FilamentUser` interface pada model `User` (`canAccessPanel()` mengecek `role === 'admin'`).
+
+| Halaman | Route | Implementasi |
+|---------|-------|--------------|
+| Dashboard | `/admin` | Filament Dashboard (auto-generated) |
+| Login Admin | `/admin/login` | Filament Login Page (built-in) |
+| User Management (CRUD) | `/admin/users/*` | `UserResource` (Filament Resource) |
+| Product Management (CRUD) | `/admin/products/*` | `ProductResource` (Filament Resource) |
+| Categories (CRUD) | `admin.categories.*` | Custom Blade / Filament Resource (TBD) |
+| Sub Categories (CRUD) | `admin.sub-categories.*` | Custom Blade / Filament Resource (TBD) |
+| Sliders (CRUD) | `admin.sliders.*` | Custom Blade / Filament Resource (TBD) |
+| Info Boxes (CRUD) | `admin.info-boxes.*` | Custom Blade / Filament Resource (TBD) |
+| Partners (CRUD) | `admin.partners.*` | Custom Blade / Filament Resource (TBD) |
+| Course Management (lihat + ubah status) | `admin.courses.index/show`, `admin.courses.update-status` | Custom Blade / Filament Resource (TBD) |
+| Instructors (lihat) | `admin.instructors.index/show` | Custom Blade / Filament Resource (TBD) |
+| Order Management (lihat) | `admin.orders.index/show` | Custom Blade / Filament Resource (TBD) |
+| Reviews (moderasi) | `admin.reviews.index`, `admin.reviews.update-status` | Custom Blade / Filament Resource (TBD) |
+| Site Settings | `admin.settings.index/update` | Custom Blade / Filament Resource (TBD) |
 
 ---
 
@@ -219,11 +227,14 @@ Format: user story + kriteria penerimaan ringkas. Spesifikasi penuh ada di `03_f
 - Dukungan **coupon** (potongan) tersimpan sebagai snapshot di order (`original_price`, `discount_amount`, `final_price`).
 - **Acceptance:** akses kursus = ada row `enrollments`; halaman success/failed sesuai hasil; sandbox only.
 
-### F07 — Admin Panel
-- Dashboard statistik platform; CRUD konten (kategori, slider, info box, partner, settings).
+### F07 — Admin Panel (Filament v5)
+- **Dibangun menggunakan Filament v5** sebagai panel builder — menyediakan UI admin modern, form builder, table builder, dan dashboard widgets out-of-the-box.
+- Akses panel dikontrol via `FilamentUser` interface: hanya `role='admin'` yang bisa masuk (`canAccessPanel()`).
+- **Filament Resources** sudah dibuat: `UserResource` (CRUD user) dan `ProductResource` (CRUD product) dengan halaman List, Create, Edit, dan View.
+- Dashboard statistik platform; CRUD konten (kategori, slider, info box, partner, settings) — akan di-migrate ke Filament Resources.
 - Moderasi: **approve/reject course** (`pending_review`→`active`/`inactive`), **approve/reject review** (`status` boolean).
 - View-only: user, instruktur, order.
-- **Acceptance:** aksi status mengubah DB & memberi flash message; tidak ada fitur block user / payout.
+- **Acceptance:** aksi status mengubah DB & memberi flash message; tidak ada fitur block user / payout; panel admin accessible di `/admin`.
 
 ### F08 — Instructor Panel
 - Dashboard: total courses, total students, revenue (gross). Manajemen course/section/lecture/coupon; riwayat penjualan (`/instructor/orders`).
@@ -346,7 +357,7 @@ Instruktur submit course → status pending_review
 | P1b Seeders/Factories | ~896 records | ✅ Done |
 | P2 Auth + Frontend base | Breeze + Role + Google + landing/detail | 🔄 Berjalan (UI sudah ada di repo) |
 | P3 Commerce | Cart, wishlist, Midtrans, coupon | 🔜 Sebagian placeholder route |
-| P4 Panels & Player | Student/Instructor/Admin + Course Player | 🔄 Sebagian (admin & student UI ada) |
+| P4 Panels & Player | Student/Instructor/Admin + Course Player | 🔄 Berjalan — **Admin panel: Filament v5 terinstall** (User & Product Resources sudah di-generate). Student & Instructor panel sebagian. |
 | P5 Polish | Review, settings, testing, deploy | 🔴 Pending |
 
 > Tracking aktual: `06_reports/PROGRESS_TRACKER.md`.
