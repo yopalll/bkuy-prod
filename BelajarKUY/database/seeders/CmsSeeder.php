@@ -19,31 +19,31 @@ class CmsSeeder extends Seeder
         $sliders = [
             [
                 'title' => 'Belajar Skill Baru di BelajarKUY',
-                'description' => 'Ribuan kursus online dari instruktur terbaik Indonesia.',
-                'image' => 'sliders/slide-1.jpg',
-                'button_text' => 'Mulai Belajar',
-                'button_url' => '/courses',
+                'sub_title' => 'Ribuan kursus online dari instruktur terbaik Indonesia.',
+                'link' => '/courses',
+                'image_url' => 'https://placehold.co/1280x500/4F46E5/ffffff?text=BelajarKUY',
+                'image_public_id' => 'sliders/slide-1',
             ],
             [
                 'title' => 'Diskon Hingga 50% untuk Pelajar',
-                'description' => 'Manfaatkan promo spesial untuk mendapat materi premium.',
-                'image' => 'sliders/slide-2.jpg',
-                'button_text' => 'Lihat Promo',
-                'button_url' => '/courses?promo=1',
+                'sub_title' => 'Manfaatkan promo spesial untuk mendapat materi premium.',
+                'link' => '/courses?promo=1',
+                'image_url' => 'https://placehold.co/1280x500/7C3AED/ffffff?text=Promo+50%25',
+                'image_public_id' => 'sliders/slide-2',
             ],
             [
                 'title' => 'Jadi Instruktur di BelajarKUY',
-                'description' => 'Bagikan ilmu-mu dan dapatkan penghasilan tambahan.',
-                'image' => 'sliders/slide-3.jpg',
-                'button_text' => 'Daftar Instruktur',
-                'button_url' => '/register?role=instructor',
+                'sub_title' => 'Bagikan ilmu-mu dan dapatkan penghasilan tambahan.',
+                'link' => '/register?role=instructor',
+                'image_url' => 'https://placehold.co/1280x500/059669/ffffff?text=Daftar+Instruktur',
+                'image_public_id' => 'sliders/slide-3',
             ],
         ];
 
         foreach ($sliders as $i => $slider) {
             Slider::create(array_merge($slider, [
                 'status' => true,
-                'sort_order' => $i + 1,
+                'order_position' => $i + 1,
             ]));
         }
 
@@ -56,7 +56,7 @@ class CmsSeeder extends Seeder
         ];
 
         foreach ($infoBoxes as $i => $box) {
-            InfoBox::create(array_merge($box, ['sort_order' => $i + 1]));
+            InfoBox::create(array_merge($box, ['order_position' => $i + 1]));
         }
 
         // --- Partners ---
@@ -67,9 +67,10 @@ class CmsSeeder extends Seeder
         foreach ($partners as $i => $name) {
             Partner::create([
                 'name' => $name,
-                'image' => 'partners/'.strtolower($name).'.png',
-                'status' => true,
-                'sort_order' => $i + 1,
+                'link' => null,
+                'logo_url' => 'https://placehold.co/200x80/e2e8f0/1e293b?text='.urlencode($name),
+                'logo_public_id' => 'partners/'.strtolower(str_replace(' ', '-', $name)),
+                'order_position' => $i + 1,
             ]);
         }
 

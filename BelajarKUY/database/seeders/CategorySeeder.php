@@ -29,7 +29,8 @@ class CategorySeeder extends Seeder
             $category = Category::create([
                 'name' => $name,
                 'slug' => Str::slug($name),
-                'image' => 'categories/'.Str::slug($name).'.png',
+                'image_url' => null,
+                'image_public_id' => null,
                 'status' => true,
             ]);
 
