@@ -4,7 +4,7 @@
 
 ---
 
-> **Update terakhir:** 1 Juni 2026 — oleh Claude (AI Agent) — sinkronisasi tracker terhadap kondisi kode nyata
+> **Update terakhir:** 1 Juni 2026 — 23:38 WIB oleh  Vascha U — Session 10 (L1 Courses/Show React+Inertia selesai)
 >
 > ⚠️ **Catatan:** Entri 19 Mei 2026 (overall 30%) sudah usang. Tabel di bawah disusun ulang dari inspeksi langsung `app/Http/Controllers`, `resources/views`, `resources/js`, dan `routes/web.php`. **Persentase = estimasi** berdasarkan keberadaan controller/view/route nyata.
 
@@ -19,7 +19,7 @@
 | Project Setup (Laravel `^13.7` + React/Inertia scaffolding) | 100% | 🟢 Selesai |
 | Database (Migrations + Models + Seeders) | 100% | 🟢 Selesai |
 | Auth System (Breeze + Role + Google) | 100% | 🟢 Selesai |
-| Landing Page (Blade) | 90% | 🟢 Hampir selesai (route detail masih placeholder) |
+| Landing Page (Blade → React) | 95% | 🟢 Welcome, Home, Courses/Show sudah React+Inertia |
 | Category & SubCategory CRUD (admin) | 100% | 🟢 Selesai |
 | Admin Panel (CRUD lengkap, Blade) | 90% | 🟢 Hampir selesai |
 | Site Settings (admin) | 100% | 🟢 Selesai |
@@ -31,8 +31,9 @@
 | Course CRUD (Instructor) | 0% | 🔴 Belum (hanya DashboardController) |
 | Coupon System | 0% | 🔴 Belum (hanya model) |
 | Course Player (F13) | 0% | 🔴 Belum |
-| **Migrasi Frontend React + Inertia (ADR-008)** | 0% | 🔴 Belum dimulai di kode |
-| **OVERALL** | **~55%** | **🟡 On Progress** |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **0%** | **🔴 Menunggu L2 (Albariqi Auth React)** |
+| **OVERALL** | **~58%** | **🟡 On Progress** |
 
 ---
 
@@ -53,6 +54,16 @@
 **Frontend & Student — Blade (Vascha):**
 - `HomeController` + `frontend/home.blade.php`, komponen `navbar`/`footer`/`course-card`, layout `app`/`admin`/`guest`
 - Student panel views: dashboard, my_courses, wishlist, profile, setting
+
+**Frontend React + Inertia — Fase 1 (Vascha — L1):**
+- `resources/js/Pages/Courses/Show.jsx` — port penuh dari Blade, data dinamis via `Inertia::render()`
+- `resources/js/Components/AppFooter.jsx` — footer reusable dengan i18n
+- `resources/js/Components/Badge.jsx` — badge reusable dengan `Object.hasOwn()` security fix
+- `resources/js/Components/EmptyState.jsx` — empty state reusable
+- `resources/js/i18n/` — setup `i18next` + `react-i18next`, `id.json`, `en.json`
+- `CourseDetailController.php` → `Inertia::render('Courses/Show', ...)` (ganti `view()`)
+- `routes/web.php` → `course.detail` kini pakai `CourseDetailController@show`
+- `npm run build` ✅ — commit `f9f6848` di branch `feature/public-react`
 
 ---
 
@@ -87,9 +98,14 @@
 - [ ] Submit review oleh siswa (route `course.review.store` placeholder; moderasi admin sudah ada)
 - [ ] Event `PaymentSuccessful` + broadcasting Reverb (F14)
 
-### Migrasi Frontend React + Inertia (ADR-008) — LINTAS TIM, belum mulai di kode
-- [ ] **Fase 1 — Fondasi & Publik:** `app.jsx` entry, port `Welcome`/`Home`/`Courses/Show` ke `Pages/`, komponen `AppHeader`/`CourseCard`/`FlashToast`
-- [ ] **Fase 2 — Auth & Student:** halaman `Pages/Auth/*` (Breeze React) + `Pages/Student/*`
+### Migrasi Frontend React + Inertia (ADR-008)
+- [x] **Fase 1 — Fondasi & Publik (L0 Yosua + L1 Vascha): SELESAI ✅**
+  - `app.jsx` entry ✅, `AppLayout.jsx` ✅, `AppHeader.jsx` + i18n ✅
+  - `Pages/Welcome.jsx`, `Pages/Home.jsx` (L0 Yosua) ✅
+  - `Pages/Courses/Show.jsx` + `CourseDetailController` Inertia (L1 Vascha) ✅
+  - `AppFooter.jsx`, `Badge.jsx`, `EmptyState.jsx` (L1 Vascha) ✅
+  - i18n: `react-i18next`, `id.json`, `en.json` (L1 Vascha) ✅
+- [ ] **Fase 2 — Auth & Student:** halaman `Pages/Auth/*` (Breeze React) + `Pages/Student/*` — menunggu L2 Albariqi
 - [ ] **Fase 3 — Instructor & Admin:** `Pages/Instructor/*` + `Pages/Admin/*`; deaktivasi view Blade lama
 - [ ] (Detail fase, exit criteria, rollback: `04_plans/MASTER_PLAN_REACT_INERTIA.md` & `MASTER_ROADMAP.md` Phase 6)
 
@@ -194,14 +210,29 @@
 - Backend tidak diubah (0 diff); seluruh perubahan hanya berkas `.md` di `BelajarKUY_docs/`.
 - Next: kickoff Fase 1 migrasi (port halaman publik ke `resources/js/Pages`).
 
+### Session 10 — 1 Juni 2026 (Antigravity) — Vascha U — L1 Courses/Show React+Inertia
+- Implemented: `Pages/Courses/Show.jsx` — port penuh dari Blade, dengan accordion kurikulum, sticky purchase card, review form, rating breakdown, kursus terkait
+- Created: `Components/AppFooter.jsx` (reusable + i18n), `Components/Badge.jsx` (reusable + `Object.hasOwn()` security fix), `Components/EmptyState.jsx` (reusable)
+- Updated: `CourseDetailController.php` → `Inertia::render('Courses/Show', ...)` (ganti `view()`)
+- Updated: `routes/web.php` → route `course.detail` kini pakai `CourseDetailController@show` (bukan closure placeholder)
+- Setup: i18n (`react-i18next`, `id.json`, `en.json`) di semua komponen L1 + AppHeader + Home + Welcome
+- Security fix: `Badge.jsx` — `Object.hasOwn()` mencegah prototype pollution via bracket notation
+- Security fix: `AppHeader.jsx` + `AppFooter.jsx` — semua JSX string di-i18n (fix scanner `jsx-not-internationalized`)
+- Branch: `feature/public-react`
+- Build: `npm run build` ✅ — 2366 modules, built in ~850ms
+- Commits: `44c9edb` (L1 feat), `f9f6848` (security fix Badge)
+- Push: `feature/public-react` → https://github.com/yopalll/BelajarKUY
+- Status: **L1 Vascha SELESAI 100%**. Fase 1 React+Inertia selesai.
+- Next: L2 Albariqi (Auth React — `Pages/Auth/*`); L3 Ray (Wishlist); L5 Vascha (Student Panel — tunggu L2)
+- Report: `06_reports/REPORT_2026-06-01_L1_VASCHA_COURSES_SHOW.md`
+
 ---
 
 ## ⚠️ Known Issues
 
-- **Frontend masih Blade**, padahal tech stack resmi sudah React+Inertia (ADR-008). Migrasi 3-fase belum dimulai di kode — ini pekerjaan terbesar yang tersisa.
+- **Frontend masih sebagian Blade**, meski Fase 1 migrasi React+Inertia sudah selesai. Fase 2 (Auth React) dan Fase 3 (Admin/Instructor React) belum dikerjakan.
 - **Cart, Wishlist (add), Coupon, Course Player belum ada controller**; route `cart.add`/`wishlist.add`/`course.review.store` masih placeholder (`back()->with('info', '... belum tersedia')`).
 - **Payment Midtrans** belum berfungsi end-to-end (checkout/payment masih render view statis; belum ada callback handler & pembuatan Order).
-- Course detail (`course.detail`) masih placeholder yang merender view statis tanpa data dinamis.
 
 ---
 

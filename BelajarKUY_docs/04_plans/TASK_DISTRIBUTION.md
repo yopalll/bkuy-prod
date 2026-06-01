@@ -87,21 +87,23 @@ Lead:
 
 ```
 Lead (React + Inertia — ADR-008):
-☐ Root view Inertia (app.blade.php) + entry app.jsx
-☐ Layout React per peran (komponen layout, bukan Blade @extends) — collaborate with Quinsha
-☐ Navbar component (React `Components/AppHeader.jsx` — responsive, cart badge, user menu)
-☐ Footer component (React)
-☐ Hero slider section (React)
-☐ Category card component (React)
-☐ Course card component (`Components/CourseCard.jsx`)
-☐ Featured courses section (React)
-☐ Course detail page (`Pages/Courses/Show.jsx`)
-☐ Cart & Checkout page UI (`Pages/Cart/Index.jsx`, `Pages/Checkout/Index.jsx`)
-☐ Student dashboard (`Pages/Student/Dashboard.jsx`)
-☐ Student enrolled courses page (`Pages/Student/MyCourses.jsx` — progress bars)
-☐ Course Player frontend (F13) — `Pages/Courses/Player.jsx` (video embed, sidebar, progress)
-☐ Live search component (Meilisearch + React state)
-☐ Toast/notification listener (Reverb events; konsumsi shared prop `flash`)
+✅ Root view Inertia (app.blade.php) + entry app.jsx (oleh Yosua, L0)
+✅ Layout React: AppLayout.jsx (oleh Yosua, L0; footer diperbaiki di L1)
+✅ Navbar component — AppHeader.jsx (responsive, cart badge, user menu) — L1 (i18n)
+✅ Footer component — AppFooter.jsx reusable + i18n — L1 Vascha
+✅ Category card component (via Home.jsx section kategori) — L1
+✅ Course card component — CourseCard.jsx (oleh Yosua L0; dipakai di Show.jsx L1)
+✅ Featured & Bestseller courses section (Home.jsx) — L1
+✅ Course detail page — Pages/Courses/Show.jsx (Inertia::render, data dinamis) — L1 Vascha
+✅ Komponen reusable: Badge.jsx, EmptyState.jsx — L1 Vascha
+✅ Setup i18n (react-i18next, id.json, en.json) — L1 Vascha
+✅ Security fix: Object.hasOwn() di Badge.jsx (prototype pollution) — L1 Vascha
+☐ Cart & Checkout page UI (`Pages/Cart/Index.jsx`, `Pages/Checkout/Index.jsx`) — L5+
+☐ Student dashboard (`Pages/Student/Dashboard.jsx`) — L5
+☐ Student enrolled courses page (`Pages/Student/MyCourses.jsx` — progress bars) — L5
+☐ Course Player frontend (F13) — `Pages/Courses/Player.jsx` — L10
+☐ Live search component (Meilisearch + React state) — post-L1
+☐ Toast/notification listener (Reverb events; konsumsi shared prop `flash`) — post-L1
 ```
 
 ### 5. Quinsha Ilmi (UI/UX Lead — Admin & Frontend)
@@ -135,13 +137,17 @@ Collaborator (with Vascha):
 
 ```
 Fase 1 — Fondasi & Publik (Vascha & Quinsha + Yosua)
-☐ Scaffolding Inertia: app.blade.php (root view 'app') + resources/js/app.jsx
-☐ Port halaman publik ke Pages/ (Welcome, Home, Courses/Show) — controller view() → Inertia::render()
-☐ Komponen reusable awal: AppHeader, CourseCard, FlashToast
+✅ Scaffolding Inertia: app.blade.php (root view 'app') + resources/js/app.jsx — L0 Yosua
+✅ Port halaman publik ke Pages/ (Welcome, Home) — controller view() → Inertia::render() — L0 Yosua
+✅ Komponen reusable awal: AppHeader, CourseCard, FlashToast — L0 Yosua
+✅ Port Courses/Show ke Pages/Courses/Show.jsx — Inertia::render, data dinamis — L1 Vascha
+✅ Komponen baru: AppFooter, Badge, EmptyState — L1 Vascha
+✅ Setup i18n: react-i18next, id.json, en.json — L1 Vascha
+🔄 Fase 1 selesai untuk Vascha. Menunggu Albariqi L2 (Auth React) sebelum L5 Student panel.
 
 Fase 2 — Auth & Student (Albariqi + Vascha)
-☐ Halaman auth React (Pages/Auth/*) via Breeze + Inertia
-☐ Panel Student ke Pages/Student/* (Dashboard, MyCourses, Wishlist, Profile, Notifications)
+☐ Halaman auth React (Pages/Auth/*) via Breeze + Inertia — L2 Albariqi
+☐ Panel Student ke Pages/Student/* (Dashboard, MyCourses, Wishlist, Profile, Notifications) — L5 Vascha
 
 Fase 3 — Instructor & Admin (Albariqi + Quinsha & Vascha)
 ☐ Panel Instructor ke Pages/Instructor/*
@@ -221,4 +227,4 @@ docs: update progress tracker and task distribution session 7
 ---
 
 *Pembagian tugas ini bisa berubah sesuai progress. Update jika ada perubahan.*
-*Last updated: 17 Mei 2026 — Session 7 — Antigravity (AI Agent) untuk Albariqi Tarigan*
+*Last updated: 1 Juni 2026 — Session 10 — Antigravity (AI Agent) untuk Vascha U — L1 Selesai*
