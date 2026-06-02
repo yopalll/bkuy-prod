@@ -39,8 +39,8 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
                                        │  semua orang build dari sini
         ┌──────────────────────────────┼──────────────────────────────┐
         ▼                              ▼                              ▼
-  L1 Vascha               L2 Albariqi ✅                 L6 Albariqi
-  Halaman publik          Auth pages React            Instructor Course CRUD
+  L1 Vascha ✅            L2 Albariqi ✅                 L6 Albariqi
+  Halaman publik          Auth + Error pages            Instructor Course CRUD
   + komponen dasar        (Login/Register)            (jalan mandiri)
         │                              │                              │
         ▼                              │                              ▼
@@ -88,16 +88,16 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 
 ---
 
-### LANGKAH 1 — Vascha · Halaman publik + komponen dasar (V1, V2)
+### LANGKAH 1 — Vascha · Halaman publik + komponen dasar (V1, V2) ✅ SELESAI (2026-06-01)
 - **Apa:** port **`Courses/Show`** (detail kursus) pakai data dinamis (ganti placeholder `course.detail`); rapikan `Home`/`Welcome`; buat komponen reusable `AppFooter`, `EmptyState`, `Badge`.
 - **Mulai setelah:** Langkah 0 (sudah ada).
 - **File utama:** `resources/js/Pages/Courses/Show.jsx`, `resources/js/Components/{AppFooter,EmptyState,Badge}.jsx`, controller detail kursus → `Inertia::render`.
-- **Selesai bila:** buka detail kursus tampil React dengan data asli (judul, instruktur, kurikulum, harga); komponen dipakai ulang; `npm run build` sukses.
-- **Branch:** `feature/public-react`, lalu `feature/react-components`.
+- **Selesai bila:** buka detail kursus tampil React dengan data asli (judul, instruktur, kurikulum, harga); komponen dipakai ulang; `npm run build` sukses. ✅
+- **Branch:** `feature/public-react`, lalu `feature/react-components`. ✅
 - **Kenapa duluan:** menetapkan **pola komponen & gaya visual** yang jadi acuan semua orang, dan menyediakan `CourseCard` + tombol cart/wishlist yang dibutuhkan Ray.
 
-### LANGKAH 2 — Albariqi · Auth pages React ✅ SELESAI (2026-06-02)
-- **Apa:** port halaman Breeze ke React: `Pages/Auth/{Login,Register,ForgotPassword,ResetPassword}` (termasuk pilihan role saat register).
+### LANGKAH 2 — Albariqi · Auth & Error pages React ✅ SELESAI (2026-06-02)
+- **Apa:** port halaman Breeze ke React: `Pages/Auth/*` (termasuk pilihan role saat register) dan migrasi halaman error ke React (`Pages/Errors/*`).
 - **Mulai setelah:** Langkah 0.
 - **File utama:** `resources/js/Pages/Auth/*`, `resources/js/Layouts/GuestLayout.jsx`, controller Breeze → `Inertia::render`.
 - **Selesai bila:** login/register/logout jalan via React; redirect per role tetap benar (admin/instructor/student); `npm run build` sukses. ✅
@@ -110,6 +110,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   - `ForgotPassword.jsx` — info box + status sukses
   - `ResetPassword.jsx` — token prop, email readonly, password strength hints
   - 4 controller diupdate: `AuthenticatedSessionController`, `RegisteredUserController`, `PasswordResetLinkController`, `NewPasswordController` → `Inertia::render`
+  - Error Pages: `Pages/Errors/404.jsx`, `500.jsx`, dsb. menggantikan legacy blade.
   - `npm run build` PASS ✅ (2371 modules)
 
 > L1 dan L2 **berjalan paralel** — keduanya hanya butuh fondasi.
@@ -251,8 +252,8 @@ Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enro
 | Anggota | Mulai dari | Lanjut ke | Tonggak pribadi |
 |---|---|---|---|
 | **Yosua** (PM) | L0 ✅ (selesai) | review tiap PR (L2-jalan terus) | L16 matikan Blade, L17 deploy |
-| **Vascha** | **L1** halaman publik + komponen | L5 student panel | komponen jadi acuan tim |
-| **Albariqi** | **L2** auth React **&** L6 instructor CRUD | L7 kurikulum → L10 player → L11 email | L10 butuh Enrollment Ray |
+| **Vascha** | **L1** ✅ (selesai) | L5 student panel | komponen jadi acuan tim |
+| **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 kurikulum → L10 player → L11 email | L10 butuh Enrollment Ray |
 | **Ray** | **L3** wishlist | L4 cart → L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
 | **Quinsha** | **L12** admin shell | L13 → L14 admin pages | L15 arsip Blade admin |
 

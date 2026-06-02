@@ -54,7 +54,7 @@ Lead:
 ✅ Post-register redirect logic by role
 ✅ Dashboard Controllers (Admin, Instructor, Student — placeholder)
 ✅ Dashboard Views (backend/admin|instructor|student/dashboard.blade.php)
-☐ Create separate login pages (admin/login, instructor/login) — NEXT
+✅ Create separate login pages (admin/login, instructor/login) — NEXT
 ☐ Course CRUD controller (instructor)
 ☐ Course form + validation (StoreCourseRequest) — Cloudinary upload
 ☐ Dynamic subcategory loading (AJAX)
@@ -146,7 +146,7 @@ Fase 1 — Fondasi & Publik (Vascha & Quinsha + Yosua)
 🔄 Fase 1 selesai untuk Vascha. Menunggu Albariqi L2 (Auth React) sebelum L5 Student panel.
 
 Fase 2 — Auth & Student (Albariqi + Vascha)
-☐ Halaman auth React (Pages/Auth/*) via Breeze + Inertia — L2 Albariqi
+✅ Halaman auth React (Pages/Auth/*) via Breeze + Inertia — L2 Albariqi
 ☐ Panel Student ke Pages/Student/* (Dashboard, MyCourses, Wishlist, Profile, Notifications) — L5 Vascha
 
 Fase 3 — Instructor & Admin (Albariqi + Quinsha & Vascha)
@@ -227,4 +227,4 @@ docs: update progress tracker and task distribution session 7
 ---
 
 *Pembagian tugas ini bisa berubah sesuai progress. Update jika ada perubahan.*
-*Last updated: 1 Juni 2026 — Session 10 — Antigravity (AI Agent) untuk Vascha U — L1 Selesai*
+*Last updated: 2 Juni 2026 — Session 11 — Antigravity (AI Agent) untuk Albariqi Tarigan — L2 Selesai*

@@ -4,7 +4,11 @@
 
 ---
 
+ feature/wishlist
 > **Update terakhir:** 2 Juni 2026 — 17:40 WIB oleh Ray Nathan — Session 11 (L3 Wishlist React+Inertia selesai)
+=======
+> **Update terakhir:** 2 Juni 2026 — 17:32 WIB oleh Albariqi Tarigan — Session 11 (L2 Auth React & Error Pages Selesai)
+ main
 >
 > ⚠️ **Catatan:** Entri 19 Mei 2026 (overall 30%) sudah usang. Tabel di bawah disusun ulang dari inspeksi langsung `app/Http/Controllers`, `resources/views`, `resources/js`, dan `routes/web.php`. **Persentase = estimasi** berdasarkan keberadaan controller/view/route nyata.
 
@@ -32,8 +36,12 @@
 | Coupon System | 0% | 🔴 Belum (hanya model) |
 | Course Player (F13) | 0% | 🔴 Belum |
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
+ feature/wishlist
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **0%** | **🔴 Menunggu L2 (Albariqi Auth React)** |
 | **OVERALL** | **~62%** | **🟡 On Progress** |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **20%** | **🟡 L2 (Auth React) Selesai, Menunggu L5** |
+| **OVERALL** | **~60%** | **🟡 On Progress** |
+ main
 
 ---
 
@@ -106,9 +114,13 @@
   - `Pages/Courses/Show.jsx` + `CourseDetailController` Inertia (L1 Vascha) ✅
   - `AppFooter.jsx`, `Badge.jsx`, `EmptyState.jsx` (L1 Vascha) ✅
   - i18n: `react-i18next`, `id.json`, `en.json` (L1 Vascha) ✅
+ feature/wishlist
 - [ ] **Fase 2 — Auth & Student:** halaman `Pages/Auth/*` (Breeze React) ✅ (Albariqi) + `Pages/Student/Wishlist.jsx` ✅ (Ray L3) + sisa `Pages/Student/*` — Vascha L5
+- [ ] **Fase 2 — Auth & Student:** halaman `Pages/Auth/*` (Breeze React) ✅ + `Pages/Student/*` — menunggu L5 Vascha
+ main
 - [ ] **Fase 3 — Instructor & Admin:** `Pages/Instructor/*` + `Pages/Admin/*`; deaktivasi view Blade lama
 - [ ] (Detail fase, exit criteria, rollback: `04_plans/MASTER_PLAN_REACT_INERTIA.md` & `MASTER_ROADMAP.md` Phase 6)
+- [x] **Error Pages:** Hapus legacy blade dan ganti ke halaman error React (404, 500, etc) ✅
 
 ### Polish (semua)
 - [ ] Responsive check, bug fixing, performance, final testing, dokumentasi akhir
@@ -227,6 +239,7 @@
 - Next: L2 Albariqi (Auth React — `Pages/Auth/*`); L3 Ray (Wishlist); L5 Vascha (Student Panel — tunggu L2)
 - Report: `06_reports/REPORT_2026-06-01_L1_VASCHA_COURSES_SHOW.md`
 
+ feature/wishlist
 ### Session 11 — 2 Juni 2026 (Antigravity) — Ray Nathan — L3 Wishlist React+Inertia
 - Created: `WishlistController.php` (`app/Http/Controllers/Frontend/`) — toggle add/remove (JSON), halaman index Inertia, remove, count
 - Created: `Pages/Student/Wishlist.jsx` — halaman React wishlist siswa (grid kartu, empty state, tombol hapus via router.delete)
@@ -244,6 +257,16 @@
   - [x] Koeksistensi Blade lama tidak rusak
 - Next: L4 Ray (Cart — `Pages/Cart/Index.jsx` + `CartController`)
 - Report: `06_reports/REPORT_2026-06-02_L3_RAY_WISHLIST.md`
+
+### Session 11 — 2 Juni 2026 (Albariqi & Yosua)
+- Created: React Error pages (`Pages/Errors/404.jsx`, dsb.) dan dihapus legacy blade error views.
+- Created: `Pages/Auth/*` dan `GuestLayout.jsx` untuk migrasi Auth.
+- Updated: Controller `AuthenticatedSessionController`, `RegisteredUserController`, `PasswordResetLinkController`, `NewPasswordController` ke Inertia::render.
+- Branch: `feature/react-error-pages`, `feature/auth-react`
+- Status: Auth React (L2) selesai. React Error pages diimplementasikan.
+- Next: L5 Vascha (Student panel) atau L3 Ray (Wishlist).
+- Report: `06_reports/REPORT_2026-06-02_L2_ALBARIQI_AUTH_REACT.md`
+ main
 
 ---
 
@@ -264,4 +287,4 @@
 
 ---
 
-*Format update: `> **Update:** DD Mei 2026 — HH:MM WIB oleh [NAMA]`*
+*Format update: `> **Update:** DD Mei/Juni 2026 — HH:MM WIB oleh [NAMA]`*
