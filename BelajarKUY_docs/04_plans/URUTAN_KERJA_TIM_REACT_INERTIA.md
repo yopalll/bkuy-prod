@@ -39,7 +39,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
                                        │  semua orang build dari sini
         ┌──────────────────────────────┼──────────────────────────────┐
         ▼                              ▼                              ▼
-  L1 Vascha ✅            L2 Albariqi ✅                 L6 Albariqi
+  L1 Vascha ✅            L2 Albariqi ✅                 L6 Albariqi ✅
   Halaman publik          Auth + Error pages            Instructor Course CRUD
   + komponen dasar        (Login/Register)            (jalan mandiri)
         │                              │                              │
@@ -139,12 +139,21 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 - **Selesai bila:** semua halaman student tampil React dengan data asli; `npm run build` sukses.
 - **Branch:** `feature/student-react`.
 
-### LANGKAH 6 — Albariqi · Instructor Course CRUD (A1) — paralel
+### LANGKAH 6 — Albariqi · Instructor Course CRUD (A1) — paralel ✅ SELESAI (2026-06-02)
 - **Apa:** `Pages/Instructor/Courses/{Index,BasicInfo}` + create/edit kursus.
 - **Mulai setelah:** Langkah 0 (mandiri, tidak menunggu Ray/Vascha).
 - **File utama:** `Instructor/CourseController`, `resources/js/Pages/Instructor/Courses/*`.
-- **Selesai bila:** instruktur bisa buat & edit kursus (info dasar, kategori, harga, thumbnail Cloudinary); `npm run build` sukses.
+- **Selesai bila:** instruktur bisa buat & edit kursus (info dasar, kategori, harga, thumbnail Cloudinary); `npm run build` sukses. ✅
 - **Branch:** `feature/instructor-courses`.
+- **Hasil implementasi:**
+  - `app/Http/Controllers/Backend/Instructor/CourseController.php` — CRUD lengkap (index, create, store, edit, update, destroy, submit); scope ke `instructor_id = auth()->id()`
+  - `app/Http/Requests/Instructor/StoreCourseRequest.php` — validasi buat kursus baru (title, slug, kategori, harga, thumbnail)
+  - `app/Http/Requests/Instructor/UpdateCourseRequest.php` — validasi edit (unique slug exclude current, authorize pemilik)
+  - `Pages/Instructor/Courses/Index.jsx` — daftar kursus dengan status badge, statistik (total/aktif/pending/draft), aksi edit/hapus/submit-for-review/lihat-publik
+  - `Pages/Instructor/Courses/BasicInfo.jsx` — form 2-kolom: Identitas (judul, slug auto-generate, deskripsi), Kategori (cascade subcategory), Harga (dengan preview diskon), Sorotan toggle (featured/bestseller), Thumbnail drag-drop ke Cloudinary
+  - `routes/web.php` — ditambahkan `Route::resource('courses', ...)` + route `submit` + placeholder `curriculum` di grup instructor
+  - `npm run build` PASS ✅ (2385 modules)
+
 
 ### LANGKAH 7 — Albariqi · Section & Lecture CRUD (A2)
 - **Apa:** `Curriculum.jsx` (kelola section & lecture) + tombol submit-for-review (draft → pending_review).

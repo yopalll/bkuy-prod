@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Backend\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Backend\Instructor\DashboardController as InstructorDashboardController;
+use App\Http\Controllers\Backend\Instructor\CourseController as InstructorCourseController;
 use App\Http\Controllers\Backend\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
@@ -79,6 +80,18 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 // --- Instructor Panel (dilindungi auth + verified + role:instructor) ---
 Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('instructor')->name('instructor.')->group(function () {
     Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('dashboard');
+
+    // Course CRUD
+    Route::resource('courses', InstructorCourseController::class)->except(['show']);
+
+    // Submit course untuk ditinjau admin (draft → pending_review)
+    Route::post('courses/{course}/submit', [InstructorCourseController::class, 'submit'])->name('courses.submit');
+
+    // Placeholder route kurikulum (dikerjakan di L7)
+    Route::get('courses/{course}/curriculum', function ($courseId) {
+        return redirect()->route('instructor.courses.edit', $courseId)
+            ->with('info', 'Halaman kurikulum akan tersedia setelah L7 selesai.');
+    })->name('courses.curriculum');
 });
 
 // --- Student Panel (dilindungi auth + verified + role:user) ---
