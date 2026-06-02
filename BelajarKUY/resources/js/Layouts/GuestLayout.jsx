@@ -1,99 +1,81 @@
 import { Link } from '@inertiajs/react';
 import FlashToast from '@/Components/FlashToast';
 
-/**
- * GuestLayout — layout untuk halaman auth (Login, Register, ForgotPassword, ResetPassword).
- * Desain dua panel: kiri ilustrasi/branding, kanan form.
- * Koeksistensi: hanya dipakai oleh Pages/Auth/*. Tidak mengganggu Blade lama.
- */
-export default function GuestLayout({ children, title, subtitle }) {
+// Layout auth — desain Vascha & Quinsha (login_registrasi_belajarkuy/code.html)
+export default function GuestLayout({ children, panelTitle, panelSubtitle }) {
     return (
-        <div className="min-h-screen flex font-sans" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <div
+            className="min-h-screen flex items-center justify-center p-md md:p-margin-desktop antialiased"
+            style={{ backgroundColor: '#fcf9f8', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
             <FlashToast />
 
-            {/* Panel Kiri — Branding */}
-            <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 flex-col justify-between p-12 relative overflow-hidden"
+            {/* Card container: split layout */}
+            <div
+                className="w-full max-w-6xl bg-surface rounded-[24px] flex flex-col md:flex-row overflow-hidden border"
                 style={{
-                    background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #A855F7 100%)',
-                }}>
-                {/* Pattern background */}
-                <div className="absolute inset-0 opacity-10">
-                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#grid)" />
-                    </svg>
-                </div>
-
-                {/* Logo */}
-                <Link href="/" className="relative z-10 text-3xl font-extrabold tracking-tight text-white" aria-label="BelajarKUY">
-                    Belajar<span className="text-yellow-300">KUY</span>
-                </Link>
-
-                {/* Ilustrasi tengah */}
-                <div className="relative z-10 space-y-6">
-                    <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-5xl shadow-xl">
-                        🎓
+                    boxShadow: '0 12px 40px rgba(48, 0, 51, 0.08)',
+                    borderColor: 'rgba(48,0,51,0.05)',
+                    minHeight: '600px',
+                }}
+            >
+                {/* ===== Panel Kiri: Branding (tersembunyi di mobile) ===== */}
+                <div className="hidden md:flex md:w-5/12 lg:w-1/2 relative bg-primary-container p-xl flex-col justify-between overflow-hidden group">
+                    {/* Background image + overlay */}
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            alt="Students collaborating"
+                            className="w-full h-full object-cover opacity-30 mix-blend-luminosity group-hover:scale-105 transition-transform duration-1000 ease-in-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4gmdY1CBcOzbn0Ybh1dIDswEnFg9g8GceaFud-ORhYBBfgpwIjnGsvQPB7yy9chmIOXDQ66Dt2RAVrUH9xj8HXctfpxpUtqDDCFExbKBaGqgrtoLdkN-UNmNh7dUzfopENhxCU7truzQtjgYdaXAlVoDKcrA26GmPzBKkLiueAEP8zbuxt5ZWxc2xYMcPXVwEJAKF8ovHysL9D-8wbpJSv4DjV6_ivVm9iWUjN29X65_Gs4GBvVxw6oGYF4clo0Yrlh2KcIrPXA"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary-container via-primary-container/80 to-transparent z-10" />
                     </div>
-                    <h2 className="text-3xl xl:text-4xl font-bold text-white leading-snug">
-                        Belajar tanpa batas,<br />
-                        <span className="text-yellow-300">kapan & di mana saja.</span>
-                    </h2>
-                    <p className="text-white/70 text-base leading-relaxed max-w-sm">
-                        Bergabung dengan ribuan pelajar dan instruktur terbaik di platform kursus online terpercaya Indonesia.
-                    </p>
-                    {/* Stats */}
-                    <div className="flex gap-8 pt-2">
-                        {[
-                            { label: 'Kursus', value: '500+' },
-                            { label: 'Pelajar', value: '12K+' },
-                            { label: 'Instruktur', value: '150+' },
-                        ].map(({ label, value }) => (
-                            <div key={label}>
-                                <p className="text-2xl font-extrabold text-white">{value}</p>
-                                <p className="text-white/60 text-sm">{label}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
-                {/* Bottom quote */}
-                <p className="relative z-10 text-white/40 text-xs">
-                    © {new Date().getFullYear()} BelajarKUY. Semua hak dilindungi.
-                </p>
+                    {/* Konten overlay */}
+                    <div className="relative z-20 flex flex-col h-full justify-between">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-sm">
+                            <span
+                                className="material-symbols-outlined text-secondary-container"
+                                style={{ fontVariationSettings: "'FILL' 1", fontSize: '32px' }}
+                            >
+                                rocket_launch
+                            </span>
+                            <span className="font-headline-md text-headline-md text-surface tracking-tight">
+                                Belajar<span className="text-secondary-container">KUY</span>
+                            </span>
+                        </Link>
 
-                {/* Decorative circles */}
-                <div className="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-white/5" />
-                <div className="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-white/5" />
-            </div>
-
-            {/* Panel Kanan — Form */}
-            <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-20 py-12 bg-white">
-                {/* Mobile logo */}
-                <div className="lg:hidden mb-8">
-                    <Link href="/" className="text-2xl font-extrabold tracking-tight">
-                        <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Belajar</span>
-                        <span className="text-indigo-700 font-black">KUY</span>
-                    </Link>
-                </div>
-
-                <div className="w-full max-w-md mx-auto">
-                    {/* Header form */}
-                    {(title || subtitle) && (
-                        <div className="mb-8">
-                            {title && (
-                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>
-                            )}
-                            {subtitle && (
-                                <p className="mt-2 text-sm text-gray-500">{subtitle}</p>
-                            )}
+                        {/* Welcome text */}
+                        <div className="mt-auto mb-xl">
+                            <h1 className="font-headline-lg text-headline-lg text-surface mb-sm leading-tight">
+                                {panelTitle ?? 'Selamat Datang Kembali!'}
+                            </h1>
+                            <p className="font-body-lg text-body-lg text-primary-fixed-dim max-w-sm">
+                                {panelSubtitle ?? 'Lanjutkan perjalanan belajarmu hari ini. Ada banyak skill baru yang siap menantimu untuk dikuasai.'}
+                            </p>
                         </div>
-                    )}
+                    </div>
+                </div>
 
-                    {children}
+                {/* ===== Panel Kanan: Form ===== */}
+                <div className="w-full md:w-7/12 lg:w-1/2 p-xl lg:p-xxl flex flex-col justify-center bg-surface relative">
+                    {/* Logo mobile */}
+                    <div className="md:hidden flex items-center justify-center gap-sm mb-xl">
+                        <span
+                            className="material-symbols-outlined text-secondary-container"
+                            style={{ fontVariationSettings: "'FILL' 1", fontSize: '28px' }}
+                        >
+                            rocket_launch
+                        </span>
+                        <span className="font-headline-md text-headline-md text-primary tracking-tight">
+                            Belajar<span className="text-secondary-container">KUY</span>
+                        </span>
+                    </div>
+
+                    <div className="w-full max-w-md mx-auto">
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>

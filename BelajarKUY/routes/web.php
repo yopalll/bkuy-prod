@@ -22,7 +22,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use Inertia\Inertia;
 
 // --- Public Routes ---
-// Fase 1 migrasi React+Inertia (ADR-008): landing dirender via Inertia → Pages/Welcome.jsx
+// Landing page via React+Inertia (desain Vascha & Quinsha)
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });

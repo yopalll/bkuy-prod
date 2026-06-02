@@ -2,22 +2,18 @@ import { useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 
-/**
- * Register page — React+Inertia (L2 Albariqi, feature/auth-react).
- * Fitur: pilihan role (Siswa/Instruktur), nama, email, password + konfirmasi.
- * Controller: App\Http\Controllers\Auth\RegisteredUserController@create → Inertia::render('Auth/Register')
- */
+// Desain: login_registrasi_belajarkuy/code.html (Vascha & Quinsha) — halaman register
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
-        role: 'user', // default: Siswa
+        role: 'user',
     });
 
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showConfirm, setShowConfirm]   = useState(false);
 
     function submit(e) {
         e.preventDefault();
@@ -28,128 +24,87 @@ export default function Register() {
 
     return (
         <GuestLayout
-            title="Buat akun baru 🚀"
-            subtitle="Bergabung dan mulai belajar hari ini"
+            panelTitle="Mulai Belajar Hari Ini!"
+            panelSubtitle="Bergabunglah dengan ribuan pelajar yang sudah mengembangkan skill mereka bersama BelajarKUY."
         >
-            <form onSubmit={submit} className="space-y-5" noValidate>
-                {/* Pilihan Role */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Daftar sebagai
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                        {/* Siswa */}
-                        <label
-                            htmlFor="role_student"
-                            className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none ${
-                                data.role === 'user'
-                                    ? 'border-indigo-500 bg-indigo-50 shadow-sm shadow-indigo-100'
-                                    : 'border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50'
-                            }`}
-                        >
-                            <input
-                                type="radio"
-                                id="role_student"
-                                name="role"
-                                value="user"
-                                checked={data.role === 'user'}
-                                onChange={() => setData('role', 'user')}
-                                className="sr-only"
-                            />
-                            <span className="text-3xl mb-1.5">🎓</span>
-                            <span className={`font-semibold text-sm ${data.role === 'user' ? 'text-indigo-700' : 'text-gray-700'}`}>
-                                Siswa
-                            </span>
-                            <span className="text-xs text-gray-400 mt-0.5">Belajar dari kursus</span>
-                        </label>
+            <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-xs">
+                Daftar
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
+                Buat akun baru dan mulai perjalanan belajarmu.
+            </p>
 
-                        {/* Instruktur */}
-                        <label
-                            htmlFor="role_instructor"
-                            className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none ${
-                                data.role === 'instructor'
-                                    ? 'border-indigo-500 bg-indigo-50 shadow-sm shadow-indigo-100'
-                                    : 'border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50'
-                            }`}
-                        >
-                            <input
-                                type="radio"
-                                id="role_instructor"
-                                name="role"
-                                value="instructor"
-                                checked={data.role === 'instructor'}
-                                onChange={() => setData('role', 'instructor')}
-                                className="sr-only"
-                            />
-                            <span className="text-3xl mb-1.5">📖</span>
-                            <span className={`font-semibold text-sm ${data.role === 'instructor' ? 'text-indigo-700' : 'text-gray-700'}`}>
-                                Instruktur
-                            </span>
-                            <span className="text-xs text-gray-400 mt-0.5">Buat & jual kursus</span>
-                        </label>
-                    </div>
-                    {errors.role && (
-                        <p className="mt-1.5 text-xs text-red-600">{errors.role}</p>
-                    )}
-                </div>
-
+            <form onSubmit={submit} className="flex flex-col gap-md" noValidate>
                 {/* Nama Lengkap */}
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <div className="flex flex-col gap-xs">
+                    <label htmlFor="name" className="font-label-md text-label-md text-on-surface ml-xs">
                         Nama Lengkap
                     </label>
-                    <input
-                        id="name"
-                        type="text"
-                        name="name"
-                        value={data.name}
-                        autoComplete="name"
-                        autoFocus
-                        required
-                        onChange={(e) => setData('name', e.target.value)}
-                        placeholder="Nama kamu"
-                        className={`w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                            errors.name
-                                ? 'border-red-400 bg-red-50 focus:ring-red-400'
-                                : 'border-gray-200 bg-gray-50 hover:border-gray-300 focus:bg-white'
-                        }`}
-                    />
+                    <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-md text-outline pointer-events-none">
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>person</span>
+                        </span>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            value={data.name}
+                            autoComplete="name"
+                            autoFocus
+                            required
+                            onChange={(e) => setData('name', e.target.value)}
+                            placeholder="Nama lengkap kamu"
+                            className={`w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[44px] pr-md border-2 outline-none transition-all duration-200 placeholder:text-outline-variant ${
+                                errors.name
+                                    ? 'border-error bg-error-container/20'
+                                    : 'border-transparent focus:border-primary-container focus:bg-surface'
+                            }`}
+                        />
+                    </div>
                     {errors.name && (
-                        <p className="mt-1.5 text-xs text-red-600">{errors.name}</p>
+                        <p className="font-caption text-caption text-error ml-xs">{errors.name}</p>
                     )}
                 </div>
 
                 {/* Email */}
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <div className="flex flex-col gap-xs">
+                    <label htmlFor="email" className="font-label-md text-label-md text-on-surface ml-xs">
                         Email
                     </label>
-                    <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        autoComplete="username"
-                        required
-                        onChange={(e) => setData('email', e.target.value)}
-                        placeholder="nama@email.com"
-                        className={`w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                            errors.email
-                                ? 'border-red-400 bg-red-50 focus:ring-red-400'
-                                : 'border-gray-200 bg-gray-50 hover:border-gray-300 focus:bg-white'
-                        }`}
-                    />
+                    <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-md text-outline pointer-events-none">
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>mail</span>
+                        </span>
+                        <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={data.email}
+                            autoComplete="username"
+                            required
+                            onChange={(e) => setData('email', e.target.value)}
+                            placeholder="nama@email.com"
+                            className={`w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[44px] pr-md border-2 outline-none transition-all duration-200 placeholder:text-outline-variant ${
+                                errors.email
+                                    ? 'border-error bg-error-container/20'
+                                    : 'border-transparent focus:border-primary-container focus:bg-surface'
+                            }`}
+                        />
+                    </div>
                     {errors.email && (
-                        <p className="mt-1.5 text-xs text-red-600">{errors.email}</p>
+                        <p className="font-caption text-caption text-error ml-xs">{errors.email}</p>
                     )}
                 </div>
 
                 {/* Password */}
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <div className="flex flex-col gap-xs">
+                    <label htmlFor="password" className="font-label-md text-label-md text-on-surface ml-xs">
                         Password
                     </label>
                     <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-md text-outline pointer-events-none">
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>lock</span>
+                        </span>
                         <input
                             id="password"
                             type={showPassword ? 'text' : 'password'}
@@ -158,104 +113,127 @@ export default function Register() {
                             autoComplete="new-password"
                             required
                             onChange={(e) => setData('password', e.target.value)}
-                            placeholder="Min. 8 karakter"
-                            className={`w-full rounded-xl border px-4 py-3 pr-12 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                            placeholder="Minimal 8 karakter"
+                            className={`w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[44px] pr-[44px] border-2 outline-none transition-all duration-200 placeholder:text-outline-variant ${
                                 errors.password
-                                    ? 'border-red-400 bg-red-50 focus:ring-red-400'
-                                    : 'border-gray-200 bg-gray-50 hover:border-gray-300 focus:bg-white'
+                                    ? 'border-error bg-error-container/20'
+                                    : 'border-transparent focus:border-primary-container focus:bg-surface'
                             }`}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                            aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                            className="absolute inset-y-0 right-0 flex items-center pr-md text-outline hover:text-primary transition-colors focus:outline-none"
                         >
-                            {showPassword ? (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            )}
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                                {showPassword ? 'visibility' : 'visibility_off'}
+                            </span>
                         </button>
                     </div>
                     {errors.password && (
-                        <p className="mt-1.5 text-xs text-red-600">{errors.password}</p>
+                        <p className="font-caption text-caption text-error ml-xs">{errors.password}</p>
                     )}
                 </div>
 
                 {/* Konfirmasi Password */}
-                <div>
-                    <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <div className="flex flex-col gap-xs">
+                    <label htmlFor="password_confirmation" className="font-label-md text-label-md text-on-surface ml-xs">
                         Konfirmasi Password
                     </label>
                     <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-md text-outline pointer-events-none">
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>lock_reset</span>
+                        </span>
                         <input
                             id="password_confirmation"
-                            type={showConfirmPassword ? 'text' : 'password'}
+                            type={showConfirm ? 'text' : 'password'}
                             name="password_confirmation"
                             value={data.password_confirmation}
                             autoComplete="new-password"
                             required
                             onChange={(e) => setData('password_confirmation', e.target.value)}
-                            placeholder="Ulangi password"
-                            className={`w-full rounded-xl border px-4 py-3 pr-12 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                            placeholder="Ulangi password kamu"
+                            className={`w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[44px] pr-[44px] border-2 outline-none transition-all duration-200 placeholder:text-outline-variant ${
                                 errors.password_confirmation
-                                    ? 'border-red-400 bg-red-50 focus:ring-red-400'
-                                    : 'border-gray-200 bg-gray-50 hover:border-gray-300 focus:bg-white'
+                                    ? 'border-error bg-error-container/20'
+                                    : 'border-transparent focus:border-primary-container focus:bg-surface'
                             }`}
                         />
                         <button
                             type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                            aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi' : 'Tampilkan konfirmasi'}
+                            onClick={() => setShowConfirm(!showConfirm)}
+                            className="absolute inset-y-0 right-0 flex items-center pr-md text-outline hover:text-primary transition-colors focus:outline-none"
                         >
-                            {showConfirmPassword ? (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            )}
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                                {showConfirm ? 'visibility' : 'visibility_off'}
+                            </span>
                         </button>
                     </div>
                     {errors.password_confirmation && (
-                        <p className="mt-1.5 text-xs text-red-600">{errors.password_confirmation}</p>
+                        <p className="font-caption text-caption text-error ml-xs">{errors.password_confirmation}</p>
                     )}
+                </div>
+
+                {/* Role Selector */}
+                <div className="flex flex-col gap-xs">
+                    <span className="font-label-md text-label-md text-on-surface ml-xs">Daftar sebagai</span>
+                    <div className="grid grid-cols-2 gap-sm">
+                        {[
+                            { value: 'user', icon: 'school', label: 'Pelajar' },
+                            { value: 'instructor', icon: 'cast_for_education', label: 'Instruktur' },
+                        ].map(({ value, icon, label }) => (
+                            <button
+                                key={value}
+                                type="button"
+                                onClick={() => setData('role', value)}
+                                className={`flex items-center justify-center gap-sm py-3 rounded-lg border-2 font-label-md text-label-md transition-all duration-200 ${
+                                    data.role === value
+                                        ? 'border-primary-container bg-primary-fixed text-primary-container'
+                                        : 'border-surface-container-high bg-surface-container-low text-on-surface-variant hover:border-outline-variant'
+                                }`}
+                            >
+                                <span
+                                    className="material-symbols-outlined"
+                                    style={{ fontSize: '20px', fontVariationSettings: "'FILL' 1" }}
+                                >
+                                    {icon}
+                                </span>
+                                {label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Submit */}
                 <button
-                    id="register-submit-btn"
                     type="submit"
                     disabled={processing}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-indigo-200"
+                    className="w-full bg-primary-container text-on-primary font-label-md text-label-md py-4 rounded-lg hover:bg-on-primary-fixed-variant active:scale-[0.98] transition-all duration-200 shadow-sm flex justify-center items-center gap-sm group disabled:opacity-60 disabled:cursor-not-allowed mt-sm"
                 >
                     {processing ? (
                         <>
-                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                            </svg>
-                            Mendaftarkan…
+                            <span className="material-symbols-outlined animate-spin" style={{ fontSize: '20px' }}>progress_activity</span>
+                            Memproses…
                         </>
-                    ) : 'Daftar Sekarang'}
+                    ) : (
+                        <>
+                            Buat Akun
+                            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: '20px' }}>
+                                arrow_forward
+                            </span>
+                        </>
+                    )}
                 </button>
             </form>
 
-            {/* Link login */}
-            <p className="mt-6 text-center text-sm text-gray-500">
+            {/* Link ke Login */}
+            <p className="text-center mt-xl font-body-md text-body-md text-on-surface-variant">
                 Sudah punya akun?{' '}
-                <Link href={route('login')} className="font-semibold text-indigo-600 hover:text-indigo-700">
-                    Masuk di sini
+                <Link
+                    href={route('login')}
+                    className="font-label-md text-label-md text-primary-container hover:text-primary hover:underline underline-offset-4 transition-colors"
+                >
+                    Masuk
                 </Link>
             </p>
         </GuestLayout>

@@ -32,9 +32,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = $request->user();
-        
-        return redirect()->intended(route('dashboard'));
+        // Inertia::location() → 409 + X-Inertia-Location → client paksa window.location (full reload ke Blade dashboard)
+        return Inertia::location(route('dashboard'));
     }
 
     /**

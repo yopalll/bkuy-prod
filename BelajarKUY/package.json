@@ -29,6 +29,7 @@
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-i18next": "^17.0.8",
-        "sweetalert2": "^11.26.24"
+        "sweetalert2": "^11.26.24",
+        "ziggy-js": "^2.6.2"
     }
 }

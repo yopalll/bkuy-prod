@@ -7,10 +7,14 @@
 
     <title inertia>{{ config('app.name', 'BelajarKUY') }}</title>
 
-    <!-- Fonts: Plus Jakarta Sans -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+    <!-- Ziggy routes untuk React -->
+    @routes
 
     <!-- Vite + Inertia -->
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
