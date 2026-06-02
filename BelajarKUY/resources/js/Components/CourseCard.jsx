@@ -1,39 +1,107 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { useState } from 'react';
 
 const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
 
-// Komponen reusable (≥2 layar). Field mengikuti model Course pada Kode_Nyata:
-// title, slug, thumbnail, category.name, instructor.{name,photo},
-// bestseller, featured, price, discount, discounted_price, average_rating, reviews.
-export default function CourseCard({ course }) {
+/**
+ * Komponen reusable CourseCard (≥2 layar).
+ *
+ * Props:
+ *   course        – objek Course (lihat model Course)
+ *   isWishlisted  – boolean (opsional), status wishlist awal
+ *   onWishlistChange – callback(courseId, newIsWishlisted) opsional
+ */
+export default function CourseCard({ course, isWishlisted: initialWishlisted = false, onWishlistChange }) {
+    const { auth } = usePage().props;
     const rating = Number(course.average_rating ?? 0);
     const reviewCount = course.reviews?.length ?? course.reviews_count ?? 0;
     const hasDiscount = (course.discount ?? 0) > 0;
 
+    const [wishlisted, setWishlisted] = useState(initialWishlisted);
+    const [loading, setLoading] = useState(false);
+
+    async function handleWishlistToggle(e) {
+        e.preventDefault();
+        if (!auth?.user) {
+            window.location.href = '/login';
+            return;
+        }
+        if (loading) return;
+        setLoading(true);
+
+        try {
+            // Ambil CSRF token dari meta tag (diisi oleh HandleInertiaRequests via shared props)
+            const csrfToken =
+                document.cookie
+                    .split('; ')
+                    .find((row) => row.startsWith('XSRF-TOKEN='))
+                    ?.split('=')[1] ?? '';
+
+            const res = await fetch(`/wishlist/${course.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': decodeURIComponent(csrfToken),
+                    Accept: 'application/json',
+                },
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const newState = data.action === 'added';
+                setWishlisted(newState);
+                onWishlistChange?.(course.id, newState);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="group bg-white rounded-3xl overflow-hidden border border-gray-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full relative">
+            {/* Badges */}
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
                 {course.bestseller && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white">Bestseller</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                        Bestseller
+                    </span>
                 )}
                 {course.featured && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white">Featured</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                        Featured
+                    </span>
                 )}
             </div>
 
-            <button className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 border border-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500" aria-label="Wishlist">
-                <Heart className="w-5 h-5" />
+            {/* Tombol Wishlist */}
+            <button
+                onClick={handleWishlistToggle}
+                disabled={loading}
+                className={`absolute top-4 right-4 z-10 w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+                    wishlisted
+                        ? 'bg-red-500 border-red-500 text-white hover:bg-red-600'
+                        : 'bg-white/90 border-gray-100 text-gray-500 hover:text-red-500'
+                } ${loading ? 'opacity-60 cursor-wait' : ''}`}
+                aria-label={wishlisted ? 'Hapus dari Wishlist' : 'Tambah ke Wishlist'}
+                title={wishlisted ? 'Hapus dari Wishlist' : 'Tambah ke Wishlist'}
+            >
+                <Heart className={`w-5 h-5 ${wishlisted ? 'fill-current' : ''}`} />
             </button>
 
+            {/* Thumbnail */}
             <Link href={`/courses/${course.slug}`} className="block overflow-hidden bg-gray-50 aspect-video">
                 <img
-                    src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80'}
+                    src={
+                        course.thumbnail ||
+                        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80'
+                    }
                     alt={course.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
             </Link>
 
+            {/* Konten */}
             <div className="p-6 flex flex-col flex-1">
                 <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg w-max mb-3 uppercase tracking-wider">
                     {course.category?.name ?? 'Kategori'}
@@ -44,7 +112,12 @@ export default function CourseCard({ course }) {
 
                 <div className="flex items-center gap-2.5 mb-4">
                     <img
-                        src={course.instructor?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor?.name ?? 'BK')}&background=4F46E5&color=fff`}
+                        src={
+                            course.instructor?.photo ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                course.instructor?.name ?? 'BK',
+                            )}&background=4F46E5&color=fff`
+                        }
                         alt={course.instructor?.name}
                         className="h-6 w-6 rounded-full object-cover border border-indigo-100"
                     />
@@ -54,7 +127,10 @@ export default function CourseCard({ course }) {
                 <div className="flex items-center gap-1.5 mb-4">
                     <div className="flex items-center text-amber-400">
                         {[1, 2, 3, 4, 5].map((i) => (
-                            <Star key={i} className={`w-4 h-4 ${i <= Math.round(rating) ? 'fill-current' : 'text-gray-200'}`} />
+                            <Star
+                                key={i}
+                                className={`w-4 h-4 ${i <= Math.round(rating) ? 'fill-current' : 'text-gray-200'}`}
+                            />
                         ))}
                     </div>
                     <span className="text-sm font-bold text-gray-800">{rating.toFixed(1)}</span>
@@ -66,15 +142,20 @@ export default function CourseCard({ course }) {
                         {hasDiscount ? (
                             <>
                                 <span className="text-xs text-gray-400 line-through">{rupiah(course.price)}</span>
-                                <span className="text-lg font-extrabold text-indigo-600">{rupiah(course.discounted_price)}</span>
+                                <span className="text-lg font-extrabold text-indigo-600">
+                                    {rupiah(course.discounted_price)}
+                                </span>
                             </>
-                        ) : course.price == 0 ? (
+                        ) : Number(course.price) === 0 ? (
                             <span className="text-lg font-extrabold text-emerald-600">Gratis</span>
                         ) : (
                             <span className="text-lg font-extrabold text-gray-900">{rupiah(course.price)}</span>
                         )}
                     </div>
-                    <button className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all" aria-label="Tambah ke Keranjang">
+                    <button
+                        className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
+                        aria-label="Tambah ke Keranjang"
+                    >
                         <ShoppingCart className="w-5 h-5" />
                     </button>
                 </div>

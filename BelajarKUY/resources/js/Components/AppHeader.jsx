@@ -33,7 +33,7 @@ export default function AppHeader() {
 
                 {/* Right actions */}
                 <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <Link href="#" className="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-gray-50" aria-label={t('nav.wishlist')}>
+                    <Link href="/student/wishlist" className="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-gray-50" aria-label={t('nav.wishlist')}>
                         <Heart className="w-5 h-5" />
                     </Link>
                     <Link href="#" className="p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-gray-50" aria-label={t('nav.cart')}>

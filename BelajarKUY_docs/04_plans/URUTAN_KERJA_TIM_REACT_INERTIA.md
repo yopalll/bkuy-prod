@@ -116,13 +116,20 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 
 ---
 
-### LANGKAH 3 — Ray · Wishlist (R1)
+### LANGKAH 3 — Ray · Wishlist (R1) ✅ SELESAI (2026-06-02)
 - **Apa:** add/remove wishlist (ganti placeholder route `wishlist.add`).
 - **Mulai setelah:** Langkah 1 (butuh `CourseCard` + tombol wishlist).
 - **File utama:** `WishlistController`, route wishlist, tombol di `CourseCard`.
-- **Selesai bila:** siswa bisa tambah/hapus wishlist, data tersimpan di tabel `wishlists`, halaman wishlist menampilkannya.
-- **Branch:** `feature/wishlist`.
+- **Selesai bila:** siswa bisa tambah/hapus wishlist, data tersimpan di tabel `wishlists`, halaman wishlist menampilkannya. ✅
+- **Branch:** `feature/wishlist`. ✅
 - **Kenapa duluan untuk Ray:** kecil → pemanasan pola "controller + aksi Inertia" sebelum Cart.
+- **Hasil implementasi:**
+  - `WishlistController.php` — toggle add/remove (JSON), halaman index Inertia (`Pages/Student/Wishlist`), remove, count
+  - `Pages/Student/Wishlist.jsx` — halaman React (grid kartu, empty state, tombol hapus via `router.delete`)
+  - `Components/CourseCard.jsx` — tombol wishlist fungsional (props `isWishlisted` + `onWishlistChange`, fetch POST CSRF-aware, redirect guest ke `/login`)
+  - `Components/AppHeader.jsx` — link ikon hati → `/student/wishlist`
+  - `routes/web.php` — `wishlist.add`, `wishlist.count`, `student.wishlist` GET/DELETE terhubung ke `WishlistController`
+  - `npm run build` PASS ✅ (2384 modules)
 
 ### LANGKAH 4 — Ray · Cart (R2)
 - **Apa:** add/remove cart + halaman `Pages/Cart/Index` (ganti placeholder `cart.*`).
