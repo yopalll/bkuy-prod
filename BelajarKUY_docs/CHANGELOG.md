@@ -5,6 +5,22 @@
 
 ---
 
+## [2026-06-02] — React Error Pages & Auth React
+
+Penyelesaian Fase 2 (bagian Auth) dan porting halaman error (404, 500, dll) dari Blade ke React.
+
+### ➕ Added
+
+- **Auth React (L2)**: Porting halaman Breeze ke React+Inertia (Login, Register, Forgot Password, Reset Password) dengan role selection untuk Register.
+- **GuestLayout.jsx**: Layout baru untuk otentikasi (split panel).
+- **Error Pages**: Pembuatan halaman error React (`Pages/Errors/404.jsx`, dsb.).
+
+### ➖ Removed
+
+- **Legacy Blade Error Views**: Penghapusan view error bawaan Blade/Laravel yang tergantikan oleh komponen React.
+
+---
+
 ## [2026-05-31] — Adopsi React + Inertia (Lapisan Frontend)
 
 Penyelarasan dokumentasi terhadap `Kode_Nyata`: lapisan presentasi resmi adalah **React via Inertia** (bukan Blade + Alpine.js), dan **Filament tidak terpasang** pada `composer.json`.
