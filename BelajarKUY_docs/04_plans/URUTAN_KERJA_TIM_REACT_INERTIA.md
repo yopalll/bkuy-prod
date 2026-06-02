@@ -39,7 +39,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
                                        │  semua orang build dari sini
         ┌──────────────────────────────┼──────────────────────────────┐
         ▼                              ▼                              ▼
-  L1 Vascha               L2 Albariqi                 L6 Albariqi
+  L1 Vascha               L2 Albariqi ✅                 L6 Albariqi
   Halaman publik          Auth pages React            Instructor Course CRUD
   + komponen dasar        (Login/Register)            (jalan mandiri)
         │                              │                              │
@@ -96,13 +96,21 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 - **Branch:** `feature/public-react`, lalu `feature/react-components`.
 - **Kenapa duluan:** menetapkan **pola komponen & gaya visual** yang jadi acuan semua orang, dan menyediakan `CourseCard` + tombol cart/wishlist yang dibutuhkan Ray.
 
-### LANGKAH 2 — Albariqi · Auth pages React (selipan, paralel dengan L1)
+### LANGKAH 2 — Albariqi · Auth pages React ✅ SELESAI (2026-06-02)
 - **Apa:** port halaman Breeze ke React: `Pages/Auth/{Login,Register,ForgotPassword,ResetPassword}` (termasuk pilihan role saat register).
 - **Mulai setelah:** Langkah 0.
-- **File utama:** `resources/js/Pages/Auth/*`, controller Breeze → `Inertia::render`.
-- **Selesai bila:** login/register/logout jalan via React; redirect per role tetap benar (admin/instructor/student); `npm run build` sukses.
-- **Branch:** `feature/auth-react`.
+- **File utama:** `resources/js/Pages/Auth/*`, `resources/js/Layouts/GuestLayout.jsx`, controller Breeze → `Inertia::render`.
+- **Selesai bila:** login/register/logout jalan via React; redirect per role tetap benar (admin/instructor/student); `npm run build` sukses. ✅
+- **Branch:** `feature/auth-react`. ✅
 - **Kenapa di sini:** kecil tapi **membuka jalan** untuk Student panel Vascha (L5). Albariqi pemilik modul Auth, jadi dia yang port.
+- **Hasil implementasi:**
+  - `GuestLayout.jsx` — layout dua panel (branding kiri, form kanan)
+  - `Login.jsx` — email/password + Google OAuth + remember me + show/hide password
+  - `Register.jsx` — role selector kartu (Siswa 🎓 / Instruktur 📖) + show/hide password
+  - `ForgotPassword.jsx` — info box + status sukses
+  - `ResetPassword.jsx` — token prop, email readonly, password strength hints
+  - 4 controller diupdate: `AuthenticatedSessionController`, `RegisteredUserController`, `PasswordResetLinkController`, `NewPasswordController` → `Inertia::render`
+  - `npm run build` PASS ✅ (2371 modules)
 
 > L1 dan L2 **berjalan paralel** — keduanya hanya butuh fondasi.
 
