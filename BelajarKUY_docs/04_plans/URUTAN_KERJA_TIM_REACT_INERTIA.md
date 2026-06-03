@@ -50,7 +50,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   L4 Ray ✅ Cart                                                       │
         │                                                              │
         ▼                              ▼                               │
-  L8 Ray: Coupon              L5 Vascha: Student panel                 │
+  L8 Ray: Coupon              L5 Vascha ✅ Student panel               │
         │                     (butuh L1 + L2)                          │
         ▼                                                              │
   ┌──────────────────────────────────────────────┐                    │
@@ -147,12 +147,23 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   - `npm run build` PASS ✅
 
 
-### LANGKAH 5 — Vascha · Student panel React (V4) — paralel dengan Ray
+### LANGKAH 5 — Vascha · Student panel React (V4) ✅ SELESAI (2026-06-04)
 - **Apa:** port `Pages/Student/{Dashboard,MyCourses,Wishlist,Profile,Notifications}`.
 - **Mulai setelah:** Langkah 1 (komponen) + Langkah 2 (auth React).
 - **File utama:** `resources/js/Pages/Student/*`, controller student → `Inertia::render`.
-- **Selesai bila:** semua halaman student tampil React dengan data asli; `npm run build` sukses.
+- **Selesai bila:** semua halaman student tampil React dengan data asli; `npm run build` sukses. ✅
 - **Branch:** `feature/student-react`.
+- **Hasil implementasi:**
+  - `Layouts/StudentLayout.jsx` — shared sidebar layout (desktop fixed + mobile overlay + bottom nav bar), flash messages
+  - `Pages/Student/Dashboard.jsx` — stat cards (enrolled/wishlist/reviews), lanjutkan belajar, SVG circular progress "Misi Belajar", empty state CTA
+  - `Pages/Student/MyCourses.jsx` — grid kursus dikelompokkan per status (In Progress / Not Started / Selesai), progress bar gradient
+  - `Pages/Student/Wishlist.jsx` — redesign pakai StudentLayout + V&Q design tokens (migrasi dari AppLayout)
+  - `Pages/Student/Profile.jsx` — 3 tabs: Informasi Pribadi (form + photo upload), Keamanan & Sandi (ganti password), Notifikasi (placeholder)
+  - `Pages/Student/Notifications.jsx` — notification center (empty state; data real dari F14 nanti)
+  - `DashboardController.php` — semua `view()` → `Inertia::render()`, tambah `notifications()`
+  - `routes/web.php` — tambah `student.notifications` route
+  - `tailwind.config.js` — tambah token `background-subtle: #F8F5F2`
+  - `npm run build` ✅ — 2392 modules, 0 error
 
 ### LANGKAH 6 — Albariqi · Instructor Course CRUD (A1) — paralel ✅ SELESAI (2026-06-02)
 - **Apa:** `Pages/Instructor/Courses/{Index,BasicInfo}` + create/edit kursus.
@@ -269,7 +280,7 @@ Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enro
 | Anggota | Mulai dari | Lanjut ke | Tonggak pribadi |
 |---|---|---|---|
 | **Yosua** (PM) | L0 ✅ (selesai) | review tiap PR (L2-jalan terus) | L16 matikan Blade, L17 deploy |
-| **Vascha** | **L1** ✅ (selesai) | L5 student panel | komponen jadi acuan tim |
+| **Vascha** | **L1** ✅ (selesai) | **L5** ✅ student panel selesai | komponen jadi acuan tim |
 | **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 kurikulum → L10 player → L11 email | L10 butuh Enrollment Ray |
 | **Ray** | **L3** ✅ wishlist · **L4** ✅ cart | L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
 | **Quinsha** | **L12** admin shell | L13 → L14 admin pages | L15 arsip Blade admin |

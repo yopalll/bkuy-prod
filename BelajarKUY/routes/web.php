@@ -107,6 +107,7 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('student')->name('s
     Route::post('/profile', [StudentDashboardController::class, 'profileUpdate'])->name('profile.update');
     Route::get('/setting', [StudentDashboardController::class, 'setting'])->name('setting');
     Route::post('/setting', [StudentDashboardController::class, 'settingUpdate'])->name('setting.update');
+    Route::get('/notifications', [StudentDashboardController::class, 'notifications'])->name('notifications');
 });
 
 // --- Google OAuth ---
