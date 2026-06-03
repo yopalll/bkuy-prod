@@ -111,6 +111,7 @@ export default {
                 'warning':                    '#E67E22',
 
                 // legacy aliases yang dipakai komponen lain
+                'background-subtle':           '#F8F5F2',
                 'brand-bg-soft':              '#E2E8ED',
                 'brand-cream-card':           '#FDF6ED',
                 'brand-sidebar-light':        '#F9F6F0',

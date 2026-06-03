@@ -100,8 +100,8 @@ Lead (React + Inertia — ADR-008):
 ✅ Setup i18n (react-i18next, id.json, en.json) — L1 Vascha
 ✅ Security fix: Object.hasOwn() di Badge.jsx (prototype pollution) — L1 Vascha
 ☐ Cart & Checkout page UI (`Pages/Cart/Index.jsx`, `Pages/Checkout/Index.jsx`) — L5+
-☐ Student dashboard (`Pages/Student/Dashboard.jsx`) — L5
-☐ Student enrolled courses page (`Pages/Student/MyCourses.jsx` — progress bars) — L5
+✅ Student dashboard (`Pages/Student/Dashboard.jsx`) — L5 Vascha (4 Jun 2026)
+✅ Student enrolled courses page (`Pages/Student/MyCourses.jsx` — progress bars) — L5 Vascha (4 Jun 2026)
 ☐ Course Player frontend (F13) — `Pages/Courses/Player.jsx` — L10
 ☐ Live search component (Meilisearch + React state) — post-L1
 ☐ Toast/notification listener (Reverb events; konsumsi shared prop `flash`) — post-L1
@@ -148,7 +148,7 @@ Fase 1 — Fondasi & Publik (Vascha & Quinsha + Yosua)
 
 Fase 2 — Auth & Student (Albariqi + Vascha)
 ✅ Halaman auth React (Pages/Auth/*) via Breeze + Inertia — L2 Albariqi
-☐ Panel Student ke Pages/Student/* (Dashboard, MyCourses, Wishlist, Profile, Notifications) — L5 Vascha
+✅ Panel Student ke Pages/Student/* (Dashboard, MyCourses, Wishlist, Profile, Notifications) — L5 Vascha (4 Jun 2026)
 
 Fase 3 — Instructor & Admin (Albariqi + Quinsha & Vascha)
 ☐ Panel Instructor ke Pages/Instructor/*
@@ -229,3 +229,4 @@ docs: update progress tracker and task distribution session 7
 
 *Pembagian tugas ini bisa berubah sesuai progress. Update jika ada perubahan.*
 *Last updated: 4 Juni 2026 — 00:30 WIB — Session 13 — Antigravity (AI Agent) untuk Ray Nathan — L8 Coupon Selesai*
+*Last updated: 4 Juni 2026 — Session 13 — Antigravity (AI Agent) untuk Vascha U — L5 Student Panel React Selesai*

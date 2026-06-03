@@ -23,7 +23,7 @@
 | Category & SubCategory CRUD (admin) | 100% | 🟢 Selesai |
 | Admin Panel (CRUD lengkap, Blade) | 90% | 🟢 Hampir selesai |
 | Site Settings (admin) | 100% | 🟢 Selesai |
-| Student Panel (dashboard/my-courses/wishlist/profile/setting, Blade) | 85% | 🟢 Hampir selesai |
+| Student Panel React (Pages/Student/*) | 100% | 🟢 Selesai — L5 Vascha (Dashboard, MyCourses, Wishlist, Profile, Notifications) |
 | Review & Rating | 50% | 🟡 Moderasi admin ✅, submit review siswa ❌ |
 | Payment (Midtrans) | 25% | 🟡 Service + CheckoutController ada; view placeholder, callback ❌ |
 | Cart & Wishlist | 100% | 🟢 Wishlist ✅, Cart ✅, Coupon apply di Cart ✅ |
@@ -34,6 +34,8 @@
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **30%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L6 Instructor CRUD ✅ + L8 Coupon ✅ — menunggu L5 Vascha + L7 Albariqi** |
 | **OVERALL** | **~70%** | **🟡 On Progress** |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **55%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ — menunggu L8 Coupon, L9 Checkout** |
+| **OVERALL** | **~72%** | **🟡 On Progress** |
 
 ---
 
@@ -76,8 +78,8 @@
 
 ## 🔄 SEDANG DIKERJAKAN
 
-- L5 Vascha: Student panel React (menunggu di-assign)
-- L6 Albariqi: Instructor Course CRUD (mandiri, belum dimulai)
+- L8 Ray: Coupon CRUD + apply at checkout
+- L9 Ray: Checkout + Midtrans + Enrollment
 
 ---
 
@@ -98,7 +100,15 @@
 - [ ] Email: CourseApproved / CourseRejected / NewSale (baru `WelcomeMail`)
 
 ### Frontend (Vascha)
-- [ ] Student panel React (`Pages/Student/*`) — L5
+- [x] Student panel React (`Pages/Student/*`) — L5 ✅ 4 Jun 2026
+  - `StudentLayout.jsx` — shared sidebar layout (desktop + mobile)
+  - `Pages/Student/Dashboard.jsx` — stats + enrolled courses + progress
+  - `Pages/Student/MyCourses.jsx` — enrolled courses grid + progress bars
+  - `Pages/Student/Wishlist.jsx` — redesign pakai StudentLayout (V&Q design)
+  - `Pages/Student/Profile.jsx` — tabs: Informasi Pribadi + Keamanan & Sandi
+  - `Pages/Student/Notifications.jsx` — notification center (empty state ready)
+  - `DashboardController.php` — semua method → `Inertia::render`
+  - Route `student.notifications` ditambahkan
 - [ ] Live search (Meilisearch) + listener notifikasi (Reverb/Echo)
 - [ ] Course Player frontend
 
@@ -113,7 +123,7 @@
   - `Pages/Courses/Show.jsx` + `CourseDetailController` Inertia (L1 Vascha) ✅
   - `AppFooter.jsx`, `Badge.jsx`, `EmptyState.jsx` (L1 Vascha) ✅
   - i18n: `react-i18next`, `id.json`, `en.json` (L1 Vascha) ✅
-- [ ] **Fase 2 — Auth & Student:** `Pages/Auth/*` ✅ (Albariqi L2) + `Pages/Student/Wishlist.jsx` ✅ (Ray L3) + `Pages/Cart/Index.jsx` ✅ (Ray L4) + sisa `Pages/Student/*` — Vascha L5
+- [x] **Fase 2 — Auth & Student:** `Pages/Auth/*` ✅ (Albariqi L2) + `Pages/Student/Wishlist.jsx` ✅ (Ray L3) + `Pages/Cart/Index.jsx` ✅ (Ray L4) + `Pages/Student/*` ✅ (Vascha L5)
 - [ ] **Fase 3 — Instructor & Admin:** `Pages/Instructor/*` + `Pages/Admin/*`; deaktivasi view Blade lama
 - [x] **Error Pages:** Hapus legacy blade dan ganti ke halaman error React (404, 500, etc) ✅
 
@@ -293,6 +303,28 @@
   - [x] `npm run build` sukses ✅
 - Next: L9 Ray (Checkout + Midtrans + Enrollment) — `feature/payment-midtrans`
 - Report: `06_reports/REPORT_2026-06-04_L8_RAY_COUPON.md`
+### Session 13 — 4 Juni 2026 (Antigravity) — Vascha U — L5 Student Panel React+Inertia
+- Created: `Layouts/StudentLayout.jsx` — shared sidebar layout (desktop + mobile burger + bottom nav bar), flash messages
+- Created: `Pages/Student/Dashboard.jsx` — stat cards (3), lanjutkan belajar, SVG circular progress, empty state CTA
+- Created: `Pages/Student/MyCourses.jsx` — grid kursus per kategori status (In Progress / Not Started / Completed), progress bar gradient
+- Redesigned: `Pages/Student/Wishlist.jsx` — migrasi dari AppLayout ke StudentLayout, V&Q design tokens
+- Created: `Pages/Student/Profile.jsx` — tab Informasi Pribadi (form + photo upload) + tab Keamanan & Sandi (password change) + tab Notifikasi (placeholder)
+- Created: `Pages/Student/Notifications.jsx` — notification center (empty state + list mode)
+- Updated: `DashboardController.php` — semua method view() → Inertia::render(); tambah notifications(); hapus unused imports
+- Updated: `routes/web.php` — tambah Route::get('/notifications') di student group
+- Updated: `tailwind.config.js` — tambah token warna `background-subtle: #F8F5F2`
+- Branch: `feature/student-react`
+- Build: `npm run build` ✅ — 2392 modules, built in 1.24s, 0 error
+- Status: **L5 Vascha Student Panel SELESAI 100%** ✅
+- DoD:
+  - [x] Dashboard tampil React dengan data asli (enrollments, wishlist, reviews count; progress courses)
+  - [x] MyCourses tampil semua kursus terdaftar dengan progress bars
+  - [x] Wishlist pakai StudentLayout + V&Q design
+  - [x] Profile: edit info + upload foto + ganti password
+  - [x] Notifications: halaman siap (empty state; data real akan datang dari F14)
+  - [x] StudentLayout: sidebar desktop + mobile overlay + bottom nav
+  - [x] `npm run build` sukses, 0 error
+- Next: L8 Ray (Coupon), L9 Ray (Checkout + Midtrans)
 
 ---
 
@@ -301,6 +333,9 @@
 - **Frontend masih sebagian Blade** untuk student panel (menunggu L5 Vascha) dan admin panel (L12-L14 Quinsha).
 - **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order) — dikerjakan di L9 Ray.
 - **`used_count` increment kupon** dikerjakan di L9 saat payment settlement.
+- **Frontend admin/instructor panel** masih Blade, menunggu L12 Quinsha dan L7 Albariqi.
+- **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order).
+- **Kupon belum ada** — placeholder kode kupon di `Cart/Index.jsx` (diaktifkan di L8).
 
 ---
 
