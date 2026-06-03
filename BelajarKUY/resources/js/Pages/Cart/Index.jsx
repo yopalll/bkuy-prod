@@ -9,6 +9,9 @@ import {
     ArrowRight,
     Tag,
     Package,
+    CheckCircle2,
+    X,
+    Loader2,
 } from 'lucide-react';
 import { useState } from 'react';
 import EmptyState from '@/Components/EmptyState';
@@ -148,30 +151,143 @@ function CartItemRow({ item, onRemove, onMoveToWishlist, isInWishlist }) {
     );
 }
 
+// ========================= CouponPanel =========================
+function CouponPanel({ courseIds, subtotal, onApply, onRemove, applied }) {
+    const [code, setCode]       = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError]     = useState('');
+
+    function getCsrfToken() {
+        return decodeURIComponent(
+            document.cookie
+                .split('; ')
+                .find((r) => r.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1] ?? '',
+        );
+    }
+
+    async function handleApply(e) {
+        e.preventDefault();
+        if (!code.trim() || loading) return;
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('/coupon/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept:         'application/json',
+                    'X-XSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    coupon_code: code.trim().toUpperCase(),
+                    course_ids:  courseIds,
+                    subtotal:    subtotal,
+                }),
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                onApply(json);
+                setCode('');
+            } else {
+                setError(json.message ?? 'Kupon tidak valid.');
+            }
+        } catch {
+            setError('Gagal menghubungi server. Coba lagi.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (applied) {
+        return (
+            <div className="mb-5">
+                <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-emerald-700">Kupon diterapkan!</p>
+                        <p className="text-sm font-black text-emerald-800 font-mono tracking-wider">{applied.coupon_code}</p>
+                        <p className="text-xs text-emerald-600">Hemat {applied.discount_percent}% — {rupiah(applied.discount_amount)}</p>
+                    </div>
+                    <button
+                        onClick={onRemove}
+                        className="p-1.5 rounded-xl text-emerald-600 hover:bg-emerald-100 transition-colors"
+                        title="Batalkan kupon"
+                    >
+                        <X className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="mb-5">
+            <form onSubmit={handleApply} className="flex gap-2">
+                <div className="relative flex-1">
+                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                        id="coupon-code-input"
+                        type="text"
+                        value={code}
+                        onChange={(e) => { setCode(e.target.value.toUpperCase()); setError(''); }}
+                        placeholder="Kode kupon"
+                        className="w-full pl-9 pr-4 py-2.5 rounded-2xl border border-gray-200 bg-gray-50 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    disabled={loading || !code.trim()}
+                    id="btn-apply-coupon"
+                    className="px-4 py-2.5 rounded-2xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-500 disabled:opacity-50 transition-colors shrink-0"
+                >
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Terapkan'}
+                </button>
+            </form>
+            {error && (
+                <p className="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
+                    <X className="w-3.5 h-3.5" /> {error}
+                </p>
+            )}
+        </div>
+    );
+}
+
 // ========================= OrderSummary =========================
-function OrderSummary({ subtotal, itemCount }) {
+function OrderSummary({ subtotal, itemCount, coupon, courseIds, onCouponApply, onCouponRemove }) {
+    const finalTotal = coupon ? coupon.final_price : subtotal;
+
     return (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sticky top-24">
             <h2 className="text-lg font-extrabold text-gray-900 mb-5">Ringkasan Pesanan</h2>
 
             <div className="space-y-3 mb-5">
                 <div className="flex justify-between text-sm text-gray-600">
-                    <span>
-                        {itemCount} kursus
-                    </span>
+                    <span>{itemCount} kursus</span>
                     <span className="font-medium">{rupiah(subtotal)}</span>
                 </div>
+
+                {coupon && (
+                    <div className="flex justify-between text-sm text-emerald-600">
+                        <span className="font-semibold">Diskon kupon ({coupon.discount_percent}%)</span>
+                        <span className="font-bold">-{rupiah(coupon.discount_amount)}</span>
+                    </div>
+                )}
+
                 <div className="border-t border-dashed border-gray-100 pt-3 flex justify-between">
                     <span className="font-bold text-gray-900">Total</span>
-                    <span className="font-extrabold text-xl text-indigo-600">{rupiah(subtotal)}</span>
+                    <span className="font-extrabold text-xl text-indigo-600">{rupiah(finalTotal)}</span>
                 </div>
             </div>
 
-            {/* Info kupon (placeholder, diaktifkan di L8) */}
-            <div className="mb-5 flex items-center gap-2 rounded-2xl bg-gray-50 border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-400">
-                <Tag className="w-4 h-4 shrink-0" />
-                <span>Kode kupon tersedia saat checkout</span>
-            </div>
+            {/* Panel kupon (aktif di L8) */}
+            <CouponPanel
+                courseIds={courseIds}
+                subtotal={subtotal}
+                applied={coupon}
+                onApply={onCouponApply}
+                onRemove={onCouponRemove}
+            />
 
             <Link
                 href="/checkout"
@@ -200,6 +316,8 @@ export default function CartIndex({ cartItems, subtotal, wishlistIds }) {
     const [items, setItems] = useState(cartItems ?? []);
     const [total, setTotal]   = useState(subtotal ?? 0);
     const [wIds, setWIds]     = useState(wishlistIds ?? []);
+    // State kupon
+    const [coupon, setCoupon] = useState(null);
 
     // Helper ambil CSRF token
     function getCsrf() {
@@ -248,6 +366,16 @@ export default function CartIndex({ cartItems, subtotal, wishlistIds }) {
                 setWIds((prev) => [...prev, moved.course.id]);
             }
         }
+    }
+
+    const courseIds = items.map((i) => i.course.id);
+
+    function handleCouponApply(data) {
+        setCoupon(data);
+    }
+
+    function handleCouponRemove() {
+        setCoupon(null);
     }
 
     const itemCount = items.length;
@@ -319,7 +447,14 @@ export default function CartIndex({ cartItems, subtotal, wishlistIds }) {
 
                         {/* Ringkasan pesanan */}
                         <div>
-                            <OrderSummary subtotal={total} itemCount={itemCount} />
+                            <OrderSummary
+                                subtotal={total}
+                                itemCount={itemCount}
+                                coupon={coupon}
+                                courseIds={courseIds}
+                                onCouponApply={handleCouponApply}
+                                onCouponRemove={handleCouponRemove}
+                            />
                         </div>
                     </div>
                 )}

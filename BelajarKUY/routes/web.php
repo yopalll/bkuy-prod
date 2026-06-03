@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\WishlistController;
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\CouponController as FrontendCouponController;
+use App\Http\Controllers\Backend\Instructor\CouponController as InstructorCouponController;
 use Inertia\Inertia;
 
 // --- Public Routes ---
@@ -94,6 +96,11 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('instructor')
         return redirect()->route('instructor.courses.edit', $courseId)
             ->with('info', 'Halaman kurikulum akan tersedia setelah L7 selesai.');
     })->name('courses.curriculum');
+
+    // L8 Ray: Coupon CRUD (instruktur)
+    Route::get('coupons/generate-code', [InstructorCouponController::class, 'generateCode'])->name('coupons.generate-code');
+    Route::resource('coupons', InstructorCouponController::class)->except(['show', 'create', 'edit']);
+    Route::patch('coupons/{coupon}/toggle', [InstructorCouponController::class, 'toggle'])->name('coupons.toggle');
 });
 
 // --- Student Panel (dilindungi auth + verified + role:user) ---
@@ -132,6 +139,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/{id}/move-to-wishlist', [CartController::class, 'moveToWishlist'])->name('cart.move-to-wishlist');
     Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+
+    // L8 Ray: Apply / remove kupon di halaman cart
+    Route::post('/coupon/apply', [FrontendCouponController::class, 'apply'])->name('coupon.apply');
+    Route::post('/coupon/remove', [FrontendCouponController::class, 'remove'])->name('coupon.remove');
 });
 
 // Checkout (Phase 3)
