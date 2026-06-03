@@ -3,96 +3,88 @@
 namespace App\Http\Controllers\Backend\Student;
 
 use App\Http\Controllers\Controller;
-use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Wishlist;
 use App\Models\Review;
 use App\Models\LectureCompletion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display the student dashboard overview.
-     */
     public function index()
     {
         $user = auth()->user();
 
-        // Get enrollments count
         $enrollmentsCount = Enrollment::where('user_id', $user->id)->count();
+        $wishlistCount    = Wishlist::where('user_id', $user->id)->count();
+        $reviewsCount     = Review::where('user_id', $user->id)->count();
 
-        // Get wishlist count
-        $wishlistCount = Wishlist::where('user_id', $user->id)->count();
-
-        // Get reviews count
-        $reviewsCount = Review::where('user_id', $user->id)->count();
-
-        // Get enrolled courses with progress
         $enrollments = Enrollment::where('user_id', $user->id)
             ->with(['course.instructor', 'course.sections.lectures'])
             ->latest('enrolled_at')
             ->take(3)
             ->get();
 
-        $enrolledCoursesData = [];
+        $enrolledCoursesData    = [];
         $totalCompletedLectures = 0;
-        $totalLectures = 0;
+        $totalLectures          = 0;
 
         foreach ($enrollments as $enrollment) {
             $course = $enrollment->course;
             if (!$course) continue;
 
-            $lectures = $course->sections->flatMap(function($section) {
-                return $section->lectures;
-            });
-            $courseLecturesCount = $lectures->count();
-            $totalLectures += $courseLecturesCount;
+            $lectures           = $course->sections->flatMap(fn ($s) => $s->lectures);
+            $courseLectureCount = $lectures->count();
+            $totalLectures     += $courseLectureCount;
 
             $completedCount = 0;
-            if ($courseLecturesCount > 0) {
-                $lectureIds = $lectures->pluck('id')->toArray();
+            if ($courseLectureCount > 0) {
                 $completedCount = LectureCompletion::where('user_id', $user->id)
-                    ->whereIn('lecture_id', $lectureIds)
+                    ->whereIn('lecture_id', $lectures->pluck('id'))
                     ->count();
                 $totalCompletedLectures += $completedCount;
             }
 
-            $progress = $courseLecturesCount > 0 ? round(($completedCount / $courseLecturesCount) * 100) : 0;
+            $progress = $courseLectureCount > 0
+                ? round(($completedCount / $courseLectureCount) * 100)
+                : 0;
 
             $enrolledCoursesData[] = [
-                'course' => $course,
-                'progress' => $progress,
-                'lectures_count' => $courseLecturesCount,
+                'course'          => [
+                    'id'        => $course->id,
+                    'title'     => $course->title,
+                    'slug'      => $course->slug,
+                    'thumbnail' => $course->thumbnail,
+                    'instructor' => $course->instructor ? ['name' => $course->instructor->name] : null,
+                ],
+                'progress'        => $progress,
+                'lectures_count'  => $courseLectureCount,
                 'completed_count' => $completedCount,
-                'enrolled_at' => $enrollment->enrolled_at,
+                'enrolled_at'     => $enrollment->enrolled_at,
             ];
         }
 
-        $overallProgress = $totalLectures > 0 ? round(($totalCompletedLectures / $totalLectures) * 100) : 0;
+        $overallProgress = $totalLectures > 0
+            ? round(($totalCompletedLectures / $totalLectures) * 100)
+            : 0;
 
-        return view('backend.student.dashboard', compact(
-            'user', 
-            'enrollmentsCount', 
-            'wishlistCount', 
-            'reviewsCount', 
-            'enrolledCoursesData', 
-            'overallProgress'
-        ));
+        return Inertia::render('Student/Dashboard', [
+            'enrollmentsCount'   => $enrollmentsCount,
+            'wishlistCount'      => $wishlistCount,
+            'reviewsCount'       => $reviewsCount,
+            'enrolledCoursesData'=> $enrolledCoursesData,
+            'overallProgress'    => $overallProgress,
+        ]);
     }
 
-    /**
-     * Display enrolled courses for the student.
-     */
     public function myCourses()
     {
-        $user = auth()->user();
+        $user        = auth()->user();
         $enrollments = Enrollment::where('user_id', $user->id)
-            ->with(['course.instructor', 'course.sections.lectures'])
+            ->with(['course.instructor', 'course.category', 'course.sections.lectures'])
             ->latest('enrolled_at')
             ->get();
 
@@ -102,98 +94,81 @@ class DashboardController extends Controller
             $course = $enrollment->course;
             if (!$course) continue;
 
-            $lectures = $course->sections->flatMap(function($section) {
-                return $section->lectures;
-            });
-            $courseLecturesCount = $lectures->count();
+            $lectures           = $course->sections->flatMap(fn ($s) => $s->lectures);
+            $courseLectureCount = $lectures->count();
 
             $completedCount = 0;
-            if ($courseLecturesCount > 0) {
-                $lectureIds = $lectures->pluck('id')->toArray();
+            if ($courseLectureCount > 0) {
                 $completedCount = LectureCompletion::where('user_id', $user->id)
-                    ->whereIn('lecture_id', $lectureIds)
+                    ->whereIn('lecture_id', $lectures->pluck('id'))
                     ->count();
             }
 
-            $progress = $courseLecturesCount > 0 ? round(($completedCount / $courseLecturesCount) * 100) : 0;
+            $progress = $courseLectureCount > 0
+                ? round(($completedCount / $courseLectureCount) * 100)
+                : 0;
 
             $enrolledCoursesData[] = [
-                'course' => $course,
-                'progress' => $progress,
-                'lectures_count' => $courseLecturesCount,
+                'course' => [
+                    'id'        => $course->id,
+                    'title'     => $course->title,
+                    'slug'      => $course->slug,
+                    'thumbnail' => $course->thumbnail,
+                    'category'  => $course->category ? ['name' => $course->category->name] : null,
+                    'instructor'=> $course->instructor ? ['name' => $course->instructor->name] : null,
+                ],
+                'progress'        => $progress,
+                'lectures_count'  => $courseLectureCount,
                 'completed_count' => $completedCount,
-                'enrolled_at' => $enrollment->enrolled_at,
+                'enrolled_at'     => $enrollment->enrolled_at,
             ];
         }
 
-        return view('backend.student.my_courses', compact('user', 'enrolledCoursesData'));
+        return Inertia::render('Student/MyCourses', [
+            'enrolledCoursesData' => $enrolledCoursesData,
+        ]);
     }
 
-    /**
-     * Display wishlisted courses.
-     */
-    public function wishlist()
-    {
-        $user = auth()->user();
-        $wishlists = Wishlist::where('user_id', $user->id)
-            ->with(['course.instructor', 'course.category'])
-            ->latest()
-            ->get();
-
-        return view('backend.student.wishlist', compact('user', 'wishlists'));
-    }
-
-    /**
-     * Remove item from wishlist.
-     */
-    public function wishlistRemove($id)
-    {
-        $wishlist = Wishlist::where('user_id', auth()->id())->where('id', $id)->firstOrFail();
-        $wishlist->delete();
-
-        return redirect()->back()->with('success', 'Kursus berhasil dihapus dari daftar keinginan Anda.');
-    }
-
-    /**
-     * Display edit profile page.
-     */
     public function profile()
     {
         $user = auth()->user();
-        return view('backend.student.profile', compact('user'));
+
+        return Inertia::render('Student/Profile', [
+            'profileUser' => [
+                'id'      => $user->id,
+                'name'    => $user->name,
+                'email'   => $user->email,
+                'phone'   => $user->phone   ?? '',
+                'address' => $user->address ?? '',
+                'bio'     => $user->bio      ?? '',
+                'photo'   => $user->photo    ?? null,
+            ],
+            'defaultTab' => 'profile',
+        ]);
     }
 
-    /**
-     * Handle profile update.
-     */
     public function profileUpdate(Request $request)
     {
         $user = auth()->user();
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'website' => ['nullable', 'url', 'max:255'],
+            'name'    => ['required', 'string', 'max:255'],
+            'phone'   => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
-            'bio' => ['nullable', 'string'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'bio'     => ['nullable', 'string'],
+            'photo'   => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 
-        $data = $request->only(['name', 'phone', 'website', 'address', 'bio']);
+        $data = $request->only(['name', 'phone', 'address', 'bio']);
 
         if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
+            $file     = $request->file('photo');
             $filename = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            
-            // Store file in public/uploads/profile
             $file->move(public_path('uploads/profile'), $filename);
-            
-            // Delete old photo if it exists and is local
-            if ($user->photo && !Str::startsWith($user->photo, 'http')) {
-                $oldPath = public_path($user->photo);
-                if (file_exists($oldPath)) {
-                    @unlink($oldPath);
-                }
+
+            if ($user->photo && !str_starts_with($user->photo, 'http')) {
+                $old = public_path($user->photo);
+                if (file_exists($old)) @unlink($old);
             }
 
             $data['photo'] = 'uploads/profile/' . $filename;
@@ -201,32 +176,45 @@ class DashboardController extends Controller
 
         $user->update($data);
 
-        return redirect()->back()->with('success', 'Profil Anda berhasil diperbarui.');
+        return redirect()->route('student.profile')->with('success', 'Profil berhasil diperbarui.');
     }
 
-    /**
-     * Display settings page.
-     */
     public function setting()
     {
         $user = auth()->user();
-        return view('backend.student.setting', compact('user'));
+
+        return Inertia::render('Student/Profile', [
+            'profileUser' => [
+                'id'      => $user->id,
+                'name'    => $user->name,
+                'email'   => $user->email,
+                'phone'   => $user->phone   ?? '',
+                'address' => $user->address ?? '',
+                'bio'     => $user->bio      ?? '',
+                'photo'   => $user->photo    ?? null,
+            ],
+            'defaultTab' => 'security',
+        ]);
     }
 
-    /**
-     * Handle password change.
-     */
     public function settingUpdate(Request $request)
     {
         $request->validate([
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'password'         => ['required', Password::defaults(), 'confirmed'],
         ]);
 
         $request->user()->update([
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->back()->with('success', 'Kata sandi berhasil diperbarui.');
+        return redirect()->route('student.setting')->with('success', 'Kata sandi berhasil diperbarui.');
+    }
+
+    public function notifications()
+    {
+        return Inertia::render('Student/Notifications', [
+            'notifications' => [],
+        ]);
     }
 }

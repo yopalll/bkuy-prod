@@ -1,118 +1,107 @@
-import AppLayout from '@/Layouts/AppLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { Heart, ShoppingCart, Star, Trash2, BookOpen } from 'lucide-react';
-import EmptyState from '@/Components/EmptyState';
+import StudentLayout from '@/Layouts/StudentLayout';
 
 const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
 
-// ========================= WishlistCourseCard =========================
 function WishlistCourseCard({ item, onRemove }) {
     const { course } = item;
-    const rating = Number(course.average_rating ?? 0);
-    const hasDiscount = (course.discount ?? 0) > 0;
+    const hasDiscount  = (course.discount ?? 0) > 0;
+    const rating       = Number(course.average_rating ?? 0);
 
     return (
-        <div className="group bg-white rounded-3xl overflow-hidden border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative">
-            {/* Badge */}
-            <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-                {course.bestseller && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                        Bestseller
-                    </span>
+        <div className="bg-surface rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col">
+            {/* Thumbnail */}
+            <div className="relative h-40 overflow-hidden bg-surface-container-high">
+                {course.thumbnail ? (
+                    <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                        <span className="material-symbols-outlined text-5xl text-outline">school</span>
+                    </div>
                 )}
-                {course.featured && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                        Featured
-                    </span>
-                )}
+
+                {/* Badge */}
+                <div className="absolute top-3 left-3 flex flex-col gap-1">
+                    {course.bestseller && (
+                        <span className="font-caption text-caption px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-bold">
+                            Bestseller
+                        </span>
+                    )}
+                    {course.featured && (
+                        <span className="font-caption text-caption px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-bold">
+                            Unggulan
+                        </span>
+                    )}
+                </div>
+
+                {/* Remove button */}
+                <button
+                    onClick={() => onRemove(item.id)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-error-container text-on-error-container flex items-center justify-center hover:bg-error hover:text-on-error transition-colors"
+                    title="Hapus dari Wishlist"
+                >
+                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                </button>
             </div>
 
-            {/* Tombol hapus wishlist */}
-            <button
-                onClick={() => onRemove(item.id)}
-                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                aria-label="Hapus dari Wishlist"
-                title="Hapus dari Wishlist"
-            >
-                <Trash2 className="w-4 h-4" />
-            </button>
-
-            {/* Thumbnail */}
-            <Link href={`/courses/${course.slug}`} className="block overflow-hidden bg-gray-50 aspect-video">
-                <img
-                    src={
-                        course.thumbnail ||
-                        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80'
-                    }
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-            </Link>
-
-            {/* Konten kartu */}
-            <div className="p-6 flex flex-col flex-1">
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg w-max mb-3 uppercase tracking-wider">
-                    {course.category?.name ?? 'Kategori'}
-                </span>
-
-                <h3 className="text-base font-bold text-gray-900 leading-snug group-hover:text-indigo-600 mb-2 line-clamp-2 min-h-[2.75rem]">
-                    <Link href={`/courses/${course.slug}`}>{course.title}</Link>
-                </h3>
-
-                {/* Instruktur */}
-                <div className="flex items-center gap-2.5 mb-4">
-                    <img
-                        src={
-                            course.instructor?.photo ||
-                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                                course.instructor?.name ?? 'BK',
-                            )}&background=4F46E5&color=fff`
-                        }
-                        alt={course.instructor?.name}
-                        className="h-6 w-6 rounded-full object-cover border border-indigo-100"
-                    />
-                    <span className="text-xs font-medium text-gray-600 truncate">
-                        {course.instructor?.name}
+            {/* Body */}
+            <div className="p-md flex flex-col flex-1">
+                {course.category && (
+                    <span className="font-caption text-caption text-primary bg-primary/10 px-2 py-0.5 rounded-full w-max mb-sm">
+                        {course.category.name}
                     </span>
-                </div>
+                )}
+                <h3 className="font-label-md text-label-md text-on-surface font-bold line-clamp-2 mb-sm flex-1">
+                    <Link href={`/courses/${course.slug}`} className="hover:text-primary transition-colors">
+                        {course.title}
+                    </Link>
+                </h3>
+                {course.instructor && (
+                    <p className="font-caption text-caption text-on-surface-variant mb-sm">
+                        {course.instructor.name}
+                    </p>
+                )}
 
                 {/* Rating */}
-                <div className="flex items-center gap-1.5 mb-4">
-                    <div className="flex items-center text-amber-400">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <Star
-                                key={i}
-                                className={`w-4 h-4 ${i <= Math.round(rating) ? 'fill-current' : 'text-gray-200'}`}
-                            />
-                        ))}
+                {rating > 0 && (
+                    <div className="flex items-center gap-xs mb-md">
+                        <span className="material-symbols-outlined text-[16px] text-secondary-container"
+                            style={{ fontVariationSettings: "'FILL' 1" }}>
+                            star
+                        </span>
+                        <span className="font-label-md text-label-md text-on-surface">{rating.toFixed(1)}</span>
+                        <span className="font-caption text-caption text-on-surface-variant">
+                            ({course.reviews_count ?? 0} ulasan)
+                        </span>
                     </div>
-                    <span className="text-sm font-bold text-gray-800">{rating.toFixed(1)}</span>
-                    <span className="text-xs text-gray-400">({course.reviews_count ?? 0} ulasan)</span>
-                </div>
+                )}
 
-                {/* Harga + Tombol cart */}
-                <div className="mt-auto border-t border-gray-50 pt-4 flex items-center justify-between">
+                {/* Price + CTA */}
+                <div className="mt-auto flex items-center justify-between pt-sm border-t border-outline-variant/30">
                     <div className="flex flex-col">
                         {hasDiscount ? (
                             <>
-                                <span className="text-xs text-gray-400 line-through">{rupiah(course.price)}</span>
-                                <span className="text-lg font-extrabold text-indigo-600">
+                                <span className="font-caption text-caption text-on-surface-variant line-through">
+                                    {rupiah(course.price)}
+                                </span>
+                                <span className="font-label-md text-label-md text-primary font-bold">
                                     {rupiah(course.discounted_price)}
                                 </span>
                             </>
                         ) : Number(course.price) === 0 ? (
-                            <span className="text-lg font-extrabold text-emerald-600">Gratis</span>
+                            <span className="font-label-md text-label-md text-success font-bold">Gratis</span>
                         ) : (
-                            <span className="text-lg font-extrabold text-gray-900">{rupiah(course.price)}</span>
+                            <span className="font-label-md text-label-md text-on-surface font-bold">
+                                {rupiah(course.price)}
+                            </span>
                         )}
                     </div>
                     <Link
                         href={`/courses/${course.slug}`}
-                        className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
-                        aria-label="Lihat Kursus"
-                        title="Lihat Kursus"
+                        className="bg-primary-container text-on-primary-container font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary hover:text-on-primary transition-colors flex items-center gap-xs"
                     >
-                        <BookOpen className="w-5 h-5" />
+                        Lihat
+                        <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                     </Link>
                 </div>
             </div>
@@ -120,80 +109,73 @@ function WishlistCourseCard({ item, onRemove }) {
     );
 }
 
-// ============================= Page ================================
+function EmptyWishlist() {
+    return (
+        <div className="flex-1 flex items-center justify-center p-gutter">
+            <div className="bg-surface rounded-2xl p-xl max-w-2xl w-full flex flex-col items-center text-center shadow-[0_8px_30px_rgba(48,0,51,0.08)] border border-outline-variant/30">
+                <div className="w-32 h-32 mb-lg flex items-center justify-center rounded-full bg-primary-fixed-dim/20">
+                    <span className="material-symbols-outlined text-[72px] text-primary/30">favorite</span>
+                </div>
+                <h2 className="font-headline-md text-headline-md text-on-surface mb-sm">
+                    Wishlist masih kosong
+                </h2>
+                <p className="font-body-md text-body-md text-on-surface-variant max-w-sm mx-auto mb-xl">
+                    Temukan kursus yang kamu suka, lalu klik ikon hati untuk menyimpannya di sini.
+                </p>
+                <a
+                    href="/home"
+                    className="bg-primary text-on-primary font-label-md text-label-md py-3 px-xl rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2"
+                >
+                    <span className="material-symbols-outlined text-[20px]">search</span>
+                    Jelajahi Kursus
+                </a>
+            </div>
+        </div>
+    );
+}
+
 export default function Wishlist({ wishlists }) {
     const count = wishlists?.length ?? 0;
 
     function handleRemove(wishlistId) {
-        router.delete(`/student/wishlist/${wishlistId}`, {
-            preserveScroll: true,
-        });
+        router.delete(`/student/wishlist/${wishlistId}`, { preserveScroll: true });
     }
 
     return (
-        <AppLayout>
+        <StudentLayout>
             <Head title="Wishlist Saya" />
 
-            {/* Hero breadcrumb */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center gap-3 mb-3">
-                        <Heart className="w-7 h-7 text-white/80" />
-                        <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Wishlist Saya</h1>
-                    </div>
-                    <p className="text-indigo-100 text-sm">
-                        {count > 0
-                            ? `${count} kursus tersimpan dalam daftar keinginan kamu`
-                            : 'Simpan kursus yang ingin kamu pelajari nanti'}
-                    </p>
-                </div>
-            </div>
-
-            {/* Konten */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-                {count === 0 ? (
-                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm">
-                        <EmptyState
-                            icon={<Heart className="w-10 h-10" />}
-                            title="Wishlist masih kosong"
-                            description="Temukan kursus yang kamu suka, lalu klik ikon hati untuk menyimpannya di sini."
-                            size="lg"
-                            action={
-                                <Link
-                                    href="/home"
-                                    className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
-                                >
-                                    <BookOpen className="w-4 h-4" />
-                                    Jelajahi Kursus
-                                </Link>
-                            }
-                        />
-                    </div>
-                ) : (
-                    <>
-                        {/* Toolbar */}
-                        <div className="flex items-center justify-between mb-6">
-                            <p className="text-sm text-gray-500 font-medium">
-                                <span className="font-extrabold text-gray-900">{count}</span> kursus
+            {count === 0 ? (
+                <EmptyWishlist />
+            ) : (
+                <div className="px-margin-mobile md:px-margin-desktop py-xl md:py-xxl">
+                    {/* Header */}
+                    <div className="flex items-end justify-between mb-xl">
+                        <div>
+                            <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-xs">
+                                Wishlist Saya
+                            </h1>
+                            <p className="font-body-md text-body-md text-on-surface-variant">
+                                {count} kursus tersimpan
                             </p>
-                            <Link
-                                href="/home"
-                                className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5"
-                            >
-                                <ShoppingCart className="w-4 h-4" />
-                                Cari kursus lain
-                            </Link>
                         </div>
+                        <a
+                            href="/home"
+                            className="text-secondary-container hover:text-secondary font-label-md text-label-md flex items-center gap-xs transition-colors"
+                        >
+                            Cari kursus lain
+                            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
 
-                        {/* Grid kursus */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {wishlists.map((item) => (
-                                <WishlistCourseCard key={item.id} item={item} onRemove={handleRemove} />
-                            ))}
-                        </div>
-                    </>
-                )}
-            </div>
-        </AppLayout>
+                    {/* Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+                        {wishlists.map((item) => (
+                            <WishlistCourseCard key={item.id} item={item} onRemove={handleRemove} />
+                        ))}
+                    </div>
+                </div>
+            )}
+        </StudentLayout>
     );
 }
