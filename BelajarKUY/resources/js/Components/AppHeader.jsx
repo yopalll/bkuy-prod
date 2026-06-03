@@ -36,7 +36,7 @@ export default function AppHeader() {
                     <Link href="/student/wishlist" className="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-gray-50" aria-label={t('nav.wishlist')}>
                         <Heart className="w-5 h-5" />
                     </Link>
-                    <Link href="#" className="p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-gray-50" aria-label={t('nav.cart')}>
+                    <Link href="/cart" className="p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-gray-50" aria-label={t('nav.cart')}>
                         <ShoppingCart className="w-5 h-5" />
                     </Link>
 

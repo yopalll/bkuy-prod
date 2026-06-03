@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\AdminSiteSettingController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\WishlistController;
+use App\Http\Controllers\Frontend\CartController;
 use Inertia\Inertia;
 
 // --- Public Routes ---
@@ -111,14 +112,14 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 use App\Http\Controllers\Frontend\CourseDetailController;
 Route::get('/courses/{slug}', [CourseDetailController::class, 'show'])->name('course.detail');
 
-// Cart (Phase 3)
-Route::get('/cart', function () {
-    return view('dashboard'); // placeholder
-})->middleware('auth')->name('cart.index');
-
-Route::post('/cart/{course}', function () {
-    return back()->with('info', 'Fitur cart belum tersedia.');
-})->middleware('auth')->name('cart.add');
+// L4 Ray: Cart — halaman React + add/remove/move-to-wishlist/count
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{course}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/{id}/move-to-wishlist', [CartController::class, 'moveToWishlist'])->name('cart.move-to-wishlist');
+    Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+});
 
 // Checkout (Phase 3)
 Route::get('/checkout', function () {

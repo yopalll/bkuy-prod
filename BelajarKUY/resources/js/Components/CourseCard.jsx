@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Check } from 'lucide-react';
 import { useState } from 'react';
 
 const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
@@ -11,8 +11,9 @@ const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
  *   course        – objek Course (lihat model Course)
  *   isWishlisted  – boolean (opsional), status wishlist awal
  *   onWishlistChange – callback(courseId, newIsWishlisted) opsional
+ *   isInCart      – boolean (opsional), sudah di keranjang
  */
-export default function CourseCard({ course, isWishlisted: initialWishlisted = false, onWishlistChange }) {
+export default function CourseCard({ course, isWishlisted: initialWishlisted = false, onWishlistChange, isInCart: initialInCart = false }) {
     const { auth } = usePage().props;
     const rating = Number(course.average_rating ?? 0);
     const reviewCount = course.reviews?.length ?? course.reviews_count ?? 0;
@@ -20,42 +21,54 @@ export default function CourseCard({ course, isWishlisted: initialWishlisted = f
 
     const [wishlisted, setWishlisted] = useState(initialWishlisted);
     const [loading, setLoading] = useState(false);
+    const [inCart, setInCart]     = useState(initialInCart);
+    const [cartLoading, setCartLoading] = useState(false);
+    const [cartMsg, setCartMsg]   = useState('');
 
     async function handleWishlistToggle(e) {
         e.preventDefault();
-        if (!auth?.user) {
-            window.location.href = '/login';
-            return;
-        }
+        if (!auth?.user) { window.location.href = '/login'; return; }
         if (loading) return;
         setLoading(true);
-
         try {
-            // Ambil CSRF token dari meta tag (diisi oleh HandleInertiaRequests via shared props)
-            const csrfToken =
-                document.cookie
-                    .split('; ')
-                    .find((row) => row.startsWith('XSRF-TOKEN='))
-                    ?.split('=')[1] ?? '';
-
             const res = await fetch(`/wishlist/${course.id}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': decodeURIComponent(csrfToken),
-                    Accept: 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrf(), Accept: 'application/json' },
             });
-
             if (res.ok) {
                 const data = await res.json();
                 const newState = data.action === 'added';
                 setWishlisted(newState);
                 onWishlistChange?.(course.id, newState);
             }
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
+    }
+
+    async function handleCartAdd(e) {
+        e.preventDefault();
+        if (!auth?.user) { window.location.href = '/login'; return; }
+        if (cartLoading || inCart) return;
+        setCartLoading(true);
+        try {
+            const res = await fetch(`/cart/${course.id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrf(), Accept: 'application/json' },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setInCart(true);
+                setCartMsg('');
+            } else {
+                setCartMsg(data.message ?? 'Tidak bisa ditambahkan.');
+            }
+        } finally { setCartLoading(false); }
+    }
+
+    // Helper CSRF
+    function getCsrf() {
+        return decodeURIComponent(
+            document.cookie.split('; ').find((r) => r.startsWith('XSRF-TOKEN='))?.split('=')[1] ?? '',
+        );
     }
 
     return (
@@ -151,12 +164,20 @@ export default function CourseCard({ course, isWishlisted: initialWishlisted = f
                         ) : (
                             <span className="text-lg font-extrabold text-gray-900">{rupiah(course.price)}</span>
                         )}
+                        {cartMsg && <span className="text-xs text-red-500 mt-0.5">{cartMsg}</span>}
                     </div>
                     <button
-                        className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
-                        aria-label="Tambah ke Keranjang"
+                        onClick={handleCartAdd}
+                        disabled={cartLoading || inCart}
+                        className={`p-2.5 rounded-2xl transition-all ${
+                            inCart
+                                ? 'bg-emerald-50 text-emerald-600 cursor-default'
+                                : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white'
+                        } ${cartLoading ? 'opacity-60 cursor-wait' : ''}`}
+                        aria-label={inCart ? 'Sudah di Keranjang' : 'Tambah ke Keranjang'}
+                        title={inCart ? 'Sudah di Keranjang' : 'Tambah ke Keranjang'}
                     >
-                        <ShoppingCart className="w-5 h-5" />
+                        {inCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
                     </button>
                 </div>
             </div>

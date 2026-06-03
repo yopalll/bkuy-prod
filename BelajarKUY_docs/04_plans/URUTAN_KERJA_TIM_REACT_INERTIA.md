@@ -44,10 +44,10 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   + komponen dasar        (Login/Register)            (jalan mandiri)
         │                              │                              │
         ▼                              │                              ▼
-  L3 Ray: Wishlist  ◄── butuh CourseCard dari L1        L7 Albariqi: Section/Lecture
+  L3 Ray ✅ Wishlist ◄── butuh CourseCard dari L1        L7 Albariqi: Section/Lecture
         │                                                              │
         ▼                                                              │
-  L4 Ray: Cart                                                         │
+  L4 Ray ✅ Cart                                                       │
         │                                                              │
         ▼                              ▼                               │
   L8 Ray: Coupon              L5 Vascha: Student panel                 │
@@ -132,12 +132,20 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   - `routes/web.php` — `wishlist.add`, `wishlist.count`, `student.wishlist` GET/DELETE terhubung ke `WishlistController`
   - `npm run build` PASS ✅ (2384 modules)
 
-### LANGKAH 4 — Ray · Cart (R2)
+### LANGKAH 4 — Ray · Cart (R2) ✅ SELESAI (2026-06-02)
 - **Apa:** add/remove cart + halaman `Pages/Cart/Index` (ganti placeholder `cart.*`).
 - **Mulai setelah:** Langkah 3.
 - **File utama:** `CartController`, `resources/js/Pages/Cart/Index.jsx`, tabel `carts`.
-- **Selesai bila:** tambah ke cart, lihat isi cart, hapus item, subtotal benar; `npm run build` sukses.
-- **Branch:** `feature/cart`.
+- **Selesai bila:** tambah ke cart, lihat isi cart, hapus item, subtotal benar; `npm run build` sukses. ✅
+- **Branch:** `feature/cart`. ✅
+- **Hasil implementasi:**
+  - `CartController.php` — index Inertia, add JSON (cek Enrollment + idempotent `firstOrCreate`), remove JSON, move-to-wishlist JSON, count badge
+  - `Pages/Cart/Index.jsx` — halaman React (daftar item, hapus, pindah ke wishlist, ringkasan sticky, empty state, update UI tanpa full-reload)
+  - `Components/CourseCard.jsx` — tombol cart fungsional (prop `isInCart`, fetch POST, ikon ✓ saat sudah di cart, pesan error server)
+  - `Components/AppHeader.jsx` — link ikon keranjang → `/cart`
+  - `routes/web.php` — `cart.index`, `cart.add`, `cart.remove`, `cart.move-to-wishlist`, `cart.count` → `CartController`
+  - `npm run build` PASS ✅
+
 
 ### LANGKAH 5 — Vascha · Student panel React (V4) — paralel dengan Ray
 - **Apa:** port `Pages/Student/{Dashboard,MyCourses,Wishlist,Profile,Notifications}`.
@@ -254,7 +262,7 @@ Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enro
 | **Yosua** (PM) | L0 ✅ (selesai) | review tiap PR (L2-jalan terus) | L16 matikan Blade, L17 deploy |
 | **Vascha** | **L1** ✅ (selesai) | L5 student panel | komponen jadi acuan tim |
 | **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 kurikulum → L10 player → L11 email | L10 butuh Enrollment Ray |
-| **Ray** | **L3** wishlist | L4 cart → L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
+| **Ray** | **L3** ✅ wishlist · **L4** ✅ cart | L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
 | **Quinsha** | **L12** admin shell | L13 → L14 admin pages | L15 arsip Blade admin |
 
 Cara ngajarinnya singkat: *"Vascha & Albariqi start duluan dari fondasi. Vascha bikin halaman publik + komponen; begitu CourseCard jadi, Ray mulai wishlist → cart → kupon → bayar. Pas Ray selesai bayar (Enrollment jadi), Albariqi lanjut bikin Course Player + email. Quinsha garap admin paralel. Terakhir Yosua matiin Blade lama, lalu kita semua polish & deploy."*

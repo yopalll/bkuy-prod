@@ -4,11 +4,7 @@
 
 ---
 
- feature/wishlist
-> **Update terakhir:** 2 Juni 2026 — 17:40 WIB oleh Ray Nathan — Session 11 (L3 Wishlist React+Inertia selesai)
-=======
-> **Update terakhir:** 2 Juni 2026 — 17:32 WIB oleh Albariqi Tarigan — Session 11 (L2 Auth React & Error Pages Selesai)
- main
+> **Update terakhir:** 2 Juni 2026 — 21:49 WIB oleh Ray Nathan — Session 12 (L4 Cart React+Inertia selesai)
 >
 > ⚠️ **Catatan:** Entri 19 Mei 2026 (overall 30%) sudah usang. Tabel di bawah disusun ulang dari inspeksi langsung `app/Http/Controllers`, `resources/views`, `resources/js`, dan `routes/web.php`. **Persentase = estimasi** berdasarkan keberadaan controller/view/route nyata.
 
@@ -16,7 +12,7 @@
 
 ## Summary
 
-> Stack saat ini: lapisan presentasi **masih Blade**; scaffolding React+Inertia (ADR-008) terpasang tetapi **migrasi belum dimulai di kode** (`resources/js` hanya `app.js`+`bootstrap.js`, belum ada `Pages/`/`Components/`).
+> Stack saat ini: lapisan presentasi **campuran** — React+Inertia untuk halaman yang sudah diport, Blade masih untuk halaman admin dan student panel (belum L5).
 
 | Modul | Progress | Status |
 |-------|----------|--------|
@@ -30,18 +26,14 @@
 | Student Panel (dashboard/my-courses/wishlist/profile/setting, Blade) | 85% | 🟢 Hampir selesai |
 | Review & Rating | 50% | 🟡 Moderasi admin ✅, submit review siswa ❌ |
 | Payment (Midtrans) | 25% | 🟡 Service + CheckoutController ada; view placeholder, callback ❌ |
-| Cart & Wishlist | 40% | 🟡 Halaman wishlist React ✅, toggle add/remove ✅; cart ❌ |
+| Cart & Wishlist | 80% | 🟢 Wishlist ✅, Cart halaman+add+remove+move-to-wishlist ✅; Coupon ❌ |
 | Notifications (F14) | 10% | 🔴 Hanya `WelcomeMail`; event/broadcast/mail lain ❌ |
 | Course CRUD (Instructor) | 0% | 🔴 Belum (hanya DashboardController) |
 | Coupon System | 0% | 🔴 Belum (hanya model) |
 | Course Player (F13) | 0% | 🔴 Belum |
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
- feature/wishlist
-| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **0%** | **🔴 Menunggu L2 (Albariqi Auth React)** |
-| **OVERALL** | **~62%** | **🟡 On Progress** |
-| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **20%** | **🟡 L2 (Auth React) Selesai, Menunggu L5** |
-| **OVERALL** | **~60%** | **🟡 On Progress** |
- main
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **25%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ — menunggu L5 Vascha** |
+| **OVERALL** | **~65%** | **🟡 On Progress** |
 
 ---
 
@@ -73,23 +65,30 @@
 - `routes/web.php` → `course.detail` kini pakai `CourseDetailController@show`
 - `npm run build` ✅ — commit `f9f6848` di branch `feature/public-react`
 
+**Auth React + Error Pages (Albariqi — L2):**
+- `Pages/Auth/{Login,Register,ForgotPassword,ResetPassword}.jsx` — port halaman Breeze ke React
+- `Layouts/GuestLayout.jsx` — layout dua panel branding kiri + form kanan
+- `Pages/Errors/{403,404,419,429,500,503}.jsx` — menggantikan legacy blade error views
+- 4 controller Auth → `Inertia::render`
+- Branch: `feature/auth-react`, `feature/react-error-pages`
+
 ---
 
 ## 🔄 SEDANG DIKERJAKAN
 
-- Penyelarasan dokumentasi ke React+Inertia (ADR-008) — **selesai** (lihat `04_plans/DOCS_UPDATE_PLAN_REACT_INERTIA.md`)
-- Belum ada fitur kode aktif yang sedang dikerjakan — menunggu kickoff Fase 1 migrasi React/Inertia
+- L5 Vascha: Student panel React (menunggu di-assign)
+- L6 Albariqi: Instructor Course CRUD (mandiri, belum dimulai)
 
 ---
 
 ## 🔴 BELUM DIKERJAKAN
 
-### Commerce (Ray) — gap terbesar
-- [ ] Cart: controller + add/remove + halaman (route `cart.add` masih placeholder `back()`)
+### Commerce (Ray)
 - [x] Wishlist toggle add/remove ✅ (`WishlistController` — `feature/wishlist`)
 - [x] Halaman wishlist siswa React (`Pages/Student/Wishlist.jsx`) ✅
-- [ ] Midtrans: Snap token nyata, payment callback/notification handler, pembuatan Order setelah bayar (checkout/payment masih render view statis)
+- [x] Cart: `CartController` + `Pages/Cart/Index.jsx` ✅ (`feature/cart`)
 - [ ] Coupon CRUD + apply di checkout (baru ada model `Coupon`)
+- [ ] Midtrans: Snap token nyata, payment callback/notification handler, pembuatan Order setelah bayar
 
 ### Course & Instructor (Albariqi)
 - [ ] Course CRUD instruktur (controller + form)
@@ -99,7 +98,7 @@
 - [ ] Email: CourseApproved / CourseRejected / NewSale (baru `WelcomeMail`)
 
 ### Frontend (Vascha)
-- [ ] Course detail page nyata (route `course.detail` masih placeholder render view statis)
+- [ ] Student panel React (`Pages/Student/*`) — L5
 - [ ] Live search (Meilisearch) + listener notifikasi (Reverb/Echo)
 - [ ] Course Player frontend
 
@@ -114,12 +113,8 @@
   - `Pages/Courses/Show.jsx` + `CourseDetailController` Inertia (L1 Vascha) ✅
   - `AppFooter.jsx`, `Badge.jsx`, `EmptyState.jsx` (L1 Vascha) ✅
   - i18n: `react-i18next`, `id.json`, `en.json` (L1 Vascha) ✅
- feature/wishlist
-- [ ] **Fase 2 — Auth & Student:** halaman `Pages/Auth/*` (Breeze React) ✅ (Albariqi) + `Pages/Student/Wishlist.jsx` ✅ (Ray L3) + sisa `Pages/Student/*` — Vascha L5
-- [ ] **Fase 2 — Auth & Student:** halaman `Pages/Auth/*` (Breeze React) ✅ + `Pages/Student/*` — menunggu L5 Vascha
- main
+- [ ] **Fase 2 — Auth & Student:** `Pages/Auth/*` ✅ (Albariqi L2) + `Pages/Student/Wishlist.jsx` ✅ (Ray L3) + `Pages/Cart/Index.jsx` ✅ (Ray L4) + sisa `Pages/Student/*` — Vascha L5
 - [ ] **Fase 3 — Instructor & Admin:** `Pages/Instructor/*` + `Pages/Admin/*`; deaktivasi view Blade lama
-- [ ] (Detail fase, exit criteria, rollback: `04_plans/MASTER_PLAN_REACT_INERTIA.md` & `MASTER_ROADMAP.md` Phase 6)
 - [x] **Error Pages:** Hapus legacy blade dan ganti ke halaman error React (404, 500, etc) ✅
 
 ### Polish (semua)
@@ -239,42 +234,53 @@
 - Next: L2 Albariqi (Auth React — `Pages/Auth/*`); L3 Ray (Wishlist); L5 Vascha (Student Panel — tunggu L2)
 - Report: `06_reports/REPORT_2026-06-01_L1_VASCHA_COURSES_SHOW.md`
 
- feature/wishlist
-### Session 11 — 2 Juni 2026 (Antigravity) — Ray Nathan — L3 Wishlist React+Inertia
+### Session 11a — 2 Juni 2026 (Antigravity) — Ray Nathan — L3 Wishlist React+Inertia
 - Created: `WishlistController.php` (`app/Http/Controllers/Frontend/`) — toggle add/remove (JSON), halaman index Inertia, remove, count
 - Created: `Pages/Student/Wishlist.jsx` — halaman React wishlist siswa (grid kartu, empty state, tombol hapus via router.delete)
 - Updated: `Components/CourseCard.jsx` — tombol wishlist fungsional (toggle via fetch POST, state `wishlisted`, redirect login jika guest, props `isWishlisted` + `onWishlistChange`)
 - Updated: `Components/AppHeader.jsx` — link ikon hati → `/student/wishlist` (bukan `#`)
 - Updated: `routes/web.php` — `wishlist.add` & `wishlist.count` → `WishlistController`; `student.wishlist` GET/DELETE → `WishlistController`
 - Branch: `feature/wishlist`
-- Build: `npm run build` ✅ — 2384 modules, Wishlist-BbWBa6j1.js & CourseCard-1fW_o_-r.js
+- Build: `npm run build` ✅ — 2384 modules
 - Status: **L3 Ray Wishlist SELESAI 100%** ✅
-- DoD:
-  - [x] Siswa bisa add/remove wishlist (bukan lagi `back('... belum tersedia')`)
-  - [x] Halaman wishlist tampil React dengan data asli
-  - [x] `npm run build` sukses (2384 modules)
-  - [x] Skema DB tidak berubah
-  - [x] Koeksistensi Blade lama tidak rusak
-- Next: L4 Ray (Cart — `Pages/Cart/Index.jsx` + `CartController`)
+- DoD: [x] add/remove wishlist ✅ [x] halaman wishlist React ✅ [x] build sukses ✅ [x] schema DB tidak berubah ✅
+- Next: L4 Ray (Cart)
 - Report: `06_reports/REPORT_2026-06-02_L3_RAY_WISHLIST.md`
 
-### Session 11 — 2 Juni 2026 (Albariqi & Yosua)
-- Created: React Error pages (`Pages/Errors/404.jsx`, dsb.) dan dihapus legacy blade error views.
-- Created: `Pages/Auth/*` dan `GuestLayout.jsx` untuk migrasi Auth.
-- Updated: Controller `AuthenticatedSessionController`, `RegisteredUserController`, `PasswordResetLinkController`, `NewPasswordController` ke Inertia::render.
+### Session 11b — 2 Juni 2026 (Albariqi & Yosua) — L2 Auth React + Error Pages
+- Created: React Error pages (`Pages/Errors/404.jsx`, `500.jsx`, `403.jsx`, `419.jsx`, `429.jsx`, `503.jsx`) — menggantikan legacy blade error views
+- Created: `Pages/Auth/{Login,Register,ForgotPassword,ResetPassword}.jsx` dan `GuestLayout.jsx`
+- Updated: Controller `AuthenticatedSessionController`, `RegisteredUserController`, `PasswordResetLinkController`, `NewPasswordController` → `Inertia::render`
 - Branch: `feature/react-error-pages`, `feature/auth-react`
-- Status: Auth React (L2) selesai. React Error pages diimplementasikan.
-- Next: L5 Vascha (Student panel) atau L3 Ray (Wishlist).
+- Status: **L2 Auth React SELESAI 100%** ✅. React Error pages diimplementasikan.
+- Next: L5 Vascha (Student panel), L6 Albariqi (Instructor CRUD)
 - Report: `06_reports/REPORT_2026-06-02_L2_ALBARIQI_AUTH_REACT.md`
- main
+
+### Session 12 — 2 Juni 2026 (Antigravity) — Ray Nathan — L4 Cart React+Inertia
+- Created: `CartController.php` (`app/Http/Controllers/Frontend/`) — index Inertia, add JSON (cek Enrollment + idempotent firstOrCreate), remove JSON, move-to-wishlist JSON, count
+- Created: `Pages/Cart/Index.jsx` — halaman React keranjang (list item dengan hapus/pindah-ke-wishlist, ringkasan harga sticky, empty state)
+- Updated: `Components/CourseCard.jsx` — tombol cart fungsional (fetch POST, state `inCart`, ikon ✓ saat sudah di cart, pesan error dari server, prop `isInCart`)
+- Updated: `Components/AppHeader.jsx` — link ikon keranjang → `/cart` (bukan `#`)
+- Updated: `routes/web.php` — `cart.index` + `cart.add` + `cart.remove` + `cart.move-to-wishlist` + `cart.count` → `CartController`
+- Branch: `feature/cart`
+- Build: `npm run build` ✅
+- Status: **L4 Ray Cart SELESAI 100%** ✅
+- DoD:
+  - [x] Add ke cart berfungsi (bukan placeholder), cek enrolled, idempotent
+  - [x] Halaman `/cart` tampil React dengan data asli + subtotal real-time
+  - [x] Hapus item & pindah ke wishlist berfungsi
+  - [x] Skema DB tidak berubah
+  - [x] `npm run build` sukses
+- Next: L8 Ray (Coupon) — setelah L5 Vascha student panel
+- Report: `06_reports/REPORT_2026-06-02_L4_RAY_CART.md`
 
 ---
 
 ## ⚠️ Known Issues
 
-- **Frontend masih sebagian Blade**, meski Fase 1 migrasi React+Inertia sudah selesai. Fase 2 (Auth React) dan Fase 3 (Admin/Instructor React) belum dikerjakan.
-- **Cart, Wishlist (add), Coupon, Course Player belum ada controller**; route `cart.add`/`wishlist.add`/`course.review.store` masih placeholder (`back()->with('info', '... belum tersedia')`).
-- **Payment Midtrans** belum berfungsi end-to-end (checkout/payment masih render view statis; belum ada callback handler & pembuatan Order).
+- **Frontend masih sebagian Blade** untuk student panel (menunggu L5 Vascha) dan admin/instructor panel.
+- **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order).
+- **Kupon belum ada** — placeholder kode kupon di `Cart/Index.jsx` (diaktifkan di L8).
 
 ---
 

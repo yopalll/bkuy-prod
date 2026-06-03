@@ -70,10 +70,11 @@ Lead:
 ### 3. Ray Nathan (Backend — Commerce)
 
 ```
-☐ Wishlist add/remove (AJAX controller)
-☐ Wishlist page UI
-☐ Cart system — add, remove, fetch (AJAX)
-☐ Cart page UI with pricing
+Lead:
+✅ Wishlist add/remove — WishlistController toggle (JSON), route wishlist.add → L3
+✅ Wishlist page UI — Pages/Student/Wishlist.jsx (React+Inertia, grid kartu, empty state) — L3
+✅ Cart system — CartController add/remove/move-to-wishlist/count + cek Enrollment — L4
+✅ Cart page UI with pricing — Pages/Cart/Index.jsx (subtotal real-time, hapus, pindah ke wishlist) — L4
 ☐ Checkout page
 ☐ Midtrans Snap integration (frontend JS)
 ☐ Payment controller (create snap token)
@@ -227,4 +228,4 @@ docs: update progress tracker and task distribution session 7
 ---
 
 *Pembagian tugas ini bisa berubah sesuai progress. Update jika ada perubahan.*
-*Last updated: 2 Juni 2026 — Session 11 — Antigravity (AI Agent) untuk Albariqi Tarigan — L2 Selesai*
+*Last updated: 2 Juni 2026 — 22:14 WIB — Session 12 — Antigravity (AI Agent) untuk Ray Nathan — L3 Wishlist & L4 Cart Selesai*
