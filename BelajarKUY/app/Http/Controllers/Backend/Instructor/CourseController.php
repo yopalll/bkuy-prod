@@ -155,6 +155,42 @@ class CourseController extends Controller
     }
 
     /**
+     * Halaman Kurikulum — kelola Section & Lecture.
+     */
+    public function curriculum(Course $course): Response
+    {
+        abort_unless($course->instructor_id === Auth::id(), 403);
+
+        $sections = $course->sections()
+            ->orderBy('sort_order')
+            ->with(['lectures' => fn ($q) => $q->orderBy('sort_order')])
+            ->get()
+            ->map(fn ($s) => [
+                'id'         => $s->id,
+                'title'      => $s->title,
+                'sort_order' => $s->sort_order,
+                'lectures'   => $s->lectures->map(fn ($l) => [
+                    'id'         => $l->id,
+                    'title'      => $l->title,
+                    'url'        => $l->url,
+                    'content'    => $l->content,
+                    'duration'   => $l->duration,
+                    'sort_order' => $l->sort_order,
+                ]),
+            ]);
+
+        return Inertia::render('Instructor/Courses/Curriculum', [
+            'course'   => [
+                'id'     => $course->id,
+                'title'  => $course->title,
+                'slug'   => $course->slug,
+                'status' => $course->status,
+            ],
+            'sections' => $sections,
+        ]);
+    }
+
+    /**
      * Kirim kursus untuk ditinjau admin (draft → pending_review).
      */
     public function submit(Course $course): RedirectResponse

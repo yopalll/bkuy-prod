@@ -5,6 +5,33 @@
 
 ---
 
+## [2026-06-04] — L7 Albariqi · Section & Lecture CRUD (Kurikulum Instruktur)
+
+Implementasi pengelolaan kurikulum kursus instruktur: accordion section + lecture CRUD, inline editing, dan alur submit-for-review dari halaman Kurikulum.
+
+### ➕ Added
+
+- **`SectionController.php`** (`Backend/Instructor/`) — CRUD section: `store`, `update`, `destroy`, `reorder`; diproteksi `instructor_id === auth()->id()`.
+- **`LectureController.php`** (`Backend/Instructor/`) — CRUD lecture nested di dalam section: `store`, `update`, `destroy`, `reorder`; validasi kepemilikan course→section→lecture.
+- **`Pages/Instructor/Courses/Curriculum.jsx`** — Halaman React kurikulum: accordion section, list lecture per section, inline edit title section, inline edit detail lecture (judul/URL/durasi/catatan), form tambah section & lecture, tombol "Ajukan ke Review" (draft → pending_review), sidebar ringkasan (total section/lecture/durasi), tips panel.
+- **Route Group L7** di `routes/web.php`:
+  - `GET instructor/courses/{course}/curriculum` → `CourseController@curriculum` (menggantikan placeholder redirect)
+  - `POST/PATCH/DELETE instructor/courses/{course}/sections/{section?}` → `SectionController`
+  - `POST instructor/courses/{course}/sections/reorder` → `SectionController@reorder`
+  - `POST/PATCH/DELETE instructor/courses/{course}/sections/{section}/lectures/{lecture?}` → `LectureController`
+  - `POST instructor/courses/{course}/sections/{section}/lectures/reorder` → `LectureController@reorder`
+
+### 🔧 Changed
+
+- **`CourseController.php`** — Tambah method `curriculum()`: load sections + lectures terurut via `sort_order`, render `Inertia::render('Instructor/Courses/Curriculum')`.
+- **`BasicInfo.jsx`** — Tab "Kurikulum" kini mengarah ke halaman Curriculum.jsx yang sesungguhnya (route `instructor.courses.curriculum` sudah nyata).
+
+### ✅ Verified
+
+- `npm run build` PASS ✅ — 2393 modules, 0 error (`Curriculum-ntylBPUk.js` terbuild).
+
+---
+
 ## [2026-06-02] — React Error Pages & Auth React
 
 Penyelesaian Fase 2 (bagian Auth) dan porting halaman error (404, 500, dll) dari Blade ke React.

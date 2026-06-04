@@ -44,7 +44,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   + komponen dasar        (Login/Register)            (jalan mandiri)
         │                              │                              │
         ▼                              │                              ▼
-  L3 Ray ✅ Wishlist ◄── butuh CourseCard dari L1        L7 Albariqi: Section/Lecture
+  L3 Ray ✅ Wishlist ◄── butuh CourseCard dari L1        L7 Albariqi ✅: Section/Lecture
         │                                                              │
         ▼                                                              │
   L4 Ray ✅ Cart                                                       │
@@ -182,12 +182,19 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   - `npm run build` PASS ✅ (2385 modules)
 
 
-### LANGKAH 7 — Albariqi · Section & Lecture CRUD (A2)
+### LANGKAH 7 — Albariqi · Section & Lecture CRUD (A2) ✅ SELESAI (2026-06-04)
 - **Apa:** `Curriculum.jsx` (kelola section & lecture) + tombol submit-for-review (draft → pending_review).
 - **Mulai setelah:** Langkah 6.
-- **File utama:** controller section/lecture, `resources/js/Pages/Instructor/Courses/Curriculum.jsx`.
-- **Selesai bila:** instruktur bisa susun kurikulum & ajukan review; status kursus berubah benar.
+- **File utama:** `SectionController`, `LectureController`, `resources/js/Pages/Instructor/Courses/Curriculum.jsx`.
+- **Selesai bila:** instruktur bisa susun kurikulum & ajukan review; status kursus berubah benar. ✅
 - **Branch:** `feature/instructor-curriculum`.
+- **Hasil implementasi:**
+  - `SectionController.php` — `store` / `update` / `destroy` / `reorder`; scope ke kursus milik instructor
+  - `LectureController.php` — `store` / `update` / `destroy` / `reorder`; nested course→section→lecture; validasi kepemilikan 3 lapis
+  - `CourseController@curriculum()` — load sections+lectures terurut (`sort_order`), render `Inertia::render('Instructor/Courses/Curriculum')`
+  - `Pages/Instructor/Courses/Curriculum.jsx` — accordion section, list lecture, inline-edit section title, inline-edit lecture (judul/URL/durasi/catatan), form tambah section & lecture, tombol Ajukan ke Review, sidebar ringkasan & tips
+  - `routes/web.php` — 9 route baru: GET kurikulum + 4 section routes + 4 lecture routes (menggantikan placeholder)
+  - `npm run build` PASS ✅ (2393 modules)
 
 ### LANGKAH 8 — Ray · Coupon (R3) ✅ SELESAI (2026-06-04)
 - **Apa:** Coupon CRUD (instruktur) + terapkan kupon di checkout.
@@ -291,7 +298,7 @@ Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enro
 | **Yosua** (PM) | L0 ✅ (selesai) | review tiap PR (L2-jalan terus) | L16 matikan Blade, L17 deploy |
 | **Vascha** | **L1** ✅ (selesai) | **L5** ✅ student panel selesai | komponen jadi acuan tim |
 | **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 kurikulum → L10 player → L11 email | L10 butuh Enrollment Ray |
-| **Ray** | **L3** ✅ wishlist · **L4** ✅ cart · **L8** ✅ coupon | **L9** payment | **L9** membuka pekerjaan Albariqi |
+| **Ray** | **L3** ✅ wishlist · **L4** ✅ cart | L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
 | **Quinsha** | **L12** admin shell | L13 → L14 admin pages | L15 arsip Blade admin |
 
 Cara ngajarinnya singkat: *"Vascha & Albariqi start duluan dari fondasi. Vascha bikin halaman publik + komponen; begitu CourseCard jadi, Ray mulai wishlist → cart → kupon → bayar. Pas Ray selesai bayar (Enrollment jadi), Albariqi lanjut bikin Course Player + email. Quinsha garap admin paralel. Terakhir Yosua matiin Blade lama, lalu kita semua polish & deploy."*

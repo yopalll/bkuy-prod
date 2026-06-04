@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Backend\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Backend\Instructor\DashboardController as InstructorDashboardController;
 use App\Http\Controllers\Backend\Instructor\CourseController as InstructorCourseController;
+use App\Http\Controllers\Backend\Instructor\SectionController as InstructorSectionController;
+use App\Http\Controllers\Backend\Instructor\LectureController as InstructorLectureController;
 use App\Http\Controllers\Backend\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
@@ -91,11 +93,20 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('instructor')
     // Submit course untuk ditinjau admin (draft → pending_review)
     Route::post('courses/{course}/submit', [InstructorCourseController::class, 'submit'])->name('courses.submit');
 
-    // Placeholder route kurikulum (dikerjakan di L7)
-    Route::get('courses/{course}/curriculum', function ($courseId) {
-        return redirect()->route('instructor.courses.edit', $courseId)
-            ->with('info', 'Halaman kurikulum akan tersedia setelah L7 selesai.');
-    })->name('courses.curriculum');
+    // L7 — Kurikulum (Section & Lecture CRUD)
+    Route::get('courses/{course}/curriculum', [InstructorCourseController::class, 'curriculum'])->name('courses.curriculum');
+
+    // Section CRUD (nested dalam course)
+    Route::post('courses/{course}/sections', [InstructorSectionController::class, 'store'])->name('courses.sections.store');
+    Route::patch('courses/{course}/sections/{section}', [InstructorSectionController::class, 'update'])->name('courses.sections.update');
+    Route::delete('courses/{course}/sections/{section}', [InstructorSectionController::class, 'destroy'])->name('courses.sections.destroy');
+    Route::post('courses/{course}/sections/reorder', [InstructorSectionController::class, 'reorder'])->name('courses.sections.reorder');
+
+    // Lecture CRUD (nested dalam course > section)
+    Route::post('courses/{course}/sections/{section}/lectures', [InstructorLectureController::class, 'store'])->name('courses.sections.lectures.store');
+    Route::patch('courses/{course}/sections/{section}/lectures/{lecture}', [InstructorLectureController::class, 'update'])->name('courses.sections.lectures.update');
+    Route::delete('courses/{course}/sections/{section}/lectures/{lecture}', [InstructorLectureController::class, 'destroy'])->name('courses.sections.lectures.destroy');
+    Route::post('courses/{course}/sections/{section}/lectures/reorder', [InstructorLectureController::class, 'reorder'])->name('courses.sections.lectures.reorder');
 
     // L8 Ray: Coupon CRUD (instruktur)
     Route::get('coupons/generate-code', [InstructorCouponController::class, 'generateCode'])->name('coupons.generate-code');
