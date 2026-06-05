@@ -17,6 +17,7 @@ Lapisan presentasi aplikasi sedang dimigrasikan dari Blade + Alpine.js menjadi *
 - [Instalasi dan Konfigurasi](#instalasi-dan-konfigurasi)
 - [Menjalankan Aplikasi](#menjalankan-aplikasi)
 - [Akun Default](#akun-default)
+- [Skema Basis Data](#skema-basis-data)
 - [Dokumentasi Proyek](#dokumentasi-proyek)
 - [Status Pengembangan](#status-pengembangan)
 - [Tim Pengembang](#tim-pengembang)
@@ -153,6 +154,68 @@ Setelah seeder dijalankan, kata sandi seluruh akun adalah `password`.
 | Instructor | `ray@belajarkuy.test` |
 | Student | `student@belajarkuy.test` |
 
+## Skema Basis Data
+
+BelajarKUY menggunakan **15 tabel utama** dengan relasi sebagai berikut.
+
+### Daftar Tabel
+
+| Tabel | Deskripsi |
+|---|---|
+| `users` | Pengguna platform — role: `user`, `instructor`, `admin` |
+| `categories` | Kategori kursus (contoh: Pemrograman, Desain) |
+| `sub_categories` | Sub-kategori, turunan dari `categories` |
+| `courses` | Kursus yang dibuat instruktur |
+| `course_goals` | Tujuan pembelajaran per kursus |
+| `course_sections` | Bagian (section/bab) dalam sebuah kursus |
+| `course_lectures` | Materi (lecture/video) dalam sebuah section |
+| `wishlists` | Daftar keinginan siswa |
+| `carts` | Keranjang belanja siswa |
+| `coupons` | Kupon diskon yang dibuat instruktur |
+| `payments` | Data transaksi Midtrans |
+| `orders` | Pesanan yang terhubung ke payment |
+| `enrollments` | Pendaftaran siswa ke kursus setelah bayar |
+| `lecture_completions` | Pelacakan materi yang sudah diselesaikan siswa |
+| `reviews` | Ulasan dan rating kursus dari siswa |
+
+### Relasi Antar Tabel
+
+```
+users ──< courses              (instructor_id)   — instruktur memiliki banyak kursus
+users ──< wishlists            (user_id)         — siswa punya banyak wishlist
+users ──< carts                (user_id)         — siswa punya banyak item cart
+users ──< coupons              (instructor_id)   — instruktur membuat kupon
+users ──< payments             (user_id)
+users ──< orders               (user_id, instructor_id)
+users ──< enrollments          (user_id)
+users ──< lecture_completions  (user_id)
+users ──< reviews              (user_id)
+
+categories ──< sub_categories  (category_id)
+categories ──< courses         (category_id)
+sub_categories ──< courses     (subcategory_id)
+
+courses ──< course_goals       (course_id)
+courses ──< course_sections    (course_id)
+courses ──< wishlists          (course_id)
+courses ──< carts              (course_id)
+courses ──< coupons            (course_id, nullable)
+courses ──< orders             (course_id)
+courses ──< enrollments        (course_id)
+courses ──< reviews            (course_id)
+
+course_sections ──< course_lectures     (section_id)
+course_lectures ──< lecture_completions (lecture_id)
+
+payments ──< orders    (payment_id)
+orders   ──< enrollments (order_id)
+coupons  ──< orders    (coupon_id, nullable)
+```
+
+**Unique constraints:** `wishlists(user_id, course_id)` · `carts(user_id, course_id)` · `enrollments(user_id, course_id)` · `lecture_completions(user_id, lecture_id)` · `reviews(user_id, course_id)`
+
+---
+
 ## Dokumentasi Proyek
 
 Dokumentasi lengkap berada pada direktori `BelajarKUY_docs/`. Berkas yang disarankan untuk dibaca terlebih dahulu:
@@ -174,15 +237,15 @@ Proyek berada pada tahap pengembangan aktif. Ringkasan terkini tersedia pada `Be
 
 ## Tim Pengembang
 
-| Nama | Peran |
-|---|---|
-| Yosua Valentino | Project Manager dan Arsitektur |
-| Albariqi Tarigan | Backend Developer (Autentikasi dan Kursus) |
-| Ray Nathan | Backend Developer (Commerce dan Pembayaran) |
-| Vascha U | Frontend Developer |
-| Quinsha Ilmi | UI/UX Developer (Panel Administrasi) |
+| No | Nama | NIM | Peran |
+|---|---|---|---|
+| 1 | Yosua Valentino Gulo | 251402055 | Project Manager & Arsitektur |
+| 2 | Albariqi Deanda Tarigan | 251402037 | Backend Developer (Autentikasi & Kurikulum) |
+| 3 | Ray Nathan Geereno Saragih | 251402046 | Backend Developer (Commerce & Pembayaran) |
+| 4 | Vascha Uli Lumbantoruan | 251402125 | Frontend Developer (Halaman Publik & Student) |
+| 5 | Quinsha Ilmi Azzahra | 251402137 | UI/UX Developer (Panel Administrasi) |
 
-Aset desain (Google Stitch) dikerjakan oleh Vascha U dan Quinsha Ilmi.
+Aset desain (Google Stitch) dikerjakan oleh Vascha Uli Lumbantoruan dan Quinsha Ilmi Azzahra.
 
 ## Lisensi
 
