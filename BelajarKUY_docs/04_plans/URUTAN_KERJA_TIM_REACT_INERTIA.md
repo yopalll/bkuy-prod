@@ -60,7 +60,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
         │  menghasilkan data Enrollment & callback Midtrans            │
         ├───────────────────────────────────────────────┐              │
         ▼                                               ▼              ▼
-  L10 Albariqi ✅: Course Player                L11 Albariqi: Email notifikasi
+  L10 Albariqi ✅: Course Player                L11 Albariqi ✅: Email notifikasi
   (butuh Enrollment dari L9)                    (dipicu callback L9)
         │
         ▼  (paralel mulai W2/W3)
@@ -246,12 +246,23 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   - `routes/web.php` — 3 route baru di grup `student.*`: `GET /student/learn/{slug}` (entry), `GET /student/learn/{slug}/{lecture}` (show), `POST /student/lecture/{lecture}/complete` (mark complete)
   - `npm run build` PASS ✅ (2399 modules)
 
-### LANGKAH 11 — Albariqi · Email notifikasi (A4, F14)
+### LANGKAH 11 — Albariqi · Email notifikasi (A4, F14) ✅ SELESAI (2026-06-05)
 - **Apa:** mail `CourseApproved` / `CourseRejected` / `NewSale` (pakai queue).
 - **Mulai setelah:** Langkah 9 (NewSale dipicu callback Midtrans).
-- **File utama:** Mailable + event/listener, `app/Mail/*`.
-- **Selesai bila:** email terkirim saat kursus disetujui/ditolak & saat ada penjualan; jalan lewat queue.
-- **Branch:** `feature/course-emails`.
+- **File utama:** Mailable + Blade templates, `app/Mail/*`.
+- **Selesai bila:** email terkirim saat kursus disetujui/ditolak & saat ada penjualan; jalan lewat queue. ✅
+- **Branch:** `feature/course-emails`. ✅
+- **Hasil implementasi:**
+  - `app/Mail/CourseApprovedMail.php` — Mailable+ShouldQueue; dikirim ke instruktur saat admin approve kursus (status → active)
+  - `app/Mail/CourseRejectedMail.php` — Mailable+ShouldQueue; dikirim ke instruktur saat admin reject dari pending_review; membawa alasan opsional
+  - `app/Mail/NewSaleMail.php` — Mailable+ShouldQueue; dikirim ke instruktur per order saat checkout berhasil (settlement/capture)
+  - `resources/views/emails/course-approved.blade.php` — template email branded purple (Konteks_A), inline CSS, detail kursus + CTA
+  - `resources/views/emails/course-rejected.blade.php` — template email merah, kotak catatan reviewer, langkah perbaikan, CTA
+  - `resources/views/emails/new-sale.blade.php` — template email hijau, detail pembeli, kursus terjual, pendapatan instruktur
+  - `AdminCourseController::updateStatus()` — hook email: approve → `CourseApprovedMail`, reject dari pending_review → `CourseRejectedMail(reason)`; validasi ditambah field `reason` opsional
+  - `CheckoutController::handleSuccess()` — hook email: per order → `NewSaleMail` ke instruktur pemilik kursus
+  - Queue driver: `database` (sudah dikonfigurasi di `.env`). Jalankan worker: `php artisan queue:work`
+  - `npm run build` PASS ✅ (2399 modules)
 
 ---
 
@@ -313,7 +324,7 @@ Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enro
 |---|---|---|---|
 | **Yosua** (PM) | L0 ✅ (selesai) | review tiap PR (L2-jalan terus) | L16 matikan Blade, L17 deploy |
 | **Vascha** | **L1** ✅ (selesai) | **L5** ✅ student panel selesai | komponen jadi acuan tim |
-| **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 ✅ kurikulum → L10 ✅ player → L11 email | L10 ✅ selesai |
+| **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 ✅ kurikulum → L10 ✅ player → **L11 ✅ email** | L11 ✅ selesai |
 | **Ray** | **L3** ✅ wishlist · **L4** ✅ cart | L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
 | **Quinsha** | **L12** admin shell | L13 → L14 admin pages | L15 arsip Blade admin |
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewSaleMail;
 use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\Order;
@@ -12,6 +13,7 @@ use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
@@ -271,6 +273,13 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'enrolled_at' => now(),
                 ]);
+
+                // L11 Albariqi: kirim email notifikasi penjualan ke instruktur (via queue)
+                $order->load(['course', 'user', 'instructor']);
+                if ($order->instructor && $order->instructor->email) {
+                    Mail::to($order->instructor->email)
+                        ->queue(new NewSaleMail($order));
+                }
             }
 
             // Increment coupon usage count if used

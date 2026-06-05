@@ -5,6 +5,38 @@
 
 ---
 
+## [2026-06-05] — L11 Albariqi · Email Notifikasi (F14)
+
+Implementasi sistem email notifikasi untuk kursus — 3 Mailable baru beserta template HTML yang dikirim via queue database.
+
+### ➕ Added
+
+- **`app/Mail/CourseApprovedMail.php`** — Mailable+ShouldQueue; email ke instruktur saat admin menyetujui kursus (status → active); membawa relasi `Course` + `instructor`.
+- **`app/Mail/CourseRejectedMail.php`** — Mailable+ShouldQueue; email ke instruktur saat admin menolak kursus dari `pending_review`; membawa alasan opsional (`?string $reason`).
+- **`app/Mail/NewSaleMail.php`** — Mailable+ShouldQueue; email ke instruktur per-order saat checkout berhasil (settlement/capture via Midtrans callback); membawa relasi `Order` + `course`, `user`, `instructor`.
+- **`resources/views/emails/course-approved.blade.php`** — Template email branded purple (Konteks_A gradient #300033→#A855F7); inline CSS; detail kursus, harga, tombol CTA.
+- **`resources/views/emails/course-rejected.blade.php`** — Template email merah; kotak catatan reviewer (alasan opsional / fallback teks); 3 langkah perbaikan; CTA ke panel instruktur.
+- **`resources/views/emails/new-sale.blade.php`** — Template email hijau; detail pembeli (nama+email), kursus terjual, pendapatan instruktur (setelah diskon), tanggal transaksi; CTA ke dashboard.
+
+### 🔧 Changed
+
+- **`app/Http/Controllers/Admin/AdminCourseController.php`** — `updateStatus()` diperluas:
+  - Validasi tambah field `reason` (nullable, max 1000 char).
+  - Hook email: status → `active` (dari non-active) → queue `CourseApprovedMail`; status → `inactive` (dari `pending_review`) → queue `CourseRejectedMail($course, $reason)`.
+  - Guard: hanya kirim email jika instruktur punya email.
+- **`app/Http/Controllers/Frontend/CheckoutController.php`** — `handleSuccess()` diperluas:
+  - Setelah setiap `Enrollment::firstOrCreate()`, load relasi order dan queue `NewSaleMail` ke instruktur pemilik kursus.
+  - Guard: hanya kirim jika instruktur punya email.
+- **`04_plans/URUTAN_KERJA_TIM_REACT_INERTIA.md`** — L11 ditandai ✅ SELESAI dengan hasil implementasi lengkap.
+
+### ✅ Verified
+
+- `npm run build` PASS ✅ — 2399 modules, 0 error.
+- Queue driver: `database` (tabel `jobs` sudah ada dari migration awal). Worker: `php artisan queue:work`.
+- Email ditulis ke `storage/logs/laravel.log` (MAIL_MAILER=log di dev) — tidak perlu SMTP.
+
+---
+
 ## [2026-06-05] — L10 Albariqi · Course Player (F13)
 
 Implementasi Course Player — halaman inti LMS di mana student ter-enroll menonton materi (video YouTube embed), menandai lecture selesai, dan melacak progress belajar. Termasuk wiring route dan penyesuaian link student panel.
