@@ -239,24 +239,56 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 
 ---
 
-### LANGKAH 12 — Quinsha · Admin shell React (Q1) — bisa mulai paralel di W2/W3
-- **Apa:** `AdminLayout` + `AdminSidebar` + komponen `DataTable` (tema Konteks_B: krem + slate-blue, font Inter).
+### LANGKAH 12 — Quinsha · Admin shell React (Q1) ✅ SELESAI (2026-06-05)
+- **Apa:** `AdminLayout` + `AdminSidebar` sebagai layout utama admin React (sidebar 256px fixed, mobile-responsive, topbar dengan search).
+- **Author:** Quinsha Ilmi Azzahra (quinshailmiazzahra@gmail.com) | Co-author: Yosua Valentino
 - **Mulai setelah:** Langkah 0 (mandiri).
-- **File utama:** `resources/js/Layouts/AdminLayout.jsx`, `resources/js/Components/Admin/*`.
-- **Selesai bila:** layout admin React tampil; `DataTable` reusable siap dipakai halaman admin.
-- **Branch:** `feature/admin-shell-react`.
+- **File utama:** `resources/js/Layouts/AdminLayout.jsx`.
+- **Branch:** `feature/admin-react-migration`.
+- **Hasil implementasi:**
+  - `AdminLayout.jsx` — sidebar 256px fixed (12 nav items), topbar, mobile hamburger toggle, logout POST
+  - Active state: `bg-background-subtle text-primary border-r-4 border-primary` (desain moderasi_kursus_admin_panel)
+  - `npm run build` PASS ✅ (2408 modules)
 
-### LANGKAH 13 — Quinsha · Admin pages bagian 1 (Q2)
+### LANGKAH 13 — Quinsha · Admin pages bagian 1 (Q2) ✅ SELESAI (2026-06-05)
 - **Apa:** port ke React: Dashboard, Categories, SubCategories, Courses (moderasi), Reviews (moderasi).
+- **Author:** Quinsha Ilmi Azzahra (quinshailmiazzahra@gmail.com) | Co-author: Yosua Valentino
 - **Mulai setelah:** Langkah 12.
-- **Selesai bila:** kelima halaman tampil React dengan data asli; aksi CRUD/moderasi jalan; `npm run build` sukses.
-- **Branch:** `feature/admin-react-1`.
+- **Branch:** `feature/admin-react-migration`.
+- **Hasil implementasi:**
+  - `DashboardController` → `Inertia::render('Admin/Dashboard')` + stats: active_courses, total_revenue, pending_courses, pending_reviews, recent_orders
+  - `CategoryController` → `Inertia::render('Admin/Categories/Index')` + edit modal
+  - `SubCategoryController` → `Inertia::render('Admin/SubCategories/Index')` + categories list
+  - `AdminCourseController` → `Inertia::render('Admin/Courses/Index')` + `Inertia::render('Admin/Courses/Show')`
+  - `AdminReviewController` → `Inertia::render('Admin/Reviews/Index')`
+  - `Pages/Admin/Dashboard.jsx` — bento grid 4 stats cards, recent orders table, action required panel, system status ping
+  - `Pages/Admin/Categories/Index.jsx` — DataTable + modal create/edit + Cloudinary image upload
+  - `Pages/Admin/SubCategories/Index.jsx` — DataTable + modal + parent category dropdown
+  - `Pages/Admin/Courses/Index.jsx` — tab filter + horizontal cards (desain moderasi_kursus_admin_panel)
+  - `Pages/Admin/Courses/Show.jsx` — detail kursus + approve/reject actions
+  - `Pages/Admin/Reviews/Index.jsx` — DataTable + star rating + approve/reject buttons
+  - `npm run build` PASS ✅ (2408 modules)
 
-### LANGKAH 14 — Quinsha · Admin pages bagian 2 (Q3)
+### LANGKAH 14 — Quinsha · Admin pages bagian 2 (Q3) ✅ SELESAI (2026-06-05)
 - **Apa:** port ke React: Orders, Users, Sliders, InfoBoxes, Partners, Settings.
+- **Author:** Quinsha Ilmi Azzahra (quinshailmiazzahra@gmail.com) | Co-author: Yosua Valentino
 - **Mulai setelah:** Langkah 13.
-- **Selesai bila:** keenam halaman tampil React dengan data asli; `npm run build` sukses.
-- **Branch:** `feature/admin-react-2`.
+- **Branch:** `feature/admin-react-migration`.
+- **Hasil implementasi:**
+  - `AdminOrderController` → `Inertia::render('Admin/Orders/Index')` + `Inertia::render('Admin/Orders/Show')`
+  - `AdminUserController` → `Inertia::render('Admin/Users/Index')`
+  - `AdminSliderController` → `Inertia::render('Admin/Sliders/Index')` + edit modal
+  - `AdminInfoBoxController` → `Inertia::render('Admin/InfoBoxes/Index')` + edit modal
+  - `AdminPartnerController` → `Inertia::render('Admin/Partners/Index')` + edit modal
+  - `AdminSiteSettingController` → `Inertia::render('Admin/Settings/Index')`
+  - `Pages/Admin/Orders/Index.jsx` — filter status tabs + DataTable (desain manajemen_pesanan)
+  - `Pages/Admin/Orders/Show.jsx` — detail order + payment info (midtrans_order_id)
+  - `Pages/Admin/Users/Index.jsx` — DataTable view-only (role badge color-coded)
+  - `Pages/Admin/Sliders/Index.jsx` — card grid + modal + Cloudinary upload
+  - `Pages/Admin/InfoBoxes/Index.jsx` — DataTable + modal CRUD
+  - `Pages/Admin/Partners/Index.jsx` — card grid + modal + Cloudinary logo upload
+  - `Pages/Admin/Settings/Index.jsx` — form General Config + Social Media (desain pengaturan_situs_global)
+  - `npm run build` PASS ✅ (2408 modules)
 
 ### LANGKAH 15 — Quinsha · Arsipkan Blade admin lama (Q4)
 - **Apa:** nonaktifkan/arsipkan `resources/views/admin/*` setelah semua halaman admin React diverifikasi.

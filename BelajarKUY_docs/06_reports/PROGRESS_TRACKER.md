@@ -4,7 +4,7 @@
 
 ---
 
-> **Update terakhir:** 4 Juni 2026 — 00:30 WIB oleh Ray Nathan — Session 13 (L8 Coupon React+Inertia selesai)
+> **Update terakhir:** 5 Juni 2026 — 22:15 WIB oleh Quinsha Ilmi Azzahra (co-author: Yosua Valentino) — Session 14 (L12+L13+L14 Admin Panel React+Inertia Migration selesai)
 >
 > ⚠️ **Catatan:** Entri 19 Mei 2026 (overall 30%) sudah usang. Tabel di bawah disusun ulang dari inspeksi langsung `app/Http/Controllers`, `resources/views`, `resources/js`, dan `routes/web.php`. **Persentase = estimasi** berdasarkan keberadaan controller/view/route nyata.
 
@@ -32,10 +32,9 @@
 | Coupon System | 80% | 🟡 Instructor CRUD ✅, apply di cart ✅; increment used_count saat settlement dikerjakan di L9 |
 | Course Player (F13) | 0% | 🔴 Belum |
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
-| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **30%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L6 Instructor CRUD ✅ + L8 Coupon ✅ — menunggu L5 Vascha + L7 Albariqi** |
-| **OVERALL** | **~70%** | **🟡 On Progress** |
-| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **55%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ — menunggu L8 Coupon, L9 Checkout** |
-| **OVERALL** | **~72%** | **🟡 On Progress** |
+| Admin Panel React (L12+L13+L14 Quinsha) | 100% | 🟢 Selesai — AdminLayout + 13 halaman React (Dashboard, Categories, SubCategories, Courses, Reviews, Orders, Users, Sliders, InfoBoxes, Partners, Settings) |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **75%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ + L6 Instructor CRUD ✅ + L7 Kurikulum ✅ + L8 Coupon ✅ + L9 Checkout ✅ + L12-14 Admin React ✅ — menunggu L10 Player + L11 Email** |
+| **OVERALL** | **~82%** | **🟡 On Progress** |
 
 ---
 
@@ -324,18 +323,56 @@
   - [x] Notifications: halaman siap (empty state; data real akan datang dari F14)
   - [x] StudentLayout: sidebar desktop + mobile overlay + bottom nav
   - [x] `npm run build` sukses, 0 error
-- Next: L8 Ray (Coupon), L9 Ray (Checkout + Midtrans)
+### Session 14 — 5 Juni 2026 (Antigravity) — Quinsha Ilmi Azzahra + Yosua Valentino — L12+L13+L14 Admin Panel React+Inertia
+- **L12 Admin Shell React:**
+  - Created: `Layouts/AdminLayout.jsx` — sidebar 256px fixed (12 nav items, lucide-react icons), topbar dengan search & notif, mobile hamburger, logout POST, user avatar di footer sidebar
+  - Active state sidebar: `bg-background-subtle text-primary border-r-4 border-primary` (desain moderasi_kursus_admin_panel)
+- **L13 Admin Pages Part 1:**
+  - Updated: `DashboardController.php` → `Inertia::render('Admin/Dashboard')` + stats tambahan (active_courses, total_revenue, pending_courses, pending_reviews, recent_orders)
+  - Updated: `CategoryController.php` → Inertia (index + edit modal)
+  - Updated: `SubCategoryController.php` → Inertia (index + categories list)
+  - Updated: `AdminCourseController.php` → Inertia (index + show)
+  - Updated: `AdminReviewController.php` → Inertia (index)
+  - Created: `Pages/Admin/Dashboard.jsx` — bento grid 4 stats cards, recent orders table, action required panel, system status ping animation
+  - Created: `Pages/Admin/Categories/Index.jsx` — DataTable + modal create/edit + Cloudinary image upload
+  - Created: `Pages/Admin/SubCategories/Index.jsx` — DataTable + modal + parent category dropdown
+  - Created: `Pages/Admin/Courses/Index.jsx` — tab filter + horizontal cards (desain moderasi_kursus_admin_panel)
+  - Created: `Pages/Admin/Courses/Show.jsx` — detail kursus + approve/reject actions
+  - Created: `Pages/Admin/Reviews/Index.jsx` — DataTable + star rating + approve/reject
+- **L14 Admin Pages Part 2:**
+  - Updated: `AdminOrderController.php`, `AdminUserController.php`, `AdminSliderController.php`, `AdminInfoBoxController.php`, `AdminPartnerController.php`, `AdminSiteSettingController.php` → semua Inertia::render
+  - Created: `Pages/Admin/Orders/Index.jsx` — filter tabs + DataTable (desain manajemen_pesanan)
+  - Created: `Pages/Admin/Orders/Show.jsx` — detail order + payment info (midtrans_order_id)
+  - Created: `Pages/Admin/Users/Index.jsx` — DataTable view-only (role badge color-coded)
+  - Created: `Pages/Admin/Sliders/Index.jsx` — card grid + modal + Cloudinary upload
+  - Created: `Pages/Admin/InfoBoxes/Index.jsx` — DataTable + modal CRUD
+  - Created: `Pages/Admin/Partners/Index.jsx` — card grid + modal + Cloudinary logo upload
+  - Created: `Pages/Admin/Settings/Index.jsx` — form General Config + Social Media (desain pengaturan_situs_global)
+- Branch: `feature/admin-react-migration`
+- Build: `npm run build` ✅ — 2408 modules, built in 898ms, 0 error
+- Author: Quinsha Ilmi Azzahra (quinshailmiazzahra@gmail.com) | Co-author: Yosua Valentino (guloyosua@gmail.com)
+- Push: `feature/admin-react-migration` → https://github.com/yopalll/BelajarKUY/pull/new/feature/admin-react-migration
+- Status: **L12 + L13 + L14 Quinsha Admin React SELESAI 100%** ✅
+- DoD:
+  - [x] 11 controller admin → Inertia::render (tidak mengubah logic backend) ✅
+  - [x] 14 halaman React admin dibuat (Dashboard, Categories, SubCategories, Courses+Show, Reviews, Orders+Show, Users, Sliders, InfoBoxes, Partners, Settings) ✅
+  - [x] Desain dari BelajarKuy_Design_Revisi (moderasi_kursus, pengaturan_situs, admin_dashboard) ✅
+  - [x] Modal create/edit inline (tidak ada halaman terpisah) ✅
+  - [x] Cloudinary upload via forceFormData untuk Category, Slider, Partner ✅
+  - [x] `npm run build` sukses, 0 error ✅
+- Next: L15 Quinsha (Arsipkan Blade admin lama); L10 Albariqi (Course Player)
+- Report: `06_reports/REPORT_2026-06-05_L12-14_QUINSHA_ADMIN_REACT.md`
 
 ---
 
+
 ## ⚠️ Known Issues
 
-- **Frontend masih sebagian Blade** untuk student panel (menunggu L5 Vascha) dan admin panel (L12-L14 Quinsha).
 - **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order) — dikerjakan di L9 Ray.
 - **`used_count` increment kupon** dikerjakan di L9 saat payment settlement.
-- **Frontend admin/instructor panel** masih Blade, menunggu L12 Quinsha dan L7 Albariqi.
-- **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order).
-- **Kupon belum ada** — placeholder kode kupon di `Cart/Index.jsx` (diaktifkan di L8).
+- **Frontend instructor panel** masih sebagian Blade, menunggu L7 Albariqi.
+- **Course Player (L10)** dan **Email (L11)** menunggu Albariqi.
+- **L15 Quinsha** (arsip Blade admin lama) belum dikerjakan — menunggu verifikasi L12-14.
 
 ---
 
