@@ -25,6 +25,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\WishlistController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CouponController as FrontendCouponController;
+use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Backend\Instructor\CouponController as InstructorCouponController;
 use Inertia\Inertia;
 
@@ -157,23 +158,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/coupon/remove', [FrontendCouponController::class, 'remove'])->name('coupon.remove');
 });
 
-// Checkout (Phase 3)
-Route::get('/checkout', function () {
-    return view('frontend.checkout');
-})->middleware('auth')->name('checkout');
+// L9 Yosua/Ray: Checkout + Midtrans + Enrollment (React + Inertia)
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/payment/success', [CheckoutController::class, 'success'])->name('payment.success');
+    Route::get('/payment/failed', [CheckoutController::class, 'failed'])->name('payment.failed');
+});
 
-Route::post('/checkout/process', function () {
-    return view('frontend.checkout-process');
-})->middleware('auth')->name('checkout.process');
-
-// Payment result pages (Phase 3)
-Route::get('/payment/success', function () {
-    return view('frontend.payment-success');
-})->middleware('auth')->name('payment.success');
-
-Route::get('/payment/failed', function () {
-    return view('frontend.payment-failed');
-})->middleware('auth')->name('payment.failed');
+// Midtrans Webhook (tanpa auth — Midtrans server call langsung; CSRF sudah di-exclude di bootstrap/app.php)
+Route::post('/payment/callback', [CheckoutController::class, 'callback'])->name('payment.callback');
 
 // Reviews (Phase 5)
 Route::post('/courses/{course}/reviews', function () {

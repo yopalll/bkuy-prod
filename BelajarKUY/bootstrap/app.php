@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+        // L9: Midtrans callback tidak mengirim CSRF token — WAJIB di-exclude (ADR-004)
+        $middleware->validateCsrfTokens(except: [
+            '/payment/callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Semua HTTP error → React error pages via Inertia

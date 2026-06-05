@@ -12,9 +12,9 @@ use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Inertia\Inertia;
 
 class CheckoutController extends Controller
 {
@@ -28,7 +28,7 @@ class CheckoutController extends Controller
     /**
      * Display checkout page with current cart items and optional coupon.
      */
-    public function index(Request $request): View|RedirectResponse
+    public function index(Request $request): \Inertia\Response|RedirectResponse
     {
         $cartItems = Cart::where('user_id', auth()->id())
             ->with(['course.instructor', 'course.category'])
@@ -66,13 +66,19 @@ class CheckoutController extends Controller
 
         $total = max(0, $subtotal - $discountAmount);
 
-        return view('frontend.checkout', compact('cartItems', 'coupon', 'subtotal', 'discountAmount', 'total'));
+        return Inertia::render('Checkout/Index', [
+            'cartItems'      => $cartItems,
+            'coupon'         => $coupon,
+            'subtotal'       => $subtotal,
+            'discountAmount' => $discountAmount,
+            'total'          => $total,
+        ]);
     }
 
     /**
      * Process checkout, generate Midtrans Snap Token, and return checkout screen.
      */
-    public function process(Request $request): View|RedirectResponse
+    public function process(Request $request): \Inertia\Response|RedirectResponse
     {
         $cartItems = Cart::where('user_id', auth()->id())
             ->with(['course.instructor', 'course.category'])
@@ -113,10 +119,10 @@ class CheckoutController extends Controller
 
             // 1. Create Payment record in 'pending' status BEFORE fetching Snap token
             $payment = Payment::create([
-                'user_id' => auth()->id(),
-                'midtrans_order_id' => $midtransOrderId,
-                'total_amount' => $totalAmount,
-                'status' => 'pending',
+                'user_id'          => auth()->id(),
+                'midtrans_order_id'=> $midtransOrderId,
+                'total_amount'     => $totalAmount,
+                'status'           => 'pending',
             ]);
 
             // 2. Fetch Snap Token from Midtrans Service
@@ -126,13 +132,20 @@ class CheckoutController extends Controller
 
             $clientKey = config('midtrans.client_key');
 
-            return view('frontend.checkout-process', compact('cartItems', 'snapToken', 'clientKey', 'payment', 'coupon', 'totalAmount'));
+            // Return Inertia page — React will auto-trigger snap.pay() via useEffect
+            return Inertia::render('Checkout/Process', [
+                'snapToken'   => $snapToken,
+                'clientKey'   => $clientKey,
+                'midtransOrderId' => $midtransOrderId,
+                'totalAmount' => $totalAmount,
+                'couponCode'  => $coupon ? $coupon->code : null,
+            ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Checkout processing failed: ' . $e->getMessage(), [
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace'   => $e->getTraceAsString()
             ]);
 
             return redirect()->back()
@@ -273,22 +286,34 @@ class CheckoutController extends Controller
     /**
      * Payment Success Page.
      */
-    public function success(Request $request): View
+    public function success(Request $request): \Inertia\Response
     {
         $orderId = $request->query('order_id');
         $payment = null;
+        $orders  = [];
 
         if ($orderId) {
-            $payment = Payment::where('midtrans_order_id', $orderId)->first();
+            $payment = Payment::where('midtrans_order_id', $orderId)
+                ->with('user')
+                ->first();
+
+            if ($payment) {
+                $orders = Order::where('payment_id', $payment->id)
+                    ->with('course:id,title,thumbnail,slug')
+                    ->get();
+            }
         }
 
-        return view('frontend.payment-success', compact('payment'));
+        return Inertia::render('Payment/Success', [
+            'payment' => $payment,
+            'orders'  => $orders,
+        ]);
     }
 
     /**
      * Payment Failed Page.
      */
-    public function failed(Request $request): View
+    public function failed(Request $request): \Inertia\Response
     {
         $orderId = $request->query('order_id');
         $payment = null;
@@ -297,6 +322,8 @@ class CheckoutController extends Controller
             $payment = Payment::where('midtrans_order_id', $orderId)->first();
         }
 
-        return view('frontend.payment-failed', compact('payment'));
+        return Inertia::render('Payment/Failed', [
+            'payment' => $payment,
+        ]);
     }
 }
