@@ -75,11 +75,11 @@ Lead:
 ✅ Wishlist page UI — Pages/Student/Wishlist.jsx (React+Inertia, grid kartu, empty state) — L3
 ✅ Cart system — CartController add/remove/move-to-wishlist/count + cek Enrollment — L4
 ✅ Cart page UI with pricing — Pages/Cart/Index.jsx (subtotal real-time, hapus, pindah ke wishlist) — L4
-☐ Checkout page
-☐ Midtrans Snap integration (frontend JS)
-☐ Payment controller (create snap token)
-☐ Payment callback handler (notification URL)
-☐ Order creation after successful payment
+✅ Checkout page — Pages/Checkout/Index.jsx (desain checkout_pesanan, Konteks_A) — L9
+✅ Midtrans Snap integration (frontend JS) — Pages/Checkout/Process.jsx auto-trigger snap.pay() — L9
+✅ Payment controller (create snap token) — CheckoutController@process → Inertia::render — L9
+✅ Payment callback handler (notification URL) — CheckoutController@callback CSRF-exempt — L9
+✅ Order creation after successful payment — handleSuccess() di CheckoutController — L9
 ✅ Coupon CRUD (instructor) — Pages/Instructor/Coupons/Index.jsx + InstructorCouponController — L8
 ✅ Coupon apply logic at checkout — CouponPanel aktif di Cart + FrontendCouponController — L8
 ```
@@ -228,5 +228,4 @@ docs: update progress tracker and task distribution session 7
 ---
 
 *Pembagian tugas ini bisa berubah sesuai progress. Update jika ada perubahan.*
-*Last updated: 4 Juni 2026 — 00:30 WIB — Session 13 — Antigravity (AI Agent) untuk Ray Nathan — L8 Coupon Selesai*
-*Last updated: 4 Juni 2026 — Session 13 — Antigravity (AI Agent) untuk Vascha U — L5 Student Panel React Selesai*
+*Last updated: 5 Juni 2026 — 21:40 WIB — Session 14 — Antigravity (AI Agent) untuk Yosua Valentino (Ray co-author) — L9 Checkout + Midtrans + Enrollment Selesai*

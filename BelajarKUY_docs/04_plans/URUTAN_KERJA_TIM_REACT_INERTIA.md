@@ -54,12 +54,12 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
                               L5 Vascha ✅ Student panel               │
         │                     (butuh L1 + L2)                          │
         ▼                                                              │
-  ┌──────────────────────────────────────────────┐                    │
-  │  L9 Ray: Checkout + Midtrans + Enrollment     │ ◄── TONGGAK KUNCI  │
-  └──────────────────────────────────────────────┘                    │
+  ┌──────────────────────────────────────────────────────────────────┐ │
+  │  L9 Yosua/Ray ✅ Checkout + Midtrans + Enrollment ◄── TONGGAK KUNCI│ │
+  └──────────────────────────────────────────────────────────────────┘ │
         │  menghasilkan data Enrollment & callback Midtrans            │
-        ├───────────────────────────────────────────────┐            │
-        ▼                                                 ▼            ▼
+        ├───────────────────────────────────────────────┐              │
+        ▼                                               ▼              ▼
   L10 Albariqi: Course Player                   L11 Albariqi: Email notifikasi
   (butuh Enrollment dari L9)                    (dipicu callback L9)
         │
@@ -211,13 +211,22 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
   - `routes/web.php` — route instructor coupon CRUD (`/instructor/coupons`, `toggle`, `generate-code`), `/coupon/apply`, `/coupon/remove`
   - `npm run build` PASS ✅ (2388 modules)
 
-### LANGKAH 9 — Ray · Checkout + Midtrans + Enrollment (R4) ⭐ TONGGAK KUNCI
+### LANGKAH 9 — Yosua (Ray co-author) · Checkout + Midtrans + Enrollment (R4) ✅ SELESAI (2026-06-05)
 - **Apa:** checkout end-to-end: buat Snap token asli, halaman pembayaran, **callback/notification handler** Midtrans, buat `Order` + `Payment`, dan **auto-enroll** (isi tabel `Enrollment`) saat status settlement.
 - **Mulai setelah:** Langkah 4 (cart) + Langkah 8 (coupon).
-- **File utama:** `CheckoutController`, `MidtransService`, handler callback, `Pages/Checkout/*`.
-- **Selesai bila:** bayar via Midtrans **sandbox** → Order tercatat → siswa otomatis ter-enroll; status pembayaran tersinkron via callback; `is_production = false` (ADR-004).
-- **Branch:** `feature/payment-midtrans`.
+- **File utama:** `CheckoutController`, `MidtransService`, handler callback, `Pages/Checkout/*`, `Pages/Payment/*`.
+- **Selesai bila:** bayar via Midtrans **sandbox** → Order tercatat → siswa otomatis ter-enroll; status pembayaran tersinkron via callback; `is_production = false` (ADR-004). ✅
+- **Branch:** `feature/payment-midtrans`. ✅
 - **Kenapa kunci:** langkah ini **membuka 2 pekerjaan Albariqi sekaligus** — Course Player (butuh Enrollment) dan Email NewSale (dipicu callback). Setelah L9 lulus, kabari Albariqi.
+- **Hasil implementasi:**
+  - `CheckoutController.php` — ganti semua `view()` → `Inertia::render()` (index, process, success, failed); callback handler sudah ada & lengkap
+  - `bootstrap/app.php` — CSRF exclusion `/payment/callback` (Midtrans webhook)
+  - `routes/web.php` — checkout/payment routes ke `CheckoutController`; tambah `POST /payment/callback`
+  - `Pages/Checkout/Index.jsx` — halaman checkout React (desain `checkout_pesanan`, Konteks_A, Plus Jakarta Sans)
+  - `Pages/Checkout/Process.jsx` — halaman perantara: load Snap JS sandbox + auto-trigger `snap.pay()` via `useEffect`
+  - `Pages/Payment/Success.jsx` — halaman sukses (desain `pembayaran_berhasil`, Quinsha, Konteks_A) — animasi ping, glassmorphism card, daftar kursus dibeli
+  - `Pages/Payment/Failed.jsx` — halaman gagal (desain `pembayaran_gagal`, Quinsha, Konteks_A) — red accent bar, CTA coba lagi
+  - `npm run build` PASS ✅ (2398 modules)
 
 ---
 

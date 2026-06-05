@@ -4,7 +4,7 @@
 
 ---
 
-> **Update terakhir:** 4 Juni 2026 — 00:30 WIB oleh Ray Nathan — Session 13 (L8 Coupon React+Inertia selesai)
+> **Update terakhir:** 5 Juni 2026 — 21:40 WIB oleh Yosua Valentino — Session 14 (L9 Checkout + Midtrans + Enrollment selesai)
 >
 > ⚠️ **Catatan:** Entri 19 Mei 2026 (overall 30%) sudah usang. Tabel di bawah disusun ulang dari inspeksi langsung `app/Http/Controllers`, `resources/views`, `resources/js`, dan `routes/web.php`. **Persentase = estimasi** berdasarkan keberadaan controller/view/route nyata.
 
@@ -25,7 +25,7 @@
 | Site Settings (admin) | 100% | 🟢 Selesai |
 | Student Panel React (Pages/Student/*) | 100% | 🟢 Selesai — L5 Vascha (Dashboard, MyCourses, Wishlist, Profile, Notifications) |
 | Review & Rating | 50% | 🟡 Moderasi admin ✅, submit review siswa ❌ |
-| Payment (Midtrans) | 25% | 🟡 Service + CheckoutController ada; view placeholder, callback ❌ |
+| Payment (Midtrans) | 100% | 🟢 CheckoutController Inertia ✅, Snap token ✅, callback handler ✅, auto-enroll ✅, Pages/Checkout & Payment React ✅ |
 | Cart & Wishlist | 100% | 🟢 Wishlist ✅, Cart ✅, Coupon apply di Cart ✅ |
 | Notifications (F14) | 10% | 🔴 Hanya `WelcomeMail`; event/broadcast/mail lain ❌ |
 | Course CRUD (Instructor) | 85% | 🟡 L6 Albariqi index+CRUD selesai; L7 kurikulum belum |
@@ -34,8 +34,8 @@
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **30%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L6 Instructor CRUD ✅ + L8 Coupon ✅ — menunggu L5 Vascha + L7 Albariqi** |
 | **OVERALL** | **~70%** | **🟡 On Progress** |
-| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **55%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ — menunggu L8 Coupon, L9 Checkout** |
-| **OVERALL** | **~72%** | **🟡 On Progress** |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **75%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ + L6 Instructor CRUD ✅ + L7 Kurikulum ✅ + L8 Coupon ✅ + L9 Checkout ✅ — menunggu L10/L11 Albariqi** |
+| **OVERALL** | **~82%** | **🟡 On Progress** |
 
 ---
 
@@ -78,8 +78,8 @@
 
 ## 🔄 SEDANG DIKERJAKAN
 
-- L8 Ray: Coupon CRUD + apply at checkout
-- L9 Ray: Checkout + Midtrans + Enrollment
+- L10 Albariqi: Course Player (butuh Enrollment dari L9 ✅)
+- L11 Albariqi: Email notifikasi NewSale (dipicu callback L9 ✅)
 
 ---
 
@@ -90,7 +90,7 @@
 - [x] Halaman wishlist siswa React (`Pages/Student/Wishlist.jsx`) ✅
 - [x] Cart: `CartController` + `Pages/Cart/Index.jsx` ✅ (`feature/cart`)
 - [x] Coupon CRUD instructor + apply di Cart ✅ (`InstructorCouponController`, `FrontendCouponController`, `Pages/Instructor/Coupons/Index.jsx`, `CouponPanel` di Cart) — `feature/coupon`
-- [ ] Midtrans: Snap token nyata, payment callback/notification handler, pembuatan Order setelah bayar
+- [x] Midtrans: Snap token nyata ✅, payment callback/notification handler ✅, pembuatan Order setelah bayar ✅ (L9 Yosua/Ray)
 
 ### Course & Instructor (Albariqi)
 - [ ] Course CRUD instruktur (controller + form)
@@ -324,18 +324,38 @@
   - [x] Notifications: halaman siap (empty state; data real akan datang dari F14)
   - [x] StudentLayout: sidebar desktop + mobile overlay + bottom nav
   - [x] `npm run build` sukses, 0 error
-- Next: L8 Ray (Coupon), L9 Ray (Checkout + Midtrans)
+- Next: L8 Ray (Coupon) ✅ selesai — Next: L9 Yosua/Ray (Checkout + Midtrans) ✅ selesai
+
+### Session 14 — 5 Juni 2026 (Antigravity) — Yosua Valentino (Ray co-author) — L9 Checkout + Midtrans + Enrollment
+- Updated: `CheckoutController.php` — semua `view()` → `Inertia::render()` di index/process/success/failed
+- Updated: `bootstrap/app.php` — CSRF exclusion `/payment/callback` (Midtrans webhook wajib)
+- Updated: `routes/web.php` — ganti 4 closure placeholder → `CheckoutController`; tambah `POST /payment/callback`
+- Created: `Pages/Checkout/Index.jsx` — halaman checkout React (desain checkout_pesanan Vascha, Konteks_A)
+- Created: `Pages/Checkout/Process.jsx` — halaman perantara auto-trigger snap.pay() via useEffect
+- Created: `Pages/Payment/Success.jsx` — halaman sukses (desain pembayaran_berhasil Quinsha, glassmorphism card, animasi ping)
+- Created: `Pages/Payment/Failed.jsx` — halaman gagal (desain pembayaran_gagal Quinsha, red accent bar)
+- Branch: `feature/payment-midtrans`
+- Build: `npm run build` ✅ — 2398 modules, 0 error
+- Status: **L9 SELESAI 100%** ✅ — TONGGAK KUNCI terpenuhi
+- DoD:
+  - [x] Checkout page tampil React dengan data asli (cart items + kupon) ✅
+  - [x] Process: Snap token dibuat via MidtransService; halaman perantara trigger snap.pay() ✅
+  - [x] Callback handler CSRF-exempt; verifikasi fraud_status; buat Order + Enrollment saat settlement ✅
+  - [x] Pages/Payment/Success & Failed tampil sesuai desain Stitch ✅
+  - [x] is_production = false (ADR-004) ✅
+  - [x] Skema DB tidak berubah ✅
+  - [x] npm run build sukses ✅
+- Next: L10 Albariqi (Course Player — butuh Enrollment dari L9), L11 Albariqi (Email notifikasi)
+- Push: `feature/payment-midtrans` → https://github.com/yopalll/BelajarKUY (guloyosua@gmail.com)
 
 ---
 
 ## ⚠️ Known Issues
 
-- **Frontend masih sebagian Blade** untuk student panel (menunggu L5 Vascha) dan admin panel (L12-L14 Quinsha).
-- **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order) — dikerjakan di L9 Ray.
-- **`used_count` increment kupon** dikerjakan di L9 saat payment settlement.
-- **Frontend admin/instructor panel** masih Blade, menunggu L12 Quinsha dan L7 Albariqi.
-- **Checkout/Payment Midtrans** belum end-to-end (view placeholder; belum ada callback handler & pembuatan Order).
-- **Kupon belum ada** — placeholder kode kupon di `Cart/Index.jsx` (diaktifkan di L8).
+- **Frontend admin panel** masih Blade, menunggu L12-L14 Quinsha.
+- **Checkout/Payment Midtrans** ✅ SELESAI — Inertia React, Snap token, callback handler, auto-enroll.
+- **Course Player (F13)** belum dimulai — menunggu L10 Albariqi.
+- **Email notifikasi (F14)** belum dimulai — menunggu L11 Albariqi.
 
 ---
 
