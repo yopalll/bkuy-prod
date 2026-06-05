@@ -4,7 +4,7 @@
 
 ---
 
-> **Update terakhir:** 5 Juni 2026 — 22:15 WIB oleh Quinsha Ilmi Azzahra (co-author: Yosua Valentino) — Session 14 (L9 Checkout selesai, L12+L13+L14 Admin Panel React selesai)
+> **Update terakhir:** 5 Juni 2026 — 22:25 WIB oleh Albariqi (co-author: Yosua Valentino) — Session 14 (L9 Checkout, L10 Player, L12-14 Admin Panel React selesai)
 >
 > ⚠️ **Catatan:** Entri 19 Mei 2026 (overall 30%) sudah usang. Tabel di bawah disusun ulang dari inspeksi langsung `app/Http/Controllers`, `resources/views`, `resources/js`, dan `routes/web.php`. **Persentase = estimasi** berdasarkan keberadaan controller/view/route nyata.
 
@@ -12,7 +12,7 @@
 
 ## Summary
 
-> Stack saat ini: lapisan presentasi **campuran** — React+Inertia untuk halaman yang sudah diport, Blade masih untuk halaman admin dan student panel (belum L5).
+> Stack saat ini: lapisan presentasi **sebagian besar** sudah React+Inertia — React+Inertia untuk halaman publik, auth, wishlist, cart, checkout, student panel, instructor course/curriculum/coupon, course player, dan admin panel. Blade tersisa untuk halaman instructor non-CRUD/setting dan email.
 
 | Modul | Progress | Status |
 |-------|----------|--------|
@@ -28,13 +28,13 @@
 | Payment (Midtrans) | 100% | 🟢 CheckoutController Inertia ✅, Snap token ✅, callback handler ✅, auto-enroll ✅, Pages/Checkout & Payment React ✅ |
 | Cart & Wishlist | 100% | 🟢 Wishlist ✅, Cart ✅, Coupon apply di Cart ✅ |
 | Notifications (F14) | 10% | 🔴 Hanya `WelcomeMail`; event/broadcast/mail lain ❌ |
-| Course CRUD (Instructor) | 85% | 🟡 L6 Albariqi index+CRUD selesai; L7 kurikulum belum |
+| Course CRUD (Instructor) | 100% | 🟢 Selesai — Course & Curriculum CRUD (L6 + L7) |
 | Coupon System | 80% | 🟡 Instructor CRUD ✅, apply di cart ✅; increment used_count saat settlement dikerjakan di L9 |
-| Course Player (F13) | 0% | 🔴 Belum |
+| Course Player (F13) | 100% | 🟢 Selesai — CoursePlayerController + Pages/Courses/Player (L10) |
 | **Migrasi Frontend React + Inertia (ADR-008) — Fase 1** | **100%** | **🟢 Fase 1 SELESAI (Vascha L1)** |
 | Admin Panel React (L12+L13+L14 Quinsha) | 100% | 🟢 Selesai — AdminLayout + 13 halaman React (Dashboard, Categories, SubCategories, Courses, Reviews, Orders, Users, Sliders, InfoBoxes, Partners, Settings) |
-| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **75%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ + L6 Instructor CRUD ✅ + L7 Kurikulum ✅ + L8 Coupon ✅ + L9 Checkout ✅ + L12-14 Admin React ✅ — menunggu L10 Player + L11 Email** |
-| **OVERALL** | **~82%** | **🟡 On Progress** |
+| **Migrasi Frontend React + Inertia (ADR-008) — Fase 2+3** | **90%** | **🟡 L2 Auth ✅ + L3 Wishlist ✅ + L4 Cart ✅ + L5 Student Panel ✅ + L6 Instructor CRUD ✅ + L7 Kurikulum ✅ + L8 Coupon ✅ + L9 Checkout ✅ + L10 Player ✅ + L12-14 Admin React ✅ — menunggu L11 Email** |
+| **OVERALL** | **~90%** | **🟡 On Progress** |
 
 ---
 
@@ -390,8 +390,6 @@
 
 ## ⚠️ Known Issues
 
-- **Frontend instructor panel** masih sebagian Blade, menunggu L7 Albariqi.
-- **Course Player (F13)** belum dimulai — menunggu L10 Albariqi.
 - **Email notifikasi (F14)** belum dimulai — menunggu L11 Albariqi.
 - **L15 Quinsha** (arsip Blade admin lama) belum dikerjakan — menunggu verifikasi L12-14.
 
