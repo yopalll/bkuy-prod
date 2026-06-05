@@ -60,7 +60,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
         │  menghasilkan data Enrollment & callback Midtrans            │
         ├───────────────────────────────────────────────┐              │
         ▼                                               ▼              ▼
-  L10 Albariqi: Course Player                   L11 Albariqi: Email notifikasi
+  L10 Albariqi ✅: Course Player                L11 Albariqi: Email notifikasi
   (butuh Enrollment dari L9)                    (dipicu callback L9)
         │
         ▼  (paralel mulai W2/W3)
@@ -232,12 +232,19 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 
 > **Estafet ke Albariqi:** begitu L9 selesai, Albariqi *melanjutkan bagiannya* dengan modal data Enrollment & callback dari Ray.
 
-### LANGKAH 10 — Albariqi · Course Player (A3, F13)
+### LANGKAH 10 — Albariqi · Course Player (A3, F13) ✅ SELESAI (2026-06-05)
 - **Apa:** `Pages/Courses/Player` + pelacakan penyelesaian materi (lecture completion).
 - **Mulai setelah:** Langkah 9 (butuh `Enrollment` untuk guard akses) + Langkah 7 (kurikulum).
 - **File utama:** `CoursePlayerController`, `resources/js/Pages/Courses/Player.jsx`, tabel `lecture_completions`.
-- **Selesai bila:** hanya siswa ter-enroll bisa menonton; tandai materi selesai; progres tersimpan & tampil.
-- **Branch:** `feature/course-player`.
+- **Selesai bila:** hanya siswa ter-enroll bisa menonton; tandai materi selesai; progres tersimpan & tampil. ✅
+- **Branch:** `feature/course-player`. ✅
+- **Hasil implementasi:**
+  - `Frontend/CoursePlayerController.php` — guard Enrollment (`abort_unless`), `index()` auto-redirect ke first uncompleted lecture, `show()` render `Inertia::render('Courses/Player')` dengan data kurikulum + completed IDs + progress + prev/next, `markComplete()` idempotent `firstOrCreate` + recalculate progress (JSON response)
+  - `Pages/Courses/Player.jsx` — layout fullscreen 2-kolom: video YouTube embed (kiri) + sidebar kurikulum accordion (kanan); tombol "Tandai Selesai" → AJAX POST, progress bar gradient (#300033→#ffb145), navigasi prev/next, mobile sidebar overlay, navbar branded dengan progress badge
+  - `Pages/Student/MyCourses.jsx` — tombol "Lanjutkan/Mulai Belajar" mengarah ke `/student/learn/{slug}` (Course Player)
+  - `Pages/Student/Dashboard.jsx` — tombol "Lanjut" di Lanjutkan Belajar mengarah ke Course Player
+  - `routes/web.php` — 3 route baru di grup `student.*`: `GET /student/learn/{slug}` (entry), `GET /student/learn/{slug}/{lecture}` (show), `POST /student/lecture/{lecture}/complete` (mark complete)
+  - `npm run build` PASS ✅ (2399 modules)
 
 ### LANGKAH 11 — Albariqi · Email notifikasi (A4, F14)
 - **Apa:** mail `CourseApproved` / `CourseRejected` / `NewSale` (pakai queue).
@@ -293,7 +300,7 @@ Yang sudah jadi dan **jangan diubah** (ini pondasi bersama):
 |---|---|---|
 | Gel. 1 (W1) | **Vascha L1** · **Albariqi L2** · **Albariqi L6** | semua hanya butuh fondasi |
 | Gel. 2 (W2) | **Ray L3→L4→L8** · **Vascha L5** · **Albariqi L7** · **Quinsha L12** | Ray berurutan; lainnya paralel |
-| Gel. 3 (W3) | **Ray L9** → lalu **Albariqi L10 & L11** · **Quinsha L13→L14** | tunggu L9 untuk L10/L11 |
+| Gel. 3 (W3) | **Ray L9** ✅ → lalu **Albariqi L10** ✅ **& L11** · **Quinsha L13→L14** | tunggu L9 untuk L10/L11 |
 | Gel. 4 (W4) | **Quinsha L15** → **Yosua L16** → **ALL L17** | tahap penutup, berurutan |
 
 Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enrollment & callback), L2→L5 (auth), L14→L15→L16 (jangan matikan Blade sebelum React siap).
@@ -306,7 +313,7 @@ Yang **tidak boleh** ditukar urutannya: L1→L3 (CourseCard), L9→L10/L11 (Enro
 |---|---|---|---|
 | **Yosua** (PM) | L0 ✅ (selesai) | review tiap PR (L2-jalan terus) | L16 matikan Blade, L17 deploy |
 | **Vascha** | **L1** ✅ (selesai) | **L5** ✅ student panel selesai | komponen jadi acuan tim |
-| **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 kurikulum → L10 player → L11 email | L10 butuh Enrollment Ray |
+| **Albariqi** | **L2** ✅ auth & error **&** L6 instructor CRUD | L7 ✅ kurikulum → L10 ✅ player → L11 email | L10 ✅ selesai |
 | **Ray** | **L3** ✅ wishlist · **L4** ✅ cart | L8 coupon → **L9** payment | **L9** membuka pekerjaan Albariqi |
 | **Quinsha** | **L12** admin shell | L13 → L14 admin pages | L15 arsip Blade admin |
 

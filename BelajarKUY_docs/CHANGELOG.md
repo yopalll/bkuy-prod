@@ -5,6 +5,31 @@
 
 ---
 
+## [2026-06-05] — L10 Albariqi · Course Player (F13)
+
+Implementasi Course Player — halaman inti LMS di mana student ter-enroll menonton materi (video YouTube embed), menandai lecture selesai, dan melacak progress belajar. Termasuk wiring route dan penyesuaian link student panel.
+
+### ➕ Added
+
+- **`Frontend/CoursePlayerController.php`** — controller lengkap: `index()` auto-redirect ke first uncompleted lecture; `show()` render `Inertia::render('Courses/Player')` dengan data kurikulum, completed IDs, progress %, navigasi prev/next; `markComplete()` idempotent `firstOrCreate` LectureCompletion + recalculate progress (JSON). Guard: `abort_unless(isEnrolled)`.
+- **`Pages/Courses/Player.jsx`** — halaman React fullscreen 2-kolom: video YouTube embed (kiri) + sidebar kurikulum accordion (kanan); tombol "Tandai Selesai" → AJAX POST → update local state tanpa reload; progress bar gradient (#300033→#ffb145); navigasi prev/next; mobile sidebar overlay; navbar branded dengan progress counter.
+- **Route Group L10** di `routes/web.php`:
+  - `GET /student/learn/{slug}` → `CoursePlayerController@index` (auto-redirect; name `student.learn`)
+  - `GET /student/learn/{slug}/{lecture}` → `CoursePlayerController@show` (player; name `student.learn.show`)
+  - `POST /student/lecture/{lecture}/complete` → `CoursePlayerController@markComplete` (JSON; name `student.lecture.complete`)
+
+### 🔧 Changed
+
+- **`Pages/Student/MyCourses.jsx`** — tombol "Lanjutkan/Mulai Belajar" mengarah ke `/student/learn/{slug}` (Course Player) alih-alih `/courses/{slug}` (detail kursus).
+- **`Pages/Student/Dashboard.jsx`** — tombol "Lanjut" di section "Lanjutkan Belajar" mengarah ke Course Player.
+- **`04_plans/URUTAN_KERJA_TIM_REACT_INERTIA.md`** — L10 ditandai ✅ SELESAI dengan hasil implementasi.
+
+### ✅ Verified
+
+- `npm run build` PASS ✅ — 2399 modules, 0 error (`Player-3KhjOmi9.js` terbuild).
+
+---
+
 ## [2026-06-04] — L7 Albariqi · Section & Lecture CRUD (Kurikulum Instruktur)
 
 Implementasi pengelolaan kurikulum kursus instruktur: accordion section + lecture CRUD, inline editing, dan alur submit-for-review dari halaman Kurikulum.

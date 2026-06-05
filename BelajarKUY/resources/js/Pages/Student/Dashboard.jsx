@@ -96,7 +96,7 @@ function CourseProgressItem({ item }) {
 
             {/* CTA */}
             <Link
-                href={`/courses/${course.slug}`}
+                href={`/student/learn/${course.slug}`}
                 className="w-full sm:w-auto bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-xs"
             >
                 Lanjut

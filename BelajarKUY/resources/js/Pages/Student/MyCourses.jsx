@@ -73,7 +73,7 @@ function CourseCard({ item }) {
 
                 {/* Action */}
                 <Link
-                    href={`/courses/${course.slug}`}
+                    href={`/student/learn/${course.slug}`}
                     className="mt-auto w-full bg-primary text-on-primary font-label-md text-label-md py-2 rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-xs"
                 >
                     {progress === 100 ? (

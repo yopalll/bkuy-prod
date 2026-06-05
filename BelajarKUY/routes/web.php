@@ -27,6 +27,7 @@ use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CouponController as FrontendCouponController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Backend\Instructor\CouponController as InstructorCouponController;
+use App\Http\Controllers\Frontend\CoursePlayerController;
 use Inertia\Inertia;
 
 // --- Public Routes ---
@@ -127,6 +128,11 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('student')->name('s
     Route::get('/setting', [StudentDashboardController::class, 'setting'])->name('setting');
     Route::post('/setting', [StudentDashboardController::class, 'settingUpdate'])->name('setting.update');
     Route::get('/notifications', [StudentDashboardController::class, 'notifications'])->name('notifications');
+
+    // L10 Albariqi: Course Player (butuh Enrollment dari L9)
+    Route::get('/learn/{slug}', [CoursePlayerController::class, 'index'])->name('learn');
+    Route::get('/learn/{slug}/{lecture}', [CoursePlayerController::class, 'show'])->name('learn.show');
+    Route::post('/lecture/{lecture}/complete', [CoursePlayerController::class, 'markComplete'])->name('lecture.complete');
 });
 
 // --- Google OAuth ---
