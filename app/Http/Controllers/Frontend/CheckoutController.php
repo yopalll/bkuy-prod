@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewSaleMail;
+use App\Mail\PurchaseConfirmationMail;
 use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\Order;
@@ -302,6 +303,13 @@ class CheckoutController extends Controller
 
             // Clear Cart now that orders are finalised
             Cart::where('user_id', $fresh->user_id)->delete();
+
+            // Email konfirmasi pembelian + invoice ke pembeli (satu email per transaksi)
+            $buyer = User::find($fresh->user_id);
+            if ($buyer && $buyer->email) {
+                $fresh->setRelation('user', $buyer);
+                Mail::to($buyer->email)->queue(new PurchaseConfirmationMail($fresh, $orders));
+            }
         });
     }
 
