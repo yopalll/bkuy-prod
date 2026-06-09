@@ -1,151 +1,125 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    ShoppingCart,
-    Trash2,
-    Heart,
-    BookOpen,
-    Star,
-    ArrowRight,
-    Tag,
-    Package,
-    CheckCircle2,
-    X,
-    Loader2,
-} from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
-import EmptyState from '@/Components/EmptyState';
 
 const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
+
+function getCsrf() {
+    return decodeURIComponent(
+        document.cookie.split('; ').find((r) => r.startsWith('XSRF-TOKEN='))?.split('=')[1] ?? '',
+    );
+}
 
 // ========================= CartItemRow =========================
 function CartItemRow({ item, onRemove, onMoveToWishlist, isInWishlist }) {
     const { course } = item;
-    const rating = Number(course.average_rating ?? 0);
+    const rating     = Number(course.average_rating ?? 0);
     const hasDiscount = (course.discount ?? 0) > 0;
     const [removing, setRemoving] = useState(false);
-    const [moving, setMoving] = useState(false);
+    const [moving, setMoving]     = useState(false);
 
     async function handleRemove() {
         if (removing) return;
         setRemoving(true);
-        try {
-            await onRemove(item.id);
-        } finally {
-            setRemoving(false);
-        }
+        try { await onRemove(item.id); } finally { setRemoving(false); }
     }
 
     async function handleMove() {
         if (moving) return;
         setMoving(true);
-        try {
-            await onMoveToWishlist(item.id);
-        } finally {
-            setMoving(false);
-        }
+        try { await onMoveToWishlist(item.id); } finally { setMoving(false); }
     }
 
     return (
-        <div className="flex gap-4 sm:gap-6 p-5 sm:p-6 border-b border-gray-50 last:border-0 group hover:bg-gray-50/60 transition-colors">
+        <div className="bg-surface rounded-2xl p-md flex flex-col sm:flex-row gap-md items-start border border-primary/10 transition-all hover:shadow-md hover:shadow-primary/10"
+             style={{ boxShadow: '0 1px 4px rgba(48,0,51,0.05)' }}>
+
             {/* Thumbnail */}
-            <Link
-                href={`/courses/${course.slug}`}
-                className="shrink-0 w-24 sm:w-32 h-16 sm:h-20 rounded-2xl overflow-hidden bg-gray-100 block"
-            >
+            <Link href={`/courses/${course.slug}`}
+                  className="w-full sm:w-48 h-32 rounded-lg overflow-hidden shrink-0 bg-surface-variant block">
                 <img
-                    src={
-                        course.thumbnail ||
-                        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80'
-                    }
+                    src={course.thumbnail || 'https://placehold.co/600x340/300033/ffffff?text=BelajarKUY'}
                     alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        if (!e.currentTarget.dataset.fallback) {
+                            e.currentTarget.dataset.fallback = '1';
+                            e.currentTarget.src = 'https://placehold.co/600x340/300033/ffffff?text=BelajarKUY';
+                        }
+                    }}
                 />
             </Link>
 
-            {/* Info kursus */}
-            <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
-                    {course.category?.name ?? 'Kategori'}
-                </span>
-                <h3 className="mt-1.5 text-sm sm:text-base font-bold text-gray-900 line-clamp-2 leading-snug">
-                    <Link href={`/courses/${course.slug}`} className="hover:text-indigo-600 transition-colors">
-                        {course.title}
-                    </Link>
-                </h3>
-
-                {/* Instruktur */}
-                <div className="flex items-center gap-1.5 mt-1.5">
-                    <img
-                        src={
-                            course.instructor?.photo ||
-                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                                course.instructor?.name ?? 'BK',
-                            )}&background=4F46E5&color=fff`
-                        }
-                        alt={course.instructor?.name}
-                        className="w-5 h-5 rounded-full object-cover"
-                    />
-                    <span className="text-xs text-gray-500 truncate">{course.instructor?.name}</span>
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center gap-1 mt-1.5">
-                    <div className="flex text-amber-400">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i <= Math.round(rating) ? 'fill-current' : 'text-gray-200'}`} />
-                        ))}
+            {/* Info + Harga */}
+            <div className="flex flex-col flex-grow justify-between h-full w-full">
+                <div className="flex justify-between items-start gap-sm">
+                    <div className="min-w-0">
+                        <span className="inline-block px-2 py-1 bg-primary/10 text-primary font-caption text-caption rounded-full mb-xs">
+                            {course.category?.name ?? 'Kursus'}
+                        </span>
+                        <h3 className="font-headline-md text-[18px] leading-[26px] font-bold text-on-surface line-clamp-2">
+                            <Link href={`/courses/${course.slug}`} className="hover:text-primary transition-colors">
+                                {course.title}
+                            </Link>
+                        </h3>
+                        <p className="font-body-md text-[13px] text-on-surface-variant mt-xs truncate">
+                            Oleh {course.instructor?.name ?? '—'}
+                        </p>
+                        {rating > 0 && (
+                            <div className="flex items-center gap-xs mt-xs">
+                                <span className="font-caption text-caption font-bold text-on-surface">{rating.toFixed(1)}</span>
+                                <span
+                                    className="material-symbols-outlined text-secondary-container text-[14px]"
+                                    style={{ fontVariationSettings: "'FILL' 1" }}
+                                >star</span>
+                                <span className="font-caption text-caption text-on-surface-variant">({course.reviews_count ?? 0})</span>
+                            </div>
+                        )}
                     </div>
-                    <span className="text-xs font-bold text-gray-700">{rating.toFixed(1)}</span>
-                    <span className="text-xs text-gray-400">({course.reviews_count ?? 0})</span>
+
+                    {/* Harga */}
+                    <div className="text-right shrink-0">
+                        {hasDiscount ? (
+                            <>
+                                <span className="font-caption text-caption text-on-surface-variant line-through block">
+                                    {rupiah(course.price)}
+                                </span>
+                                <span className="font-headline-md text-[20px] font-bold text-primary block">
+                                    {rupiah(course.discounted_price)}
+                                </span>
+                            </>
+                        ) : Number(course.price) === 0 ? (
+                            <span className="font-headline-md text-[20px] font-bold text-success block">Gratis</span>
+                        ) : (
+                            <span className="font-headline-md text-[20px] font-bold text-primary block">
+                                {rupiah(course.price)}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
-                {/* Aksi bawah */}
-                <div className="flex items-center gap-3 mt-3">
+                {/* Aksi */}
+                <div className="flex items-center gap-xs mt-md pt-sm border-t border-surface-variant">
                     <button
                         onClick={handleRemove}
                         disabled={removing}
-                        className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium disabled:opacity-50"
-                        title="Hapus dari keranjang"
+                        className="flex items-center gap-xs text-error font-label-md text-label-md px-3 py-2 rounded-lg hover:bg-error/10 transition-colors disabled:opacity-50"
                     >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
                         {removing ? 'Menghapus...' : 'Hapus'}
                     </button>
 
                     {!isInWishlist && (
-                        <>
-                            <span className="text-gray-200">|</span>
-                            <button
-                                onClick={handleMove}
-                                disabled={moving}
-                                className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 font-medium disabled:opacity-50"
-                                title="Pindah ke Wishlist"
-                            >
-                                <Heart className="w-3.5 h-3.5" />
-                                {moving ? 'Memindahkan...' : 'Pindah ke Wishlist'}
-                            </button>
-                        </>
+                        <button
+                            onClick={handleMove}
+                            disabled={moving}
+                            className="flex items-center gap-xs text-on-surface-variant font-label-md text-label-md px-3 py-2 rounded-lg hover:bg-surface-container transition-colors disabled:opacity-50"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">favorite</span>
+                            {moving ? 'Memindahkan...' : 'Pindah ke Wishlist'}
+                        </button>
                     )}
                 </div>
-            </div>
-
-            {/* Harga */}
-            <div className="shrink-0 text-right">
-                {hasDiscount ? (
-                    <>
-                        <span className="block text-xs text-gray-400 line-through">{rupiah(course.price)}</span>
-                        <span className="block text-base sm:text-lg font-extrabold text-indigo-600">
-                            {rupiah(course.discounted_price)}
-                        </span>
-                        <span className="inline-block mt-1 text-xs font-bold text-orange-500 bg-orange-50 rounded-full px-2 py-0.5">
-                            -{course.discount}%
-                        </span>
-                    </>
-                ) : Number(course.price) === 0 ? (
-                    <span className="text-base font-extrabold text-emerald-600">Gratis</span>
-                ) : (
-                    <span className="text-base sm:text-lg font-extrabold text-gray-900">{rupiah(course.price)}</span>
-                )}
             </div>
         </div>
     );
@@ -156,15 +130,6 @@ function CouponPanel({ courseIds, subtotal, onApply, onRemove, applied }) {
     const [code, setCode]       = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError]     = useState('');
-
-    function getCsrfToken() {
-        return decodeURIComponent(
-            document.cookie
-                .split('; ')
-                .find((r) => r.startsWith('XSRF-TOKEN='))
-                ?.split('=')[1] ?? '',
-        );
-    }
 
     async function handleApply(e) {
         e.preventDefault();
@@ -177,21 +142,17 @@ function CouponPanel({ courseIds, subtotal, onApply, onRemove, applied }) {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept:         'application/json',
-                    'X-XSRF-TOKEN': getCsrfToken(),
+                    'X-XSRF-TOKEN': getCsrf(),
                 },
                 body: JSON.stringify({
                     coupon_code: code.trim().toUpperCase(),
                     course_ids:  courseIds,
-                    subtotal:    subtotal,
+                    subtotal,
                 }),
             });
             const json = await res.json();
-            if (res.ok && json.success) {
-                onApply(json);
-                setCode('');
-            } else {
-                setError(json.message ?? 'Kupon tidak valid.');
-            }
+            if (res.ok && json.success) { onApply(json); setCode(''); }
+            else { setError(json.message ?? 'Kupon tidak valid.'); }
         } catch {
             setError('Gagal menghubungi server. Coba lagi.');
         } finally {
@@ -201,20 +162,24 @@ function CouponPanel({ courseIds, subtotal, onApply, onRemove, applied }) {
 
     if (applied) {
         return (
-            <div className="mb-5">
-                <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="mb-md">
+                <div className="flex items-center gap-sm rounded-lg bg-success/10 border border-success/30 px-md py-sm">
+                    <span className="material-symbols-outlined text-success text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                        check_circle
+                    </span>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-emerald-700">Kupon diterapkan!</p>
-                        <p className="text-sm font-black text-emerald-800 font-mono tracking-wider">{applied.coupon_code}</p>
-                        <p className="text-xs text-emerald-600">Hemat {applied.discount_percent}% — {rupiah(applied.discount_amount)}</p>
+                        <p className="font-caption text-caption text-success font-bold">Kupon diterapkan!</p>
+                        <p className="font-label-md text-label-md text-success font-mono">{applied.coupon_code}</p>
+                        <p className="font-caption text-caption text-success">
+                            Hemat {applied.discount_percent}% — {rupiah(applied.discount_amount)}
+                        </p>
                     </div>
                     <button
                         onClick={onRemove}
-                        className="p-1.5 rounded-xl text-emerald-600 hover:bg-emerald-100 transition-colors"
+                        className="p-1 rounded text-success hover:bg-success/20 transition-colors"
                         title="Batalkan kupon"
                     >
-                        <X className="w-3.5 h-3.5" />
+                        <span className="material-symbols-outlined text-[18px]">close</span>
                     </button>
                 </div>
             </div>
@@ -222,31 +187,34 @@ function CouponPanel({ courseIds, subtotal, onApply, onRemove, applied }) {
     }
 
     return (
-        <div className="mb-5">
-            <form onSubmit={handleApply} className="flex gap-2">
-                <div className="relative flex-1">
-                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="mb-md">
+            <label className="font-label-md text-label-md text-on-surface-variant block mb-xs">
+                Kode Kupon / Promo
+            </label>
+            <form onSubmit={handleApply} className="flex gap-xs">
+                <div className="relative flex-grow">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+                        local_offer
+                    </span>
                     <input
-                        id="coupon-code-input"
                         type="text"
                         value={code}
                         onChange={(e) => { setCode(e.target.value.toUpperCase()); setError(''); }}
-                        placeholder="Kode kupon"
-                        className="w-full pl-9 pr-4 py-2.5 rounded-2xl border border-gray-200 bg-gray-50 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                        placeholder="Masukkan kode"
+                        className="w-full bg-surface-container-low border-2 border-surface-variant focus:border-primary rounded-lg pl-10 pr-3 py-2 font-body-md text-body-md text-on-surface outline-none transition-colors"
                     />
                 </div>
                 <button
                     type="submit"
                     disabled={loading || !code.trim()}
-                    id="btn-apply-coupon"
-                    className="px-4 py-2.5 rounded-2xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-500 disabled:opacity-50 transition-colors shrink-0"
+                    className="bg-surface-variant text-on-surface font-label-md text-label-md px-md py-2 rounded-lg hover:bg-surface-dim transition-colors whitespace-nowrap disabled:opacity-50"
                 >
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Terapkan'}
+                    {loading ? '...' : 'Terapkan'}
                 </button>
             </form>
             {error && (
-                <p className="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                    <X className="w-3.5 h-3.5" /> {error}
+                <p className="mt-xs font-caption text-caption text-error flex items-center gap-xs">
+                    <span className="material-symbols-outlined text-[14px]">error</span> {error}
                 </p>
             )}
         </div>
@@ -258,29 +226,10 @@ function OrderSummary({ subtotal, itemCount, coupon, courseIds, onCouponApply, o
     const finalTotal = coupon ? coupon.final_price : subtotal;
 
     return (
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sticky top-24">
-            <h2 className="text-lg font-extrabold text-gray-900 mb-5">Ringkasan Pesanan</h2>
+        <div className="bg-surface rounded-2xl p-lg border border-primary/10 sticky top-[100px]"
+             style={{ boxShadow: '0 4px 16px rgba(48,0,51,0.10)' }}>
+            <h2 className="font-headline-md text-[20px] font-bold text-on-surface mb-md">Ringkasan Pesanan</h2>
 
-            <div className="space-y-3 mb-5">
-                <div className="flex justify-between text-sm text-gray-600">
-                    <span>{itemCount} kursus</span>
-                    <span className="font-medium">{rupiah(subtotal)}</span>
-                </div>
-
-                {coupon && (
-                    <div className="flex justify-between text-sm text-emerald-600">
-                        <span className="font-semibold">Diskon kupon ({coupon.discount_percent}%)</span>
-                        <span className="font-bold">-{rupiah(coupon.discount_amount)}</span>
-                    </div>
-                )}
-
-                <div className="border-t border-dashed border-gray-100 pt-3 flex justify-between">
-                    <span className="font-bold text-gray-900">Total</span>
-                    <span className="font-extrabold text-xl text-indigo-600">{rupiah(finalTotal)}</span>
-                </div>
-            </div>
-
-            {/* Panel kupon (aktif di L8) */}
             <CouponPanel
                 courseIds={courseIds}
                 subtotal={subtotal}
@@ -289,19 +238,43 @@ function OrderSummary({ subtotal, itemCount, coupon, courseIds, onCouponApply, o
                 onRemove={onCouponRemove}
             />
 
+            <div className="space-y-sm py-md border-t border-b border-surface-variant mb-md">
+                <div className="flex justify-between items-center font-body-md text-body-md text-on-surface-variant">
+                    <span>Subtotal ({itemCount} kursus)</span>
+                    <span>{rupiah(subtotal)}</span>
+                </div>
+                {coupon && (
+                    <div className="flex justify-between items-center font-body-md text-body-md text-success">
+                        <span>Diskon kupon ({coupon.discount_percent}%)</span>
+                        <span>-{rupiah(coupon.discount_amount)}</span>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex justify-between items-end mb-lg">
+                <span className="font-headline-md text-[18px] font-bold text-on-surface">Total Akhir</span>
+                <span className="font-headline-md text-[28px] font-extrabold text-primary leading-none">
+                    {rupiah(finalTotal)}
+                </span>
+            </div>
+
             <Link
                 href="/checkout"
-                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white hover:bg-indigo-700 transition-colors"
+                className="w-full bg-warning text-on-secondary font-label-md text-[16px] leading-[24px] py-3 rounded-lg flex items-center justify-center gap-sm hover:opacity-90 transition-opacity shadow-sm"
             >
                 Lanjut ke Checkout
-                <ArrowRight className="w-4 h-4" />
+                <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
             </Link>
+
+            <p className="font-caption text-caption text-center text-on-surface-variant mt-sm">
+                Garansi 30 hari uang kembali jika tidak puas.
+            </p>
 
             <Link
                 href="/home"
-                className="mt-3 w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-6 py-3 text-sm font-semibold text-gray-700 hover:border-indigo-300 hover:text-indigo-600 transition-colors"
+                className="mt-md w-full flex items-center justify-center gap-xs font-label-md text-label-md text-on-surface-variant border border-outline-variant rounded-lg py-2 hover:border-primary hover:text-primary transition-colors"
             >
-                <BookOpen className="w-4 h-4" />
+                <span className="material-symbols-outlined text-[18px]">menu_book</span>
                 Cari kursus lain
             </Link>
         </div>
@@ -310,37 +283,20 @@ function OrderSummary({ subtotal, itemCount, coupon, courseIds, onCouponApply, o
 
 // ========================= Page =========================
 export default function CartIndex({ cartItems, subtotal, wishlistIds }) {
-    const { auth } = usePage().props;
-
-    // State lokal cart (untuk update UI tanpa full-page reload)
-    const [items, setItems] = useState(cartItems ?? []);
-    const [total, setTotal]   = useState(subtotal ?? 0);
-    const [wIds, setWIds]     = useState(wishlistIds ?? []);
-    // State kupon
-    const [coupon, setCoupon] = useState(null);
-
-    // Helper ambil CSRF token
-    function getCsrf() {
-        return decodeURIComponent(
-            document.cookie
-                .split('; ')
-                .find((r) => r.startsWith('XSRF-TOKEN='))
-                ?.split('=')[1] ?? '',
-        );
-    }
+    const [items, setItems]                 = useState(cartItems ?? []);
+    const [total, setTotal]                 = useState(subtotal ?? 0);
+    const [wIds, setWIds]                   = useState(wishlistIds ?? []);
+    const [coupon, setCoupon]               = useState(null);
+    const [movedToWishlist, setMoved]       = useState(false);
 
     async function handleRemove(cartItemId) {
         const res = await fetch(`/cart/${cartItemId}`, {
             method: 'DELETE',
-            headers: {
-                'X-XSRF-TOKEN': getCsrf(),
-                Accept: 'application/json',
-            },
+            headers: { 'X-XSRF-TOKEN': getCsrf(), Accept: 'application/json' },
         });
         if (res.ok) {
             const removed = items.find((i) => i.id === cartItemId);
-            const newItems = items.filter((i) => i.id !== cartItemId);
-            setItems(newItems);
+            setItems(items.filter((i) => i.id !== cartItemId));
             if (removed) {
                 const price = Number(removed.course.discounted_price ?? removed.course.price ?? 0);
                 setTotal((prev) => Math.max(0, prev - price));
@@ -351,109 +307,110 @@ export default function CartIndex({ cartItems, subtotal, wishlistIds }) {
     async function handleMoveToWishlist(cartItemId) {
         const res = await fetch(`/cart/${cartItemId}/move-to-wishlist`, {
             method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': getCsrf(),
-                Accept: 'application/json',
-            },
+            headers: { 'X-XSRF-TOKEN': getCsrf(), Accept: 'application/json' },
         });
         if (res.ok) {
             const moved = items.find((i) => i.id === cartItemId);
-            const newItems = items.filter((i) => i.id !== cartItemId);
-            setItems(newItems);
+            setItems(items.filter((i) => i.id !== cartItemId));
             if (moved) {
                 const price = Number(moved.course.discounted_price ?? moved.course.price ?? 0);
                 setTotal((prev) => Math.max(0, prev - price));
                 setWIds((prev) => [...prev, moved.course.id]);
             }
+            setMoved(true);
         }
     }
 
     const courseIds = items.map((i) => i.course.id);
-
-    function handleCouponApply(data) {
-        setCoupon(data);
-    }
-
-    function handleCouponRemove() {
-        setCoupon(null);
-    }
-
     const itemCount = items.length;
 
     return (
         <AppLayout>
             <Head title="Keranjang Belanja" />
 
-            {/* Hero breadcrumb */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center gap-3 mb-3">
-                        <ShoppingCart className="w-7 h-7 text-white/80" />
-                        <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Keranjang Belanja</h1>
-                    </div>
-                    <p className="text-indigo-100 text-sm">
+            <div className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl">
+
+                {/* Heading */}
+                <div className="mb-lg">
+                    <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
+                        Keranjang Belanja
+                    </h1>
+                    <p className="font-body-md text-body-md text-on-surface-variant mt-xs">
                         {itemCount > 0
-                            ? `${itemCount} kursus siap untuk dibeli`
-                            : 'Belum ada kursus yang ditambahkan ke keranjang'}
+                            ? `${itemCount} kursus di keranjang Anda`
+                            : 'Belum ada kursus di keranjang'}
                     </p>
                 </div>
-            </div>
 
-            {/* Konten */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Banner setelah pindah ke wishlist */}
+                {movedToWishlist && (
+                    <div className="mb-md flex items-center gap-sm bg-primary-fixed/20 border border-primary/20 rounded-lg px-md py-sm">
+                        <span
+                            className="material-symbols-outlined text-primary text-[18px]"
+                            style={{ fontVariationSettings: "'FILL' 1" }}
+                        >favorite</span>
+                        <p className="font-label-md text-label-md text-on-surface flex-1">
+                            Kursus dipindahkan ke Wishlist.
+                        </p>
+                        <Link
+                            href="/wishlist"
+                            className="font-label-md text-label-md text-primary hover:underline flex items-center gap-xs whitespace-nowrap"
+                        >
+                            Lihat Wishlist
+                            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </Link>
+                        <button
+                            onClick={() => setMoved(false)}
+                            className="text-on-surface-variant hover:text-on-surface ml-xs"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                    </div>
+                )}
+
+                {/* Empty state */}
                 {itemCount === 0 ? (
-                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm">
-                        <EmptyState
-                            icon={<Package className="w-10 h-10" />}
-                            title="Keranjang masih kosong"
-                            description="Tambahkan kursus yang ingin kamu beli ke keranjang, lalu lanjutkan ke checkout."
-                            size="lg"
-                            action={
-                                <Link
-                                    href="/home"
-                                    className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
-                                >
-                                    <BookOpen className="w-4 h-4" />
-                                    Jelajahi Kursus
-                                </Link>
-                            }
-                        />
+                    <div className="bg-surface rounded-2xl border border-primary/10 p-xl flex flex-col items-center text-center"
+                         style={{ boxShadow: '0 4px 24px rgba(48,0,51,0.08)' }}>
+                        <span className="material-symbols-outlined text-[64px] text-outline mb-md">shopping_cart</span>
+                        <h2 className="font-headline-md text-headline-md text-on-surface mb-sm">
+                            Keranjang masih kosong
+                        </h2>
+                        <p className="font-body-md text-body-md text-on-surface-variant max-w-sm mb-lg">
+                            Tambahkan kursus yang ingin kamu beli ke keranjang, lalu lanjutkan ke checkout.
+                        </p>
+                        <Link
+                            href="/home"
+                            className="bg-primary text-on-primary font-label-md text-label-md py-3 px-xl rounded-lg hover:opacity-90 transition-opacity flex items-center gap-xs"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">search</span>
+                            Jelajahi Kursus
+                        </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Daftar item cart */}
-                        <div className="lg:col-span-2">
-                            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                                {/* Header list */}
-                                <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
-                                    <h2 className="font-extrabold text-gray-900">
-                                        {itemCount} Kursus
-                                    </h2>
-                                    <span className="text-sm text-gray-400">Total: {rupiah(total)}</span>
-                                </div>
-
-                                {/* Item rows */}
-                                {items.map((item) => (
-                                    <CartItemRow
-                                        key={item.id}
-                                        item={item}
-                                        onRemove={handleRemove}
-                                        onMoveToWishlist={handleMoveToWishlist}
-                                        isInWishlist={wIds.includes(item.course.id)}
-                                    />
-                                ))}
-                            </div>
+                    <div className="flex flex-col lg:flex-row gap-gutter">
+                        {/* Daftar item */}
+                        <div className="w-full lg:w-2/3 flex flex-col gap-md">
+                            {items.map((item) => (
+                                <CartItemRow
+                                    key={item.id}
+                                    item={item}
+                                    onRemove={handleRemove}
+                                    onMoveToWishlist={handleMoveToWishlist}
+                                    isInWishlist={wIds.includes(item.course.id)}
+                                />
+                            ))}
                         </div>
 
                         {/* Ringkasan pesanan */}
-                        <div>
+                        <div className="w-full lg:w-1/3">
                             <OrderSummary
                                 subtotal={total}
                                 itemCount={itemCount}
                                 coupon={coupon}
                                 courseIds={courseIds}
-                                onCouponApply={handleCouponApply}
-                                onCouponRemove={handleCouponRemove}
+                                onCouponApply={setCoupon}
+                                onCouponRemove={() => setCoupon(null)}
                             />
                         </div>
                     </div>

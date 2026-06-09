@@ -215,6 +215,8 @@ Route::post('/courses/{course}/reviews', [CourseDetailController::class, 'storeR
 
 // L3 Ray: Wishlist toggle (add/remove) — JSON response untuk CourseCard
 Route::post('/wishlist/{course}', [WishlistController::class, 'toggle'])->middleware(['auth', 'verified'])->name('wishlist.add');
+// Halaman wishlist frontend (AppLayout) — diakses dari konteks katalog/cart
+Route::get('/wishlist', [WishlistController::class, 'frontendIndex'])->middleware(['auth', 'verified'])->name('wishlist.index');
 // Badge count untuk navbar
 Route::get('/wishlist/count', [WishlistController::class, 'count'])->middleware(['auth', 'verified'])->name('wishlist.count');
 
