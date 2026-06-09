@@ -29,6 +29,8 @@ class Course extends Model
         'status',
     ];
 
+    protected $appends = ['discounted_price'];
+
     protected function casts(): array
     {
         return [
