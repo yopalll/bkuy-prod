@@ -60,7 +60,7 @@ export default function AppHeader() {
                         {user ? (
                             <>
                                 <Link
-                                    href="/student/wishlist"
+                                    href="/wishlist"
                                     className="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-primary-fixed/20"
                                     aria-label={t('nav.wishlist')}
                                 >
@@ -134,7 +134,7 @@ export default function AppHeader() {
                             <Link href="/student/my-courses" className="font-label-md text-label-md text-on-surface-variant py-sm border-b border-surface-variant" onClick={() => setOpen(false)}>
                                 Pembelajaran Saya
                             </Link>
-                            <Link href="/student/wishlist" className="font-label-md text-label-md text-on-surface-variant py-sm border-b border-surface-variant" onClick={() => setOpen(false)}>
+                            <Link href="/wishlist" className="font-label-md text-label-md text-on-surface-variant py-sm border-b border-surface-variant" onClick={() => setOpen(false)}>
                                 {t('nav.wishlist')}
                             </Link>
                         </>
