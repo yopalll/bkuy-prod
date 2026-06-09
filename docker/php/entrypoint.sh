@@ -39,4 +39,9 @@ gosu www-data php artisan view:cache
 gosu www-data php artisan route:cache || gosu www-data php artisan route:clear
 
 echo "[entrypoint] Starting: $*"
-exec gosu www-data "$@"
+# php-fpm must start as root to open log fds, then drops to www-data via pool config.
+if [ "$(basename "$1")" = "php-fpm" ]; then
+    exec "$@"
+else
+    exec gosu www-data "$@"
+fi
