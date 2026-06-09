@@ -173,7 +173,10 @@ class CourseController extends Controller
                     'id'          => $l->id,
                     'title'       => $l->title,
                     'source_type' => $l->source_type ?? ($l->video_type === 'youtube' ? 'youtube' : 'gcs'),
+                    // Untuk GCS, jangan bocorkan nama objek privat ke browser —
+                    // cukup flag has_video agar UI tahu video sudah ada.
                     'video_path'  => $l->source_type === 'gcs' ? null : $l->video_path,
+                    'has_video'   => ! empty($l->video_path),
                     'content'     => $l->content,
                     'duration'    => $l->duration,
                     'sort_order'  => $l->sort_order,

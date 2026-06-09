@@ -456,7 +456,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
                             <span className="material-symbols-outlined text-[12px]">cloud_upload</span> Upload Video
                             <span className="font-normal text-on-surface-variant normal-case tracking-normal ml-1">(mp4, webm, mov — maks 500MB)</span>
                         </label>
-                        {currentSourceType === 'gcs' && lecture.video_path && (
+                        {currentSourceType === 'gcs' && lecture.has_video && (
                             <p className="text-xs text-success flex items-center gap-1 mb-1">
                                 <span className="material-symbols-outlined text-[12px]">check_circle</span>
                                 Video tersimpan — upload baru untuk mengganti
@@ -545,17 +545,17 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-on-surface truncate">{lecture.title}</p>
                 <p className="text-xs text-on-surface-variant font-medium flex items-center gap-2 mt-0.5">
-                    {currentSourceType === 'youtube' && lecture.video_path && (
+                    {currentSourceType === 'youtube' && lecture.has_video && (
                         <span className="flex items-center gap-1 text-red-500/70">
                             <span className="material-symbols-outlined text-[12px]">smart_display</span> YouTube
                         </span>
                     )}
-                    {currentSourceType === 'gcs' && lecture.video_path && (
+                    {currentSourceType === 'gcs' && lecture.has_video && (
                         <span className="flex items-center gap-1 text-primary/70">
                             <span className="material-symbols-outlined text-[12px]">cloud_upload</span> GCS
                         </span>
                     )}
-                    {!lecture.video_path && (
+                    {!lecture.has_video && (
                         <span className="text-on-surface-variant/50 italic">Belum ada video</span>
                     )}
                     {lecture.duration > 0 && (
