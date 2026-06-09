@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Mail\WelcomeMail;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
+use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+
+class RegisteredUserController extends Controller
+{
+    /**
+     * Display the registration view (React+Inertia — L2 Albariqi).
+     */
+    public function create(): Response
+    {
+        return Inertia::render('Auth/Register');
+    }
+
+    /**
+     * Handle an incoming registration request.
+     * Supports role selection: 'user' (Student, default) or 'instructor' (F01 + ADR-006).
+     *
+     * @throws ValidationException
+     */
+    public function store(Request $request): SymfonyResponse
+    {
+        $request->validate([
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            // Role: hanya 'user' (Student) atau 'instructor' — admin tidak bisa self-register
+            'role'     => ['nullable', 'string', 'in:user,instructor'],
+        ]);
+
+        $role = $request->input('role', 'user'); // Default: Student
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => $role,
+        ]);
+
+        event(new Registered($user));
+
+        Mail::to($user->email)->queue(new WelcomeMail($user));
+
+        Auth::login($user);
+
+        // Inertia::location() → 409 + X-Inertia-Location → client paksa full reload ke /dashboard
+        // (dashboard di-dispatch per-role). Mengembalikan SymfonyResponse (bukan RedirectResponse)
+        // saat request berupa XHR Inertia — return type WAJIB SymfonyResponse agar tidak TypeError.
+        return Inertia::location(route('dashboard'));
+    }
+}
