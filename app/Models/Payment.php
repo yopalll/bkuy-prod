@@ -43,6 +43,11 @@ class Payment extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
     // ============================ SCOPES =============================
 
     /**

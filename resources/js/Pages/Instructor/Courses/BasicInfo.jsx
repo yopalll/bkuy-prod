@@ -468,23 +468,25 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                                 ))}
                                             </ul>
                                         )}
-                                        <form onSubmit={handleAddGoal} className="flex gap-sm">
+                                        <div className="flex gap-sm">
                                             <input
                                                 type="text"
                                                 value={goalInput}
                                                 onChange={(e) => { setGoalInput(e.target.value); setGoalError(''); }}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddGoal(e); } }}
                                                 placeholder="Contoh: Memahami konsep MVC Laravel"
                                                 maxLength={200}
                                                 className="flex-1 rounded-lg px-md py-sm font-body-md text-body-md text-on-surface bg-surface-container-low border-2 border-transparent focus:border-primary focus:outline-none transition-colors"
                                             />
                                             <button
-                                                type="submit"
+                                                type="button"
+                                                onClick={handleAddGoal}
                                                 disabled={goalLoading || !goalInput.trim()}
                                                 className="bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md disabled:opacity-50 transition-colors hover:opacity-90 shrink-0"
                                             >
                                                 {goalLoading ? '...' : '+ Tambah'}
                                             </button>
-                                        </form>
+                                        </div>
                                         {goalError && (
                                             <p className="font-caption text-caption text-error">{goalError}</p>
                                         )}
