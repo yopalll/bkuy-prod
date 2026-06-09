@@ -66,6 +66,8 @@
     "enroll_now": "Daftar Sekarang / Beli",
     "add_to_cart": "Tambah ke Keranjang",
     "save_wishlist": "Simpan ke Wishlist",
+    "lectures_label": "materi",
+    "money_back": "Garansi 30 hari uang kembali",
     "enrolled_count": "{{count}} siswa sudah terdaftar",
     "total_video": "Total video materi: {{duration}}",
     "full_access": "Akses penuh selamanya",

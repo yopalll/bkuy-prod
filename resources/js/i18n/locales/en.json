@@ -66,6 +66,8 @@
     "enroll_now": "Enroll Now / Buy",
     "add_to_cart": "Add to Cart",
     "save_wishlist": "Save to Wishlist",
+    "lectures_label": "lectures",
+    "money_back": "30-day money-back guarantee",
     "enrolled_count": "{{count}} students already enrolled",
     "total_video": "Total video content: {{duration}}",
     "full_access": "Full lifetime access",

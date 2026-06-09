@@ -18,6 +18,7 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
     const [wishlistState, setWishlistState] = useState(isWishlisted);
     const [cartLoading, setCartLoading]     = useState(false);
     const [wishLoading, setWishLoading]     = useState(false);
+    const [shareCopied, setShareCopied]     = useState(false);
 
     function getCsrf() {
         return decodeURIComponent(
@@ -58,6 +59,39 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                 setWishlistState(data.action === 'added');
             }
         } finally { setWishLoading(false); }
+    }
+
+    async function handleShare(e) {
+        e.preventDefault();
+        const shareUrl = window.location.href;
+        const shareData = {
+            title: course.title,
+            text: `Lihat kursus "${course.title}" di BelajarKUY!`,
+            url: shareUrl,
+        };
+        // Web Share API (umumnya tersedia di perangkat mobile)
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+                return;
+            } catch {
+                // user membatalkan / tidak didukung → fallback ke salin link
+            }
+        }
+        // Fallback: salin link ke clipboard
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+        } catch {
+            // fallback lawas untuk browser tanpa Clipboard API
+            const tmp = document.createElement('textarea');
+            tmp.value = shareUrl;
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+        }
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
     }
 
     const { data, setData, post, processing, errors, reset } = useForm({ rating: 5, comment: '' });
@@ -531,6 +565,15 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                                             favorite
                                         </span>
                                         {wishlistState ? 'Tersimpan di Wishlist' : t('course.save_wishlist')}
+                                    </button>
+                                    <button
+                                        onClick={handleShare}
+                                        className="w-full flex items-center justify-center gap-2 font-label-md text-label-md py-3 px-lg rounded-lg bg-surface border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">
+                                            {shareCopied ? 'check' : 'share'}
+                                        </span>
+                                        {shareCopied ? 'Link tersalin!' : 'Bagikan Kursus'}
                                     </button>
                                 </div>
 
