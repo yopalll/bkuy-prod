@@ -63,6 +63,14 @@ class CouponController extends Controller
     public function store(StoreCouponRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        // Defense-in-depth: pastikan course_id milik instructor ini (sudah dicek di FormRequest)
+        abort_unless(
+            Course::where('id', $data['course_id'])->where('instructor_id', Auth::id())->exists(),
+            403,
+            'Kursus bukan milikmu.'
+        );
+
         $data['instructor_id'] = Auth::id();
         $data['code']          = strtoupper($data['code']);
         $data['status']        = $data['status'] ?? true;
@@ -81,10 +89,17 @@ class CouponController extends Controller
      */
     public function update(StoreCouponRequest $request, Coupon $coupon): RedirectResponse
     {
-        // Pastikan hanya milik instructor sendiri
         abort_unless($coupon->instructor_id === Auth::id(), 403);
 
         $data = $request->validated();
+
+        // Defense-in-depth: course_id baru (jika diubah) harus tetap milik instructor ini
+        abort_unless(
+            Course::where('id', $data['course_id'])->where('instructor_id', Auth::id())->exists(),
+            403,
+            'Kursus bukan milikmu.'
+        );
+
         $data['code'] = strtoupper($data['code']);
 
         $coupon->update($data);

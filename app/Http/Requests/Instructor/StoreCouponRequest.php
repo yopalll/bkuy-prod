@@ -14,11 +14,23 @@ class StoreCouponRequest extends FormRequest
 
     public function rules(): array
     {
-        // Saat update, abaikan unique check untuk coupon yang sedang diedit
-        $couponId = $this->route('coupon')?->id;
+        $couponId   = $this->route('coupon')?->id;
+        $instructorId = Auth::id();
 
         return [
-            'course_id'        => 'nullable|exists:courses,id',
+            'course_id' => [
+                'required',
+                'exists:courses,id',
+                // Pastikan kursus benar-benar milik instruktur yang login
+                function ($attribute, $value, $fail) use ($instructorId) {
+                    $owned = \App\Models\Course::where('id', $value)
+                        ->where('instructor_id', $instructorId)
+                        ->exists();
+                    if (! $owned) {
+                        $fail('Kursus tidak ditemukan atau bukan milikmu.');
+                    }
+                },
+            ],
             'code'             => 'required|string|max:50|unique:coupons,code,' . $couponId,
             'discount_percent' => 'required|integer|between:1,100',
             'valid_until'      => 'required|date|after_or_equal:today',
@@ -30,6 +42,8 @@ class StoreCouponRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'course_id.required'        => 'Pilih kursus yang akan diberi kupon.',
+            'course_id.exists'          => 'Kursus tidak ditemukan.',
             'code.required'             => 'Kode kupon wajib diisi.',
             'code.unique'               => 'Kode kupon sudah dipakai, gunakan kode lain.',
             'code.max'                  => 'Kode kupon maksimal 50 karakter.',
@@ -39,7 +53,6 @@ class StoreCouponRequest extends FormRequest
             'valid_until.after_or_equal'=> 'Tanggal kedaluwarsa tidak boleh di masa lalu.',
             'max_usage.integer'         => 'Batas pemakaian harus berupa angka.',
             'max_usage.min'             => 'Batas pemakaian minimal 1.',
-            'course_id.exists'          => 'Kursus tidak ditemukan.',
         ];
     }
 }
