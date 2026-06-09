@@ -512,7 +512,7 @@ export default function CouponsIndex({ coupons: initialCoupons, courses }) {
                 <div className="bg-primary-fixed/10 border border-primary/10 rounded-2xl px-5 py-4 flex items-start gap-3 text-sm text-primary">
                     <span className="material-symbols-outlined text-[18px] mt-0.5 shrink-0">info</span>
                     <div>
-                        <strong>Cara kerja kupon:</strong> Student menginput kode di halaman checkout. Kupon global berlaku untuk semua kursusmu; kupon spesifik hanya untuk satu kursus. Batas pemakaian diincrement otomatis setelah pembayaran berhasil.
+                        <strong>Cara kerja kupon:</strong> Student menginput kode di halaman checkout. Setiap kupon wajib terikat ke satu kursus milikmu. Batas pemakaian diincrement otomatis setelah pembayaran berhasil.
                     </div>
                 </div>
             </div>
