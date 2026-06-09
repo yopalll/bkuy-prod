@@ -187,7 +187,7 @@ Route::get('/courses/{slug}', [CourseDetailController::class, 'show'])->name('co
 // L4 Ray: Cart — halaman React + add/remove/move-to-wishlist/count
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/{course}', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/{course}', [CartController::class, 'add'])->middleware('can.purchase')->name('cart.add');
     Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/{id}/move-to-wishlist', [CartController::class, 'moveToWishlist'])->name('cart.move-to-wishlist');
     Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
@@ -198,7 +198,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // L9 Yosua/Ray: Checkout + Midtrans + Enrollment (React + Inertia)
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'can.purchase'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/process', fn() => redirect()->route('checkout'));

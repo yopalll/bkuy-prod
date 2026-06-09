@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'can.purchase' => \App\Http\Middleware\EnsureCanPurchase::class,
         ]);
         // L9: Midtrans callback tidak mengirim CSRF token — WAJIB di-exclude (ADR-004)
         $middleware->validateCsrfTokens(except: [

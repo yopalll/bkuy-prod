@@ -15,6 +15,7 @@ const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
  */
 export default function CourseCard({ course, isWishlisted: initialWishlisted = false, onWishlistChange, isInCart: initialInCart = false }) {
     const { auth } = usePage().props;
+    const isInstructor = auth?.user?.role === 'instructor';
     const rating = Number(course.average_rating ?? 0);
     const reviewCount = course.reviews?.length ?? course.reviews_count ?? 0;
     const hasDiscount = (course.discount ?? 0) > 0;
@@ -47,6 +48,7 @@ export default function CourseCard({ course, isWishlisted: initialWishlisted = f
     async function handleCartAdd(e) {
         e.preventDefault();
         if (!auth?.user) { window.location.href = '/login'; return; }
+        if (isInstructor) return; // instruktur tidak dapat membeli kursus
         if (cartLoading || inCart) return;
         setCartLoading(true);
         try {
@@ -205,23 +207,25 @@ export default function CourseCard({ course, isWishlisted: initialWishlisted = f
                         )}
                         {cartMsg && <span className="font-caption text-caption text-error mt-xs">{cartMsg}</span>}
                     </div>
-                    <button
-                        onClick={handleCartAdd}
-                        disabled={cartLoading || inCart}
-                        className={`p-2 rounded-full transition-all ${
-                            inCart
-                                ? 'bg-success/10 text-success cursor-default'
-                                : 'text-primary hover:bg-primary-fixed/20'
-                        } ${cartLoading ? 'opacity-60 cursor-wait' : ''}`}
-                        aria-label={inCart ? 'Sudah di Keranjang' : 'Tambah ke Keranjang'}
-                    >
-                        <span
-                            className="material-symbols-outlined text-[22px]"
-                            style={{ fontVariationSettings: inCart ? "'FILL' 1" : "'FILL' 0" }}
+                    {!isInstructor && (
+                        <button
+                            onClick={handleCartAdd}
+                            disabled={cartLoading || inCart}
+                            className={`p-2 rounded-full transition-all ${
+                                inCart
+                                    ? 'bg-success/10 text-success cursor-default'
+                                    : 'text-primary hover:bg-primary-fixed/20'
+                            } ${cartLoading ? 'opacity-60 cursor-wait' : ''}`}
+                            aria-label={inCart ? 'Sudah di Keranjang' : 'Tambah ke Keranjang'}
                         >
-                            {inCart ? 'check_circle' : 'shopping_cart'}
-                        </span>
-                    </button>
+                            <span
+                                className="material-symbols-outlined text-[22px]"
+                                style={{ fontVariationSettings: inCart ? "'FILL' 1" : "'FILL' 0" }}
+                            >
+                                {inCart ? 'check_circle' : 'shopping_cart'}
+                            </span>
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

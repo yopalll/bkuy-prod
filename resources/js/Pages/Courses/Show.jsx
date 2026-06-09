@@ -11,6 +11,7 @@ import EmptyState from '@/Components/EmptyState';
 export default function Show({ course, relatedCourses = [], showReviewForm = false, hasPendingReview = false, inCart = false, isWishlisted = false, isEnrolled = false }) {
     const { t } = useTranslation();
     const { auth } = usePage().props;
+    const isInstructor = auth?.user?.role === 'instructor';
     const [openSection, setOpenSection] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [cartState, setCartState]         = useState(inCart);
@@ -27,6 +28,7 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
     async function handleAddCart(e) {
         e.preventDefault();
         if (!auth?.user) { window.location.href = '/login'; return; }
+        if (isInstructor) return; // instruktur tidak dapat membeli kursus
         if (cartLoading || cartState) return;
         setCartLoading(true);
         try {
@@ -487,7 +489,12 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
 
                                 {/* Buttons */}
                                 <div className="flex flex-col gap-sm">
-                                    {isEnrolled ? (
+                                    {isInstructor ? (
+                                        <div className="w-full text-center font-body-md text-body-md py-3 px-lg rounded-lg bg-surface-container border border-outline-variant text-on-surface-variant flex items-center justify-center gap-2">
+                                            <span className="material-symbols-outlined text-[18px]">info</span>
+                                            Akun instruktur tidak dapat membeli kursus
+                                        </div>
+                                    ) : isEnrolled ? (
                                         <Link
                                             href={`/student/learn/${course.slug}`}
                                             className="w-full text-center font-label-md text-label-md py-3 px-lg rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors active:scale-95"
@@ -503,7 +510,7 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                                             {cartLoading ? 'Memproses…' : cartState ? 'Ada di Keranjang' : t('course.enroll_now')}
                                         </button>
                                     )}
-                                    {!isEnrolled && (
+                                    {!isInstructor && !isEnrolled && (
                                         <button
                                             onClick={handleAddCart}
                                             disabled={cartLoading || cartState}
