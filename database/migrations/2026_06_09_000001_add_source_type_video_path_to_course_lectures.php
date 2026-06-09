@@ -26,8 +26,19 @@ return new class extends Migration
             DB::statement("UPDATE course_lectures SET video_path = url WHERE (video_path IS NULL OR video_path = '') AND url IS NOT NULL AND url != ''");
         }
 
+        // Sanitasi duration sebelum ALTER TABLE: MySQL strict mode menolak
+        // konversi string non-integer (misal "06:12") ke int unsigned.
+        // "06:12" → 6 (ambil bagian sebelum ":"), "" atau format lain → NULL.
+        DB::statement("
+            UPDATE course_lectures
+            SET duration = CASE
+                WHEN duration REGEXP '^[0-9]+$'  THEN CAST(duration AS UNSIGNED)
+                WHEN duration REGEXP '^[0-9]+:'  THEN CAST(SUBSTRING_INDEX(duration, ':', 1) AS UNSIGNED)
+                ELSE NULL
+            END
+        ");
+
         Schema::table('course_lectures', function (Blueprint $table) {
-            // Ubah duration dari string ke integer (MySQL cast "06:12" → 6)
             $table->unsignedInteger('duration')->nullable()->change();
         });
     }
