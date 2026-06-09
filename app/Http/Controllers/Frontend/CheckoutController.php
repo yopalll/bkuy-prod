@@ -312,9 +312,18 @@ class CheckoutController extends Controller
      * tiba (mis. local dev / delay), verifikasi transaksi langsung ke Midtrans
      * API dan jalankan handleSuccess() bila sudah settlement/capture.
      */
-    public function success(Request $request): \Inertia\Response
+    public function success(Request $request): \Inertia\Response|\Illuminate\Http\RedirectResponse
     {
-        $orderId = $request->query('order_id');
+        $orderId   = $request->query('order_id');
+        $txStatus  = $request->query('transaction_status', '');
+
+        // Midtrans menyertakan transaction_status di query string redirect URL.
+        // Jika cancel / expire / deny / failure → tampilkan halaman gagal.
+        $failedStatuses = ['cancel', 'expire', 'deny', 'failure'];
+        if ($txStatus && in_array($txStatus, $failedStatuses)) {
+            return redirect()->route('payment.failed', ['order_id' => $orderId]);
+        }
+
         $payment = null;
         $orders  = [];
 
@@ -325,20 +334,28 @@ class CheckoutController extends Controller
 
             if ($payment && $payment->status === 'pending') {
                 try {
-                    $txStatus = $this->midtrans->verifyTransaction($orderId);
-                    $tStatus  = $txStatus->transaction_status ?? '';
-                    $fStatus  = $txStatus->fraud_status ?? 'accept';
+                    $verified = $this->midtrans->verifyTransaction($orderId);
+                    $vStatus  = $verified->transaction_status ?? '';
+                    $fStatus  = $verified->fraud_status ?? 'accept';
 
-                    if ($tStatus === 'settlement' ||
-                        ($tStatus === 'capture' && $fStatus === 'accept')) {
+                    if ($vStatus === 'settlement' ||
+                        ($vStatus === 'capture' && $fStatus === 'accept')) {
                         $this->handleSuccess($payment);
                         $payment->refresh();
+                    } elseif (in_array($vStatus, $failedStatuses)) {
+                        // Webhook belum tiba tapi Midtrans sudah konfirmasi gagal
+                        return redirect()->route('payment.failed', ['order_id' => $orderId]);
                     }
                 } catch (\Exception $e) {
                     Log::warning('Midtrans verify on success page failed: ' . $e->getMessage(), [
                         'order_id' => $orderId,
                     ]);
                 }
+            }
+
+            // Payment sudah diproses webhook sebelumnya dan statusnya gagal
+            if ($payment && in_array($payment->status, $failedStatuses)) {
+                return redirect()->route('payment.failed', ['order_id' => $orderId]);
             }
 
             if ($payment) {
