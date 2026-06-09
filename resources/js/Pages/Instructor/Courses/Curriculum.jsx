@@ -383,7 +383,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
         youtube_url:  currentSourceType === 'youtube' ? (lecture.video_path ?? '') : '',
         video_file:   null,
         content:      lecture.content ?? '',
-        duration:     lecture.duration ?? 0,
+        duration:     parseInt(lecture.duration) || 0,
     });
 
     const handleEditSourceType = (type) => {

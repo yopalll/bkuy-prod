@@ -82,8 +82,12 @@ class LectureController extends Controller
             if (!GcsVideoService::isConfigured()) {
                 return back()->withErrors(['video_file' => 'GCS belum dikonfigurasi. Hubungi administrator.'])->withInput();
             }
-            $gcs       = app(GcsVideoService::class);
-            $videoPath = $gcs->upload($request->file('video_file'), $course->id);
+            $gcs = app(GcsVideoService::class);
+            try {
+                $videoPath = $gcs->upload($request->file('video_file'), $course->id);
+            } catch (\Throwable $e) {
+                return back()->withErrors(['video_file' => 'Gagal mengunggah video: ' . $e->getMessage()])->withInput();
+            }
         }
 
         $section->lectures()->create([
@@ -140,11 +144,15 @@ class LectureController extends Controller
                     return back()->withErrors(['video_file' => 'GCS belum dikonfigurasi. Hubungi administrator.'])->withInput();
                 }
                 $gcs = app(GcsVideoService::class);
-                // Hapus file GCS lama jika ada
+                try {
+                    $videoPath = $gcs->upload($request->file('video_file'), $course->id);
+                } catch (\Throwable $e) {
+                    return back()->withErrors(['video_file' => 'Gagal mengunggah video: ' . $e->getMessage()])->withInput();
+                }
+                // Hapus file GCS lama hanya setelah upload baru sukses
                 if ($lecture->source_type === 'gcs' && $lecture->video_path) {
                     $gcs->delete($lecture->video_path);
                 }
-                $videoPath = $gcs->upload($request->file('video_file'), $course->id);
             }
             // Tidak ada file baru → pertahankan path lama (video_path tetap)
         }

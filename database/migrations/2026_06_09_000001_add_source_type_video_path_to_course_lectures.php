@@ -9,13 +9,22 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Idempotent: migrasi 2026_06_08_100001 mungkin sudah menambah kolom ini.
+        // Tanpa guard, Schema::table di sini melempar "Duplicate column" dan
+        // menggagalkan `migrate --force` saat deploy.
         Schema::table('course_lectures', function (Blueprint $table) {
-            $table->string('source_type', 20)->default('youtube')->after('title');
-            $table->string('video_path', 500)->nullable()->after('source_type');
+            if (! Schema::hasColumn('course_lectures', 'source_type')) {
+                $table->string('source_type', 20)->default('youtube')->after('title');
+            }
+            if (! Schema::hasColumn('course_lectures', 'video_path')) {
+                $table->string('video_path', 500)->nullable()->after('source_type');
+            }
         });
 
-        // Migrate url → video_path untuk data existing
-        DB::statement("UPDATE course_lectures SET video_path = url WHERE url IS NOT NULL AND url != ''");
+        // Backfill video_path dari kolom lama hanya jika masih kosong.
+        if (Schema::hasColumn('course_lectures', 'url')) {
+            DB::statement("UPDATE course_lectures SET video_path = url WHERE (video_path IS NULL OR video_path = '') AND url IS NOT NULL AND url != ''");
+        }
 
         Schema::table('course_lectures', function (Blueprint $table) {
             // Ubah duration dari string ke integer (MySQL cast "06:12" → 6)

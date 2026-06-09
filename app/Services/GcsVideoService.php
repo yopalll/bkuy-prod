@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use Google\Cloud\Storage\StorageClient;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class GcsVideoService
 {
@@ -31,13 +33,27 @@ class GcsVideoService
 
         $stream = fopen($file->getRealPath(), 'r');
 
-        $this->bucket->upload($stream, [
-            'name'          => $objectName,
-            'predefinedAcl' => 'projectPrivate',
-        ]);
+        try {
+            // CATATAN: jangan kirim 'predefinedAcl'. Bucket dengan Uniform
+            // Bucket-Level Access (UBLA — default GCS) MENOLAK ACL objek dengan
+            // error 400 "Cannot insert legacy ACL ... uniform bucket-level access
+            // is enabled", sehingga setiap upload gagal. Privasi dijaga di level
+            // bucket (UBLA + IAM); akses video disajikan lewat signedUrl().
+            $this->bucket->upload($stream, [
+                'name' => $objectName,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('GCS upload gagal', [
+                'object'  => $objectName,
+                'bucket'  => config('gcp.bucket'),
+                'message' => $e->getMessage(),
+            ]);
 
-        if (is_resource($stream)) {
-            fclose($stream);
+            throw new RuntimeException('Upload video ke GCS gagal: ' . $e->getMessage(), 0, $e);
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
         }
 
         return $objectName;
