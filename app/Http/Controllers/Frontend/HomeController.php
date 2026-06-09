@@ -34,6 +34,7 @@ class HomeController extends Controller
         if ($isSearchingOrFiltering) {
             $filteredCourses = Course::where('status', 'active')
                 ->with(['instructor', 'category', 'reviews'])
+                ->withAvg(['reviews as reviews_avg_rating' => fn($q) => $q->where('status', 'approved')], 'rating')
                 ->when($request->search, fn($q) => $q
                     // cocok judul kursus ATAU nama instruktur
                     ->where(fn($sub) => $sub
@@ -42,6 +43,8 @@ class HomeController extends Controller
                     )
                 )
                 ->when($request->category, fn($q) => $q->whereHas('category', fn($c) => $c->where('slug', $request->category)))
+                // rating tertinggi dulu (kursus tanpa review/NULL otomatis di urutan akhir)
+                ->orderByDesc('reviews_avg_rating')
                 ->latest()
                 ->get();
 
@@ -69,6 +72,9 @@ class HomeController extends Controller
             $featuredCourses   = Course::where('status', 'active')
                 ->where('featured', true)
                 ->with(['instructor', 'category', 'reviews'])
+                ->withAvg(['reviews as reviews_avg_rating' => fn($q) => $q->where('status', 'approved')], 'rating')
+                // rating tertinggi dulu (kursus tanpa review/NULL otomatis di urutan akhir)
+                ->orderByDesc('reviews_avg_rating')
                 ->latest()
                 ->take(8)
                 ->get();

@@ -184,40 +184,50 @@ function InfoBoxSection({ infoBoxes }) {
 // ─── Partners Strip ────────────────────────────────────────────────────────────
 function PartnersSection({ partners }) {
     if (!partners.length) return null;
+
+    const renderLogo = (partner) => (
+        partner.logo_url
+            ? <img src={partner.logo_url} alt={partner.name} className="h-8 w-auto object-contain max-w-[120px]" />
+            : <span className="font-label-md text-label-md text-on-surface-variant whitespace-nowrap">{partner.name}</span>
+    );
+
+    // Digandakan agar perulangan marquee terlihat mulus (seamless loop).
+    const loopPartners = [...partners, ...partners];
+
     return (
         <section className="py-xl">
             <p className="text-center font-label-md text-label-md text-on-surface-variant mb-lg uppercase tracking-widest text-xs">
                 Dipercaya oleh perusahaan terkemuka
             </p>
-            <div className="flex items-center justify-center flex-wrap gap-xl px-md">
-                {partners.map(partner => (
-                    partner.link ? (
-                        <a
-                            key={partner.id}
-                            href={partner.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title={partner.name}
-                            className="opacity-50 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-300"
-                        >
-                            {partner.logo_url
-                                ? <img src={partner.logo_url} alt={partner.name} className="h-8 w-auto object-contain max-w-[120px]" />
-                                : <span className="font-label-md text-label-md text-on-surface-variant">{partner.name}</span>
-                            }
-                        </a>
-                    ) : (
-                        <div
-                            key={partner.id}
-                            title={partner.name}
-                            className="opacity-50 grayscale"
-                        >
-                            {partner.logo_url
-                                ? <img src={partner.logo_url} alt={partner.name} className="h-8 w-auto object-contain max-w-[120px]" />
-                                : <span className="font-label-md text-label-md text-on-surface-variant">{partner.name}</span>
-                            }
-                        </div>
-                    )
-                ))}
+            <div className="marquee-pause group relative overflow-hidden">
+                {/* Gradien tepi agar logo memudar di kiri/kanan */}
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-16 z-10 bg-gradient-to-r from-background to-transparent" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-16 z-10 bg-gradient-to-l from-background to-transparent" />
+
+                <div className="animate-marquee flex items-center gap-xl w-max">
+                    {loopPartners.map((partner, idx) => (
+                        partner.link ? (
+                            <a
+                                key={`${partner.id}-${idx}`}
+                                href={partner.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={partner.name}
+                                className="shrink-0 opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300"
+                            >
+                                {renderLogo(partner)}
+                            </a>
+                        ) : (
+                            <div
+                                key={`${partner.id}-${idx}`}
+                                title={partner.name}
+                                className="shrink-0 opacity-80"
+                            >
+                                {renderLogo(partner)}
+                            </div>
+                        )
+                    ))}
+                </div>
             </div>
         </section>
     );
