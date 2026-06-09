@@ -129,12 +129,12 @@ function CouponForm({ courses, editing, onClose }) {
                             onChange={(e) => setData('course_id', e.target.value)}
                             className={inputCls('course_id') + ' appearance-none'}
                         >
-                            <option value="">— Semua kursus saya (global) —</option>
+                            <option value="">— Pilih kursus —</option>
                             {courses.map((c) => (
                                 <option key={c.id} value={c.id}>{c.title}</option>
                             ))}
                         </select>
-                        <p className="text-xs text-on-surface-variant">Kosongkan agar kupon berlaku untuk semua kursusmu.</p>
+                        {errors.course_id && <p className="text-xs text-error">{errors.course_id}</p>}
                     </div>
 
                     {/* Diskon % */}

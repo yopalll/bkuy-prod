@@ -22,7 +22,13 @@ use App\Http\Controllers\Admin\AdminPartnerController;
 use App\Http\Controllers\Admin\AdminSiteSettingController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AdminCouponController;
+use App\Http\Controllers\Admin\AdminCourseReportController;
+use App\Http\Controllers\Admin\AdminSupportTicketController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\CourseReportController;
+use App\Http\Controllers\Frontend\SupportTicketController;
+use App\Http\Controllers\Frontend\ContactController;
+use App\Http\Controllers\Frontend\StaticPageController;
 use App\Http\Controllers\Frontend\InstructorController as PublicInstructorController;
 use App\Http\Controllers\Frontend\WishlistController;
 use App\Http\Controllers\Frontend\CartController;
@@ -93,6 +99,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::get('reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::patch('reviews/{review}/status', [AdminReviewController::class, 'updateStatus'])->name('reviews.update-status');
+    Route::patch('reviews/{review}/clear-report', [AdminReviewController::class, 'clearReport'])->name('reviews.clear-report');
+
+    Route::get('course-reports', [AdminCourseReportController::class, 'index'])->name('course-reports.index');
+    Route::patch('course-reports/{report}', [AdminCourseReportController::class, 'update'])->name('course-reports.update');
+
+    Route::get('support-tickets', [AdminSupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::patch('support-tickets/{ticket}', [AdminSupportTicketController::class, 'update'])->name('support-tickets.update');
 
     Route::get('settings', [AdminSiteSettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [AdminSiteSettingController::class, 'update'])->name('settings.update');
@@ -209,9 +222,29 @@ Route::middleware(['auth', 'verified', 'can.purchase'])->group(function () {
 // Midtrans Webhook (tanpa auth — Midtrans server call langsung; CSRF sudah di-exclude di bootstrap/app.php)
 Route::post('/payment/callback', [CheckoutController::class, 'callback'])->name('payment.callback');
 
-// Reviews — wired ke CourseDetailController@storeReview (sebelumnya placeholder mati)
+// Reviews — wired ke CourseDetailController@storeReview
 Route::post('/courses/{course}/reviews', [CourseDetailController::class, 'storeReview'])
     ->middleware('auth')->name('course.review.store');
+
+// Report ulasan kursus
+Route::post('/reviews/{review}/report', [CourseDetailController::class, 'reportReview'])
+    ->middleware('auth')->name('review.report');
+
+// Report kursus
+Route::post('/courses/{course}/report', [CourseReportController::class, 'store'])
+    ->middleware(['auth', 'verified'])->name('course.report.store');
+
+// Pusat Bantuan (ticket)
+Route::get('/bantuan', [SupportTicketController::class, 'index'])->middleware(['auth', 'verified'])->name('help.index');
+Route::post('/bantuan', [SupportTicketController::class, 'store'])->middleware(['auth', 'verified'])->name('help.store');
+
+// Halaman statis publik
+Route::get('/hubungi-kami', [ContactController::class, 'index'])->name('contact');
+Route::post('/hubungi-kami', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/kebijakan-privasi', [StaticPageController::class, 'privacy'])->name('privacy');
+Route::get('/syarat-ketentuan', [StaticPageController::class, 'terms'])->name('terms');
+Route::get('/tentang-kami', [StaticPageController::class, 'about'])->name('about');
+Route::get('/tentang-belajarkuy', [StaticPageController::class, 'aboutApp'])->name('about-app');
 
 // L3 Ray: Wishlist toggle (add/remove) — JSON response untuk CourseCard
 Route::post('/wishlist/{course}', [WishlistController::class, 'toggle'])->middleware(['auth', 'verified'])->name('wishlist.add');

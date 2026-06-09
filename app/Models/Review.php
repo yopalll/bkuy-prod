@@ -17,12 +17,17 @@ class Review extends Model
         'rating',
         'comment',
         'status',
+        'report_reason',
+        'reported_at',
+        'report_count',
     ];
 
     protected function casts(): array
     {
         return [
-            'rating' => 'integer',
+            'rating'      => 'integer',
+            'report_count' => 'integer',
+            'reported_at' => 'datetime',
         ];
     }
 

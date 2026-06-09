@@ -9,23 +9,16 @@ use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
-    /**
-     * Seed kategori utama + sub-kategori untuk platform BelajarKUY.
-     *
-     * PENTING: nama kategori harus PERSIS sama dengan yang direferensikan
-     * di CourseSeeder (Web Development, Mobile Development, Data Science,
-     * UI/UX Design, DevOps, Bisnis & Marketing).
-     */
     public function run(): void
     {
         foreach ($this->categories() as $data) {
             $category = Category::create([
-                'name'             => $data['name'],
-                'slug'             => Str::slug($data['name']),
-                'description'      => $data['description'],
-                'image_url'        => null,
-                'image_public_id'  => null,
-                'status'           => true,
+                'name'            => $data['name'],
+                'slug'            => Str::slug($data['name']),
+                'description'     => $data['description'],
+                'image_url'       => null,
+                'image_public_id' => null,
+                'status'          => true,
             ]);
 
             foreach ($data['subs'] as $sub) {
@@ -41,184 +34,185 @@ class CategorySeeder extends Seeder
     private function categories(): array
     {
         return [
-            // ── 1. Web Development ──────────────────────────────────────────────
+            // ── 1. Web Development ───────────────────────────────────────
             [
                 'name'        => 'Web Development',
                 'description' => 'Kuasai teknologi membangun website dan aplikasi web, dari frontend hingga backend dan arsitektur full-stack.',
                 'subs'        => [
-                    'Laravel',
-                    'React',
-                    'Vue.js',
-                    'Next.js',
-                    'Node.js',
-                    'Django & Python Web',
-                    'WordPress',
-                    'HTML & CSS Dasar',
-                    'TypeScript',
-                    'REST API & GraphQL',
+                    'Laravel', 'React', 'Vue.js', 'Next.js', 'Node.js',
+                    'Django & Python Web', 'WordPress', 'HTML & CSS Dasar',
+                    'TypeScript', 'REST API & GraphQL',
                 ],
             ],
 
-            // ── 2. Mobile Development ────────────────────────────────────────────
+            // ── 2. Mobile Development ────────────────────────────────────
             [
                 'name'        => 'Mobile Development',
                 'description' => 'Bangun aplikasi mobile untuk Android dan iOS menggunakan berbagai framework modern maupun native.',
                 'subs'        => [
-                    'Flutter',
-                    'React Native',
-                    'Android (Kotlin)',
-                    'iOS (Swift)',
-                    'Jetpack Compose',
-                    'Firebase untuk Mobile',
+                    'Flutter', 'React Native', 'Android (Kotlin)',
+                    'iOS (Swift)', 'Jetpack Compose', 'Firebase untuk Mobile',
                 ],
             ],
 
-            // ── 3. Data Science ──────────────────────────────────────────────────
+            // ── 3. Data Science ──────────────────────────────────────────
             [
                 'name'        => 'Data Science',
                 'description' => 'Pelajari analisis data, machine learning, dan kecerdasan buatan untuk mengambil keputusan berbasis data.',
                 'subs'        => [
-                    'Python',
-                    'Machine Learning',
-                    'Deep Learning',
-                    'Data Analysis',
-                    'SQL untuk Data',
-                    'Visualisasi Data',
-                    'Statistik & Matematika',
-                    'NLP & Computer Vision',
+                    'Python', 'Machine Learning', 'Deep Learning',
+                    'Data Analysis', 'SQL untuk Data', 'Visualisasi Data',
+                    'Statistik & Matematika', 'NLP & Computer Vision',
                 ],
             ],
 
-            // ── 4. UI/UX Design ──────────────────────────────────────────────────
+            // ── 4. UI/UX Design ──────────────────────────────────────────
             [
                 'name'        => 'UI/UX Design',
                 'description' => 'Rancang antarmuka yang indah dan pengalaman pengguna yang intuitif dengan tools dan metodologi desain terkini.',
                 'subs'        => [
-                    'Figma',
-                    'Adobe XD',
-                    'Design Thinking',
-                    'Prototyping',
-                    'User Research',
-                    'Design System',
+                    'Figma', 'Adobe XD', 'Design Thinking',
+                    'Prototyping', 'User Research', 'Design System',
                     'Aksesibilitas & Inklusi',
                 ],
             ],
 
-            // ── 5. Desain Grafis ─────────────────────────────────────────────────
+            // ── 5. Desain Grafis ─────────────────────────────────────────
             [
                 'name'        => 'Desain Grafis',
                 'description' => 'Ekspresikan kreativitasmu lewat desain visual, ilustrasi, branding, dan produksi konten digital maupun cetak.',
                 'subs'        => [
-                    'Adobe Photoshop',
-                    'Adobe Illustrator',
-                    'Canva',
-                    'Branding & Identitas Visual',
-                    'Desain Poster & Infografis',
-                    'Motion Graphics & Animasi',
-                    'Video Editing (Premiere Pro)',
+                    'Adobe Photoshop', 'Adobe Illustrator', 'Canva',
+                    'Branding & Identitas Visual', 'Desain Poster & Infografis',
+                    'Motion Graphics & Animasi', 'Video Editing (Premiere Pro)',
                 ],
             ],
 
-            // ── 6. DevOps & Cloud ────────────────────────────────────────────────
+            // ── 6. DevOps & Cloud ────────────────────────────────────────
             [
                 'name'        => 'DevOps',
                 'description' => 'Otomatiskan pipeline development, kelola infrastruktur cloud, dan tingkatkan keandalan sistem produksi.',
                 'subs'        => [
-                    'Docker',
-                    'Kubernetes',
-                    'CI/CD',
-                    'AWS',
-                    'Google Cloud Platform',
-                    'Linux & Shell Scripting',
-                    'Terraform & IaC',
-                    'Monitoring & Observability',
+                    'Docker', 'Kubernetes', 'CI/CD',
+                    'AWS', 'Google Cloud Platform', 'Linux & Shell Scripting',
+                    'Terraform & IaC', 'Monitoring & Observability',
                 ],
             ],
 
-            // ── 7. Keamanan Siber ────────────────────────────────────────────────
+            // ── 7. Keamanan Siber ────────────────────────────────────────
             [
                 'name'        => 'Keamanan Siber',
                 'description' => 'Lindungi sistem digital dari ancaman dengan keahlian ethical hacking, keamanan jaringan, dan kriptografi.',
                 'subs'        => [
-                    'Ethical Hacking',
-                    'Keamanan Jaringan',
-                    'Keamanan Aplikasi Web',
-                    'Kriptografi',
-                    'OSINT & Recon',
-                    'Forensik Digital',
+                    'Ethical Hacking', 'Keamanan Jaringan', 'Keamanan Aplikasi Web',
+                    'Kriptografi', 'OSINT & Recon', 'Forensik Digital',
                 ],
             ],
 
-            // ── 8. Bisnis & Marketing ────────────────────────────────────────────
+            // ── 8. Bisnis & Marketing ────────────────────────────────────
             [
                 'name'        => 'Bisnis & Marketing',
                 'description' => 'Kembangkan bisnis dan brand-mu dengan strategi pemasaran digital, kewirausahaan, dan manajemen yang efektif.',
                 'subs'        => [
-                    'Digital Marketing',
-                    'SEO',
-                    'Copywriting',
-                    'Content Marketing',
-                    'Social Media Marketing',
-                    'Google Ads & Meta Ads',
-                    'Kewirausahaan',
-                    'Manajemen Produk',
+                    'Digital Marketing', 'SEO', 'Copywriting', 'Content Marketing',
+                    'Social Media Marketing', 'Google Ads & Meta Ads',
+                    'Kewirausahaan', 'Manajemen Produk',
                 ],
             ],
 
-            // ── 9. Keuangan & Investasi ──────────────────────────────────────────
+            // ── 9. Keuangan & Investasi ──────────────────────────────────
             [
                 'name'        => 'Keuangan & Investasi',
                 'description' => 'Kelola keuangan pribadi dan bisnis dengan bijak, pahami investasi saham, reksa dana, dan perencanaan finansial.',
                 'subs'        => [
-                    'Keuangan Pribadi',
-                    'Saham & Analisis Fundamental',
-                    'Reksa Dana & ETF',
-                    'Akuntansi Dasar',
-                    'Perencanaan Pajak',
-                    'Kripto & Blockchain',
+                    'Keuangan Pribadi', 'Saham & Analisis Fundamental',
+                    'Reksa Dana & ETF', 'Akuntansi Dasar',
+                    'Perencanaan Pajak', 'Kripto & Blockchain',
                 ],
             ],
 
-            // ── 10. Bahasa & Komunikasi ──────────────────────────────────────────
+            // ── 10. Bahasa & Komunikasi ──────────────────────────────────
             [
                 'name'        => 'Bahasa & Komunikasi',
                 'description' => 'Tingkatkan kemampuan berbahasa dan berkomunikasi untuk karier global dan kehidupan sehari-hari.',
                 'subs'        => [
-                    'Bahasa Inggris Bisnis',
-                    'TOEFL & IELTS',
-                    'Bahasa Jepang',
-                    'Bahasa Mandarin',
-                    'Bahasa Korea',
-                    'Menulis Kreatif',
-                    'Public Speaking',
+                    'Bahasa Inggris Bisnis', 'TOEFL & IELTS',
+                    'Bahasa Jepang', 'Bahasa Mandarin', 'Bahasa Korea',
+                    'Menulis Kreatif', 'Public Speaking',
                 ],
             ],
 
-            // ── 11. Pengembangan Diri ────────────────────────────────────────────
+            // ── 11. Pengembangan Diri ────────────────────────────────────
             [
                 'name'        => 'Pengembangan Diri',
                 'description' => 'Bangun karakter, kepemimpinan, dan kebiasaan positif untuk meningkatkan kualitas hidup dan performa kerja.',
                 'subs'        => [
-                    'Kepemimpinan & Manajemen',
-                    'Manajemen Waktu & Produktivitas',
-                    'Mindset & Motivasi',
-                    'Kecerdasan Emosional',
-                    'Negosiasi & Persuasi',
-                    'Kesehatan Mental & Mindfulness',
+                    'Kepemimpinan & Manajemen', 'Manajemen Waktu & Produktivitas',
+                    'Mindset & Motivasi', 'Kecerdasan Emosional',
+                    'Negosiasi & Persuasi', 'Kesehatan Mental & Mindfulness',
                 ],
             ],
 
-            // ── 12. Lainnya ──────────────────────────────────────────────────────
+            // ── 12. Kesehatan & Kebugaran ────────────────────────────────
+            [
+                'name'        => 'Kesehatan & Kebugaran',
+                'description' => 'Jaga kesehatan fisik dan mental dengan panduan olahraga, nutrisi, meditasi, dan gaya hidup sehat.',
+                'subs'        => [
+                    'Yoga & Meditasi', 'Olahraga & Fitness', 'Nutrisi & Diet',
+                    'Kesehatan Mental', 'Meditasi & Mindfulness',
+                    'Lari & Cardio', 'Strength Training',
+                    'Kesehatan Tidur', 'Terapi & Self-Healing',
+                ],
+            ],
+
+            // ── 13. Lifestyle ────────────────────────────────────────────
+            [
+                'name'        => 'Lifestyle',
+                'description' => 'Eksplorasi gaya hidup modern — dari produktivitas, perjalanan, hingga fashion dan rumah.',
+                'subs'        => [
+                    'Traveling & Backpacking', 'Dekorasi & Desain Interior',
+                    'Fashion & Styling', 'Memasak & Kuliner',
+                    'Minimalis & Decluttering', 'Parenting & Keluarga',
+                    'Berkebun & Urban Farming', 'DIY & Kerajinan Tangan',
+                    'Fotografi Sehari-hari',
+                ],
+            ],
+
+            // ── 14. Agama & Spiritualitas ────────────────────────────────
+            [
+                'name'        => 'Agama & Spiritualitas',
+                'description' => 'Perdalam pemahaman agama, nilai-nilai spiritual, dan praktik ibadah sehari-hari.',
+                'subs'        => [
+                    'Tahsin & Tahfidz Al-Quran', 'Fiqih Sehari-hari',
+                    'Sejarah Islam', 'Bahasa Arab Dasar',
+                    'Kajian Hadits', 'Spiritualitas & Ketenangan Jiwa',
+                    'Manajemen Ibadah', 'Zakat & Wakaf',
+                    'Pendidikan Anak Islami',
+                ],
+            ],
+
+            // ── 15. Seni & Musik ─────────────────────────────────────────
+            [
+                'name'        => 'Seni & Musik',
+                'description' => 'Ekspresikan diri lewat seni rupa, musik, tari, dan pertunjukan kreatif.',
+                'subs'        => [
+                    'Gitar Akustik & Elektrik', 'Piano & Keyboard',
+                    'Vokal & Menyanyi', 'Produksi Musik (DAW)',
+                    'Melukis & Ilustrasi', 'Seni Digital & Digital Art',
+                    'Tari & Koreografi', 'Fotografi Seni',
+                ],
+            ],
+
+            // ── 16. Lainnya ──────────────────────────────────────────────
             [
                 'name'        => 'Lainnya',
-                'description' => 'Kursus pilihan dari berbagai topik menarik — dari hobi, seni, memasak, hingga gaya hidup sehat.',
+                'description' => 'Kursus pilihan dari berbagai topik menarik yang tidak masuk kategori utama.',
                 'subs'        => [
-                    'Fotografi & Videografi',
-                    'Musik & Instrumen',
-                    'Memasak & Kuliner',
-                    'Olahraga & Kebugaran',
-                    'Parenting & Keluarga',
-                    'Seni & Kerajinan Tangan',
+                    'Hukum & Regulasi', 'Psikologi Terapan',
+                    'Ilmu Lingkungan & Sustainability', 'Astronomi & Sains',
+                    'Sejarah & Budaya', 'Robotika & IoT',
+                    'Game Development', 'Esports & Gaming',
+                    'Pendidikan Anak & PAUD', 'Keterampilan Rumah Tangga',
                 ],
             ],
         ];

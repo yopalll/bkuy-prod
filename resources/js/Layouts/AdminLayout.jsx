@@ -6,8 +6,10 @@ import BrandLogo from '@/Components/BrandLogo';
 const NAV_ITEMS = [
     { label: 'Dashboard',        href: '/admin/dashboard',     icon: 'dashboard',           route: 'admin.dashboard' },
     { label: 'Kursus',           href: '/admin/courses',        icon: 'school',              route: 'admin.courses.index' },
-    { label: 'Moderasi Review',  href: '/admin/reviews',        icon: 'rate_review',         route: 'admin.reviews.index' },
-    { label: 'Kategori',         href: '/admin/categories',     icon: 'category',            route: 'admin.categories.index' },
+    { label: 'Moderasi Review',  href: '/admin/reviews',          icon: 'rate_review',         route: 'admin.reviews.index' },
+    { label: 'Laporan Kursus',   href: '/admin/course-reports',   icon: 'flag',                route: 'admin.course-reports.index' },
+    { label: 'Tiket Bantuan',    href: '/admin/support-tickets',  icon: 'support_agent',       route: 'admin.support-tickets.index' },
+    { label: 'Kategori',         href: '/admin/categories',       icon: 'category',            route: 'admin.categories.index' },
     { label: 'Sub-Kategori',     href: '/admin/sub-categories', icon: 'account_tree',        route: 'admin.sub-categories.index' },
     { label: 'Instruktur',       href: '/admin/instructors',    icon: 'manage_accounts',     route: 'admin.instructors.index' },
     { label: 'Order',            href: '/admin/orders',         icon: 'shopping_cart',       route: 'admin.orders.index' },
