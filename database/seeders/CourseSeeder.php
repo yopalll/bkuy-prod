@@ -30,7 +30,7 @@ class CourseSeeder extends Seeder
 
         // Pool placeholder agar URL & durasi tetap variatif tanpa faker.
         $videoIds = ['aqz-KE-bpKQ', 'rfscVS0vtbw', 'SqcY0GlETPk', 'w7ejDZ8SWv8', 'ysz5S6PUMU', 'PkZNo7MtFUM', 'hdI2bqOjy3c', 'BBAyRBTfsOU'];
-        $durations = ['06:12', '08:45', '10:30', '05:50', '12:15', '07:40', '09:20', '11:05', '04:55', '13:30', '14:48', '06:35'];
+        $durations = [6, 8, 10, 5, 12, 7, 9, 11, 4, 13, 14, 6];
         $vid = 0;
         $dur = 0;
 
@@ -75,12 +75,13 @@ class CourseSeeder extends Seeder
                 $sortLecture = 1;
                 foreach ($lectures as [$lectureTitle, $content]) {
                     CourseLecture::create([
-                        'section_id' => $section->id,
-                        'title' => $lectureTitle,
-                        'url' => 'https://youtu.be/'.$videoIds[$vid++ % count($videoIds)],
-                        'content' => $content,
-                        'duration' => $durations[$dur++ % count($durations)],
-                        'sort_order' => $sortLecture++,
+                        'section_id'  => $section->id,
+                        'title'       => $lectureTitle,
+                        'source_type' => 'youtube',
+                        'video_path'  => 'https://www.youtube.com/embed/'.$videoIds[$vid++ % count($videoIds)],
+                        'content'     => $content,
+                        'duration'    => $durations[$dur++ % count($durations)],
+                        'sort_order'  => $sortLecture++,
                     ]);
                 }
             }
