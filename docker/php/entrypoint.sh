@@ -14,8 +14,8 @@ mkdir -p \
     storage/logs \
     storage/app/public \
     bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
-chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
 # Only the primary "app" container runs migrations & one-time setup.
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
