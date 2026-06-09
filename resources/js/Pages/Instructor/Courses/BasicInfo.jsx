@@ -8,6 +8,55 @@ import InstructorLayout from '@/Layouts/InstructorLayout';
 export default function BasicInfo({ course, categories = [], subcategories = [] }) {
     const isEditing = !!course;
 
+    // Goals state (hanya saat edit)
+    const [goals, setGoals]             = useState(course?.goals ?? []);
+    const [goalInput, setGoalInput]     = useState('');
+    const [goalLoading, setGoalLoading] = useState(false);
+    const [goalError, setGoalError]     = useState('');
+
+    function getCsrf() {
+        return decodeURIComponent(
+            document.cookie.split('; ').find((r) => r.startsWith('XSRF-TOKEN='))?.split('=')[1] ?? '',
+        );
+    }
+
+    async function handleAddGoal(e) {
+        e.preventDefault();
+        if (!goalInput.trim() || goalLoading) return;
+        setGoalLoading(true);
+        setGoalError('');
+        try {
+            const res = await fetch(route('instructor.courses.goals.store', course.id), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': getCsrf() },
+                body: JSON.stringify({ goal: goalInput.trim() }),
+            });
+            const json = await res.json();
+            if (res.ok) {
+                setGoals((prev) => [...prev, json]);
+                setGoalInput('');
+            } else {
+                setGoalError(json.message ?? 'Gagal menambahkan poin.');
+            }
+        } catch {
+            setGoalError('Gagal menghubungi server.');
+        } finally {
+            setGoalLoading(false);
+        }
+    }
+
+    async function handleDeleteGoal(goalId) {
+        try {
+            await fetch(route('instructor.courses.goals.destroy', { course: course.id, goal: goalId }), {
+                method: 'DELETE',
+                headers: { Accept: 'application/json', 'X-XSRF-TOKEN': getCsrf() },
+            });
+            setGoals((prev) => prev.filter((g) => g.id !== goalId));
+        } catch {
+            // silent
+        }
+    }
+
     const { data, setData, post, patch, processing, errors, reset, recentlySuccessful } = useForm({
         title:          course?.title ?? '',
         slug:           course?.slug ?? '',
@@ -392,6 +441,56 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                     />
                                 </div>
                             </div>
+
+                            {/* Section: Yang Akan Anda Pelajari (hanya saat edit) */}
+                            {isEditing && (
+                                <div className="bg-surface rounded-2xl p-lg md:p-xl border border-primary/5 shadow-sm overflow-hidden">
+                                    <div className="flex items-center gap-sm mb-md">
+                                        <span className="text-lg">🎯</span>
+                                        <h2 className="font-headline-md text-headline-md text-on-surface">Yang Akan Anda Pelajari</h2>
+                                        <span className="ml-auto font-caption text-caption text-on-surface-variant">{goals.length} poin</span>
+                                    </div>
+                                    <div className="space-y-sm">
+                                        {goals.length > 0 && (
+                                            <ul className="space-y-xs">
+                                                {goals.map((g) => (
+                                                    <li key={g.id} className="flex items-start gap-sm bg-success/5 rounded-lg px-md py-sm">
+                                                        <span className="text-success mt-0.5 flex-shrink-0">✓</span>
+                                                        <span className="font-body-md text-body-md text-on-surface flex-1">{g.goal}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteGoal(g.id)}
+                                                            className="text-on-surface-variant hover:text-error transition-colors flex-shrink-0 text-sm"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                        <form onSubmit={handleAddGoal} className="flex gap-sm">
+                                            <input
+                                                type="text"
+                                                value={goalInput}
+                                                onChange={(e) => { setGoalInput(e.target.value); setGoalError(''); }}
+                                                placeholder="Contoh: Memahami konsep MVC Laravel"
+                                                maxLength={200}
+                                                className="flex-1 rounded-lg px-md py-sm font-body-md text-body-md text-on-surface bg-surface-container-low border-2 border-transparent focus:border-primary focus:outline-none transition-colors"
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={goalLoading || !goalInput.trim()}
+                                                className="bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md disabled:opacity-50 transition-colors hover:opacity-90 shrink-0"
+                                            >
+                                                {goalLoading ? '...' : '+ Tambah'}
+                                            </button>
+                                        </form>
+                                        {goalError && (
+                                            <p className="font-caption text-caption text-error">{goalError}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* ══════ RIGHT: Thumbnail + Save ══════ */}

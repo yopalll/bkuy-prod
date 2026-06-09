@@ -81,7 +81,7 @@ export default function ReviewsIndex({ reviews }) {
                                             <StarRating rating={review.rating ?? 0} />
                                         </td>
                                         <td className="py-md px-lg max-w-[200px]">
-                                            <p className="font-body-md text-body-md text-on-surface truncate">{review.review ?? '—'}</p>
+                                            <p className="font-body-md text-body-md text-on-surface truncate">{review.comment ?? '—'}</p>
                                         </td>
                                         <td className="py-md px-lg text-center">
                                             <span className={`inline-flex items-center px-sm py-xs rounded-full font-caption text-caption ${cfg.cls}`}>

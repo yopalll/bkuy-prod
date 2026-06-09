@@ -29,7 +29,7 @@ class Course extends Model
         'status',
     ];
 
-    protected $appends = ['discounted_price'];
+    protected $appends = ['discounted_price', 'average_rating'];
 
     protected function casts(): array
     {

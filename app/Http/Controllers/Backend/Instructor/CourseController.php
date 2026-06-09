@@ -111,6 +111,7 @@ class CourseController extends Controller
                 'bestseller'     => (bool) $course->bestseller,
                 'thumbnail'      => $course->thumbnail,
                 'status'         => $course->status,
+                'goals'          => $course->goals()->orderBy('id')->get(['id', 'goal'])->toArray(),
             ],
         ]);
     }

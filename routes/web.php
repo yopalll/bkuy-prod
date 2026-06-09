@@ -35,6 +35,7 @@ use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CouponController as FrontendCouponController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Backend\Instructor\CouponController as InstructorCouponController;
+use App\Http\Controllers\Backend\Instructor\CourseGoalController as InstructorCourseGoalController;
 use App\Http\Controllers\Frontend\CoursePlayerController;
 use App\Http\Controllers\Frontend\CertificateController;
 use Inertia\Inertia;
@@ -135,6 +136,10 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('instructor')
     Route::patch('courses/{course}/sections/{section}/lectures/{lecture}', [InstructorLectureController::class, 'update'])->name('courses.sections.lectures.update');
     Route::delete('courses/{course}/sections/{section}/lectures/{lecture}', [InstructorLectureController::class, 'destroy'])->name('courses.sections.lectures.destroy');
     Route::post('courses/{course}/sections/{section}/lectures/reorder', [InstructorLectureController::class, 'reorder'])->name('courses.sections.lectures.reorder');
+
+    // Goals (Yang Akan Anda Pelajari)
+    Route::post('courses/{course}/goals', [InstructorCourseGoalController::class, 'store'])->name('courses.goals.store');
+    Route::delete('courses/{course}/goals/{goal}', [InstructorCourseGoalController::class, 'destroy'])->name('courses.goals.destroy');
 
     // L8 Ray: Coupon CRUD (instruktur)
     Route::get('coupons/generate-code', [InstructorCouponController::class, 'generateCode'])->name('coupons.generate-code');
