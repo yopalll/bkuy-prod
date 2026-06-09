@@ -463,7 +463,14 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
                             </p>
                         )}
                         <input type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                            onChange={(e) => setData('video_file', e.target.files[0] ?? null)}
+                            onChange={async (e) => {
+                                const file = e.target.files[0] ?? null;
+                                setData('video_file', file);
+                                if (file) {
+                                    const mins = await detectVideoDuration(file);
+                                    if (mins > 0) setData(d => ({ ...d, video_file: file, duration: mins }));
+                                }
+                            }}
                             className="w-full border border-outline-variant rounded-xl px-4 py-2.5 text-sm font-semibold bg-surface file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary cursor-pointer"
                         />
                         {/* Progress bar upload */}
@@ -490,6 +497,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-1">
                             <span className="material-symbols-outlined text-[12px]">schedule</span> Durasi (menit)
+                            {editSourceType === 'gcs' && <span className="font-normal normal-case tracking-normal text-on-surface-variant ml-1">— terdeteksi otomatis dari video</span>}
                         </label>
                         <input type="number" min={0} value={data.duration}
                             onChange={(e) => setData('duration', Number(e.target.value))}
@@ -625,7 +633,14 @@ function AddLectureForm({ courseId, sectionId, onSuccess, onCancel, onFlash }) {
             {sourceType === 'gcs' && (
                 <div>
                     <input type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                        onChange={(e) => setData('video_file', e.target.files[0] ?? null)}
+                        onChange={async (e) => {
+                            const file = e.target.files[0] ?? null;
+                            setData('video_file', file);
+                            if (file) {
+                                const mins = await detectVideoDuration(file);
+                                if (mins > 0) setData(d => ({ ...d, video_file: file, duration: mins }));
+                            }
+                        }}
                         className="w-full border border-outline-variant rounded-xl px-4 py-2.5 text-sm font-semibold bg-surface file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary cursor-pointer"
                     />
                     <p className="text-xs text-on-surface-variant mt-1">Format: mp4, webm, mov — Maks. 500 MB</p>
@@ -791,4 +806,17 @@ function formatDuration(totalMinutes) {
     if (h === 0) return `${m} mnt`;
     if (m === 0) return `${h} jam`;
     return `${h} jam ${m} mnt`;
+}
+
+function detectVideoDuration(file) {
+    return new Promise((resolve) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+            URL.revokeObjectURL(video.src);
+            resolve(Math.round(video.duration / 60));
+        };
+        video.onerror = () => resolve(0);
+        video.src = URL.createObjectURL(file);
+    });
 }
