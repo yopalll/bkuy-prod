@@ -425,7 +425,7 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                                                     <span className="material-symbols-outlined text-secondary-container text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                                                 </div>
                                             </div>
-                                            <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                            <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-line">
                                                 {review.comment ?? t('course.no_comment')}
                                             </p>
                                         </div>
