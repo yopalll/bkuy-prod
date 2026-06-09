@@ -16,6 +16,9 @@ import {
     Send,
     AlertCircle,
     CheckCircle2,
+    ListChecks,
+    Plus,
+    Loader2,
 } from 'lucide-react';
 
 // Layar: informasi_dasar_kursus (Konteks_A)
@@ -23,6 +26,55 @@ import {
 //        instructor.courses.edit   → GET /instructor/courses/{course}/edit
 export default function BasicInfo({ course, categories = [], subcategories = [] }) {
     const isEditing = !!course;
+
+    // Goals state (hanya saat edit)
+    const [goals, setGoals]         = useState(course?.goals ?? []);
+    const [goalInput, setGoalInput] = useState('');
+    const [goalLoading, setGoalLoading] = useState(false);
+    const [goalError, setGoalError] = useState('');
+
+    function getCsrf() {
+        return decodeURIComponent(
+            document.cookie.split('; ').find((r) => r.startsWith('XSRF-TOKEN='))?.split('=')[1] ?? '',
+        );
+    }
+
+    async function handleAddGoal(e) {
+        e.preventDefault();
+        if (!goalInput.trim() || goalLoading) return;
+        setGoalLoading(true);
+        setGoalError('');
+        try {
+            const res = await fetch(route('instructor.courses.goals.store', course.id), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': getCsrf() },
+                body: JSON.stringify({ goal: goalInput.trim() }),
+            });
+            const json = await res.json();
+            if (res.ok) {
+                setGoals((prev) => [...prev, json]);
+                setGoalInput('');
+            } else {
+                setGoalError(json.message ?? 'Gagal menambahkan poin.');
+            }
+        } catch {
+            setGoalError('Gagal menghubungi server.');
+        } finally {
+            setGoalLoading(false);
+        }
+    }
+
+    async function handleDeleteGoal(goalId) {
+        try {
+            await fetch(route('instructor.courses.goals.destroy', { course: course.id, goal: goalId }), {
+                method: 'DELETE',
+                headers: { Accept: 'application/json', 'X-XSRF-TOKEN': getCsrf() },
+            });
+            setGoals((prev) => prev.filter((g) => g.id !== goalId));
+        } catch {
+            // silent
+        }
+    }
 
     const { data, setData, post, patch, processing, errors, reset, recentlySuccessful } = useForm({
         title:          course?.title ?? '',
@@ -407,6 +459,61 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                     />
                                 </div>
                             </div>
+
+                            {/* Section: Yang Akan Anda Pelajari (hanya saat edit) */}
+                            {isEditing && (
+                                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                                    <div className="flex items-center gap-3 px-7 py-5 border-b border-gray-50">
+                                        <div className="p-2 bg-teal-50 rounded-xl">
+                                            <ListChecks className="w-4 h-4 text-teal-600" />
+                                        </div>
+                                        <h2 className="font-bold text-gray-900 text-sm">Yang Akan Anda Pelajari</h2>
+                                        <span className="ml-auto text-xs text-gray-400 font-medium">{goals.length} poin</span>
+                                    </div>
+                                    <div className="px-7 py-6 space-y-4">
+                                        {goals.length > 0 && (
+                                            <ul className="space-y-2">
+                                                {goals.map((g) => (
+                                                    <li key={g.id} className="flex items-start gap-3 bg-teal-50/60 rounded-2xl px-4 py-3">
+                                                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                                                        <span className="text-sm font-semibold text-gray-800 flex-1">{g.goal}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteGoal(g.id)}
+                                                            className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                        <form onSubmit={handleAddGoal} className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={goalInput}
+                                                onChange={(e) => { setGoalInput(e.target.value); setGoalError(''); }}
+                                                placeholder="Contoh: Memahami konsep MVC Laravel"
+                                                maxLength={200}
+                                                className="flex-1 border border-gray-200 rounded-2xl px-4 py-3 text-sm font-semibold bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={goalLoading || !goalInput.trim()}
+                                                className="flex items-center gap-1.5 px-4 py-3 rounded-2xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-500 disabled:opacity-50 transition-colors shrink-0"
+                                            >
+                                                {goalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                                Tambah
+                                            </button>
+                                        </form>
+                                        {goalError && (
+                                            <p className="text-xs text-red-500 flex items-center gap-1">
+                                                <AlertCircle className="w-3.5 h-3.5" /> {goalError}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* ══════ RIGHT: Thumbnail + Save ══════ */}
