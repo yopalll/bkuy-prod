@@ -1,19 +1,17 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import TicketAttachmentInput from '@/Components/TicketAttachmentInput';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 const STATUS_LABELS = {
-    open:        { label: 'Menunggu',    cls: 'bg-warning/10 text-warning border-warning/20' },
-    in_progress: { label: 'Diproses',   cls: 'bg-primary/10 text-primary border-primary/20' },
-    resolved:    { label: 'Selesai',    cls: 'bg-success/10 text-success border-success/20' },
-    closed:      { label: 'Ditutup',    cls: 'bg-surface-container text-on-surface-variant border-outline-variant' },
+    open:        { label: 'Menunggu',  cls: 'bg-warning/10 text-warning border-warning/20' },
+    in_progress: { label: 'Diproses',  cls: 'bg-primary/10 text-primary border-primary/20' },
+    resolved:    { label: 'Selesai',   cls: 'bg-success/10 text-success border-success/20' },
+    closed:      { label: 'Ditutup',   cls: 'bg-surface-container text-on-surface-variant border-outline-variant' },
 };
 
 const CATEGORY_LABELS = {
-    general:   'Umum',
-    billing:   'Pembayaran',
-    technical: 'Teknis',
-    course:    'Kursus',
+    general: 'Umum', billing: 'Pembayaran', technical: 'Teknis', course: 'Kursus',
 };
 
 function StatusBadge({ status }) {
@@ -30,14 +28,16 @@ export default function HelpIndex({ tickets }) {
     const [showForm, setShowForm] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        subject:  '',
-        message:  '',
-        category: 'general',
+        subject:     '',
+        message:     '',
+        category:    'general',
+        attachments: [],
     });
 
     function handleSubmit(e) {
         e.preventDefault();
         post(route('help.store'), {
+            forceFormData: true,
             onSuccess: () => { reset(); setShowForm(false); },
         });
     }
@@ -96,23 +96,31 @@ export default function HelpIndex({ tickets }) {
                         <h2 className="font-title-lg text-title-lg font-bold text-on-surface mb-lg">Tiket Saya</h2>
                         <div className="space-y-sm">
                             {tickets.map((ticket) => (
-                                <div key={ticket.id} className="bg-surface border border-outline-variant rounded-2xl p-5">
-                                    <div className="flex items-start justify-between gap-3 mb-2">
-                                        <div>
-                                            <p className="font-semibold text-on-surface">{ticket.subject}</p>
+                                <Link
+                                    key={ticket.id}
+                                    href={route('help.show', ticket.id)}
+                                    className="block bg-surface border border-outline-variant rounded-2xl p-5 hover:border-primary/40 hover:shadow-[0_4px_20px_rgba(48,0,51,0.06)] transition-all"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-semibold text-on-surface truncate">{ticket.subject}</p>
+                                                {ticket.user_unread && (
+                                                    <span className="shrink-0 w-2 h-2 rounded-full bg-primary" title="Ada balasan baru" />
+                                                )}
+                                            </div>
                                             <p className="text-xs text-on-surface-variant mt-0.5">
-                                                {CATEGORY_LABELS[ticket.category]} · {new Date(ticket.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                #{ticket.id} · {CATEGORY_LABELS[ticket.category]} · {ticket.last_reply_role === 'admin' ? 'Dibalas admin' : 'Menunggu balasan'}
+                                                {' · '}
+                                                {new Date(ticket.last_reply_at ?? ticket.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                                             </p>
                                         </div>
-                                        <StatusBadge status={ticket.status} />
-                                    </div>
-                                    {ticket.admin_response && (
-                                        <div className="mt-3 p-3 bg-primary-fixed/20 rounded-xl border border-primary/10">
-                                            <p className="text-xs font-bold text-primary mb-1">Respons Admin</p>
-                                            <p className="text-sm text-on-surface">{ticket.admin_response}</p>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <StatusBadge status={ticket.status} />
+                                            <span className="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                </Link>
                             ))}
                         </div>
                     </section>
@@ -183,6 +191,17 @@ export default function HelpIndex({ tickets }) {
                                     {errors.message && <p className="text-xs text-error mt-1">{errors.message}</p>}
                                 </div>
 
+                                <div>
+                                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">
+                                        Lampiran Gambar <span className="font-normal normal-case text-on-surface-variant">(opsional)</span>
+                                    </label>
+                                    <TicketAttachmentInput
+                                        files={data.attachments}
+                                        onChange={(files) => setData('attachments', files)}
+                                        error={errors.attachments || errors['attachments.0']}
+                                    />
+                                </div>
+
                                 <div className="flex gap-3 pt-2">
                                     <button
                                         type="submit"
@@ -193,7 +212,7 @@ export default function HelpIndex({ tickets }) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setShowForm(false)}
+                                        onClick={() => { setShowForm(false); reset(); }}
                                         className="px-5 py-3 rounded-xl border border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low transition-colors"
                                     >
                                         Batal

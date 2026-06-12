@@ -107,7 +107,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::patch('course-reports/{report}', [AdminCourseReportController::class, 'update'])->name('course-reports.update');
 
     Route::get('support-tickets', [AdminSupportTicketController::class, 'index'])->name('support-tickets.index');
-    Route::patch('support-tickets/{ticket}', [AdminSupportTicketController::class, 'update'])->name('support-tickets.update');
+    Route::get('support-tickets/{ticket}', [AdminSupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::post('support-tickets/{ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');
+    Route::patch('support-tickets/{ticket}/status', [AdminSupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
 
     Route::get('settings', [AdminSiteSettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [AdminSiteSettingController::class, 'update'])->name('settings.update');
@@ -245,9 +247,14 @@ Route::post('/reviews/{review}/report', [CourseDetailController::class, 'reportR
 Route::post('/courses/{course}/report', [CourseReportController::class, 'store'])
     ->middleware(['auth', 'verified'])->name('course.report.store');
 
-// Pusat Bantuan (ticket)
-Route::get('/bantuan', [SupportTicketController::class, 'index'])->middleware(['auth', 'verified'])->name('help.index');
-Route::post('/bantuan', [SupportTicketController::class, 'store'])->middleware(['auth', 'verified'])->name('help.store');
+// Pusat Bantuan (ticket / helpdesk thread)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/bantuan', [SupportTicketController::class, 'index'])->name('help.index');
+    Route::post('/bantuan', [SupportTicketController::class, 'store'])->name('help.store');
+    Route::get('/bantuan/{ticket}', [SupportTicketController::class, 'show'])->name('help.show');
+    Route::post('/bantuan/{ticket}/balas', [SupportTicketController::class, 'reply'])->name('help.reply');
+    Route::patch('/bantuan/{ticket}/tutup', [SupportTicketController::class, 'close'])->name('help.close');
+});
 
 // Halaman statis publik
 Route::get('/hubungi-kami', [ContactController::class, 'index'])->name('contact');
