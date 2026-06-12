@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::resource('courses', AdminCourseController::class)->only(['index', 'show']);
     Route::patch('courses/{course}/status', [AdminCourseController::class, 'updateStatus'])->name('courses.update-status');
+    Route::get('courses/{course}/lectures/{lecture}/preview-url', [AdminCourseController::class, 'previewUrl'])->name('courses.lectures.preview-url');
 
     Route::resource('instructors', AdminInstructorController::class)->only(['index', 'show']);
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
@@ -115,6 +116,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 // --- Instructor Panel (dilindungi auth + verified + role:instructor) ---
 Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('instructor')->name('instructor.')->group(function () {
     Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('dashboard');
+
+    // Ketentuan Konten
+    Route::get('content-guidelines', fn () => Inertia::render('Instructor/ContentGuidelines'))
+        ->name('content-guidelines');
 
     // Course CRUD
     Route::resource('courses', InstructorCourseController::class)->except(['show']);

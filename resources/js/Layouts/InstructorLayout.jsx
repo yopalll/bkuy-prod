@@ -6,8 +6,9 @@ import BrandLogo from '@/Components/BrandLogo';
 const NAV_ITEMS = [
     { href: '/instructor/dashboard', icon: 'dashboard',        label: 'Dashboard',        route: 'instructor.dashboard' },
     { href: '/instructor/courses',   icon: 'school',           label: 'Kursus Saya',      route: 'instructor.courses.index' },
-    { href: '/instructor/coupons',   icon: 'confirmation_number', label: 'Kupon',          route: 'instructor.coupons.index' },
-    { href: '/home',                 icon: 'explore',          label: 'Jelajahi Kursus',  route: null },
+    { href: '/instructor/coupons',            icon: 'confirmation_number', label: 'Kupon',            route: 'instructor.coupons.index' },
+    { href: '/instructor/content-guidelines', icon: 'menu_book',           label: 'Ketentuan Konten', route: 'instructor.content-guidelines' },
+    { href: '/home',                          icon: 'explore',             label: 'Jelajahi Kursus',  route: null },
     { href: '/instructor/profile',   icon: 'person',           label: 'Profil',           route: 'instructor.profile' },
     { href: '/instructor/setting',   icon: 'settings',         label: 'Pengaturan',       route: 'instructor.setting' },
 ];

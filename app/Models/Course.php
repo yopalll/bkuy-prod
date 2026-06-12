@@ -27,6 +27,9 @@ class Course extends Model
         'bestseller',
         'featured',
         'status',
+        'rejection_reason',
+        'rejection_suggestion',
+        'reviewed_at',
     ];
 
     protected $appends = ['discounted_price', 'average_rating', 'thumbnail_url'];
@@ -38,6 +41,7 @@ class Course extends Model
             'discount' => 'integer',
             'bestseller' => 'boolean',
             'featured' => 'boolean',
+            'reviewed_at' => 'datetime',
         ];
     }
 

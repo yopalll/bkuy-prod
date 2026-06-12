@@ -42,9 +42,12 @@ class CourseController extends Controller
                 'discount'         => $c->discount,
                 'featured'         => $c->featured,
                 'bestseller'       => $c->bestseller,
-                'category'         => $c->category?->only('id', 'name'),
-                'enrollments_count'=> $c->enrollments_count,
-                'created_at'       => $c->created_at?->format('d M Y'),
+                'category'             => $c->category?->only('id', 'name'),
+                'enrollments_count'    => $c->enrollments_count,
+                'created_at'           => $c->created_at?->format('d M Y'),
+                'rejection_reason'     => $c->rejection_reason,
+                'rejection_suggestion' => $c->rejection_suggestion,
+                'reviewed_at'          => $c->reviewed_at?->format('d M Y, H:i'),
             ]);
 
         return Inertia::render('Instructor/Courses/Index', [
@@ -201,9 +204,17 @@ class CourseController extends Controller
     public function submit(Course $course): RedirectResponse
     {
         abort_unless($course->instructor_id === Auth::id(), 403);
-        abort_unless($course->status === 'draft', 422, 'Hanya kursus berstatus draft yang dapat diajukan review.');
+        abort_unless(
+            in_array($course->status, ['draft', 'inactive'], true),
+            422,
+            'Hanya kursus berstatus draft atau ditolak yang dapat diajukan review.'
+        );
 
-        $course->update(['status' => 'pending_review']);
+        $course->update([
+            'status'               => 'pending_review',
+            'rejection_reason'     => null,
+            'rejection_suggestion' => null,
+        ]);
 
         return back()->with('success', 'Kursus berhasil diajukan untuk ditinjau admin.');
     }
