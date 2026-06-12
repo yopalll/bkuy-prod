@@ -107,7 +107,9 @@
     "related_title": "Kursus Terkait",
     "related_desc": "Jelajahi kursus menarik lainnya dalam kategori {{category}}.",
     "students_count_label": "{{count}} siswa sudah terdaftar",
-    "includes_label": "Kursus ini mencakup:"
+    "includes_label": "Kursus ini mencakup:",
+    "instructor_rating_label": "Rating Instruktur",
+    "students_label": "siswa"
   },
   "badge": {
     "bestseller": "Bestseller",

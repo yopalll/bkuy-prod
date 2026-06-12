@@ -107,7 +107,9 @@
     "related_title": "Related Courses",
     "related_desc": "Explore other interesting courses in the {{category}} category.",
     "students_count_label": "{{count}} students already enrolled",
-    "includes_label": "This course includes:"
+    "includes_label": "This course includes:",
+    "instructor_rating_label": "Instructor Rating",
+    "students_label": "students"
   },
   "badge": {
     "bestseller": "Bestseller",
