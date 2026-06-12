@@ -573,6 +573,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
     }
 
     return (
+        <>
         <div className="flex items-center gap-3 px-5 py-3.5 hover:bg-surface-container-lowest transition-colors group">
             <span className="material-symbols-outlined text-[14px] text-outline-variant group-hover:text-on-surface-variant flex-shrink-0 cursor-grab">drag_indicator</span>
             <span className="flex-shrink-0 w-5 h-5 rounded-md bg-primary-fixed/20 text-primary text-xs font-black flex items-center justify-center">
@@ -619,6 +620,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
             </div>
         </div>
         {previewUrl && <VideoPreviewModal url={previewUrl} title={lecture.title} onClose={() => setPreviewUrl(null)} />}
+        </>
     );
 }
 
