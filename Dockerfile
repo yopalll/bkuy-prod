@@ -3,7 +3,7 @@
 # BelajarKUY — Multi-stage build
 #   stage "assets"  : build React/Inertia + Tailwind bundle with Vite (Node)
 #   stage "vendor"  : install PHP dependencies (Composer, no-dev)
-#   target "app"    : PHP 8.5-FPM runtime (web, queue, scheduler, reverb)
+#   target "app"    : PHP 8.4-FPM runtime (web, queue, scheduler, reverb)
 #   target "web"    : Nginx image with the compiled public/ baked in
 # =============================================================================
 
@@ -42,9 +42,9 @@ COPY . .
 RUN composer dump-autoload --no-dev --optimize --no-scripts --ignore-platform-reqs
 
 # -----------------------------------------------------------------------------
-# Target "app" — PHP 8.5-FPM runtime
+# Target "app" — PHP 8.4-FPM runtime
 # -----------------------------------------------------------------------------
-FROM php:8.5-fpm-bookworm AS app
+FROM php:8.4-fpm-bookworm AS app
 WORKDIR /var/www/html
 
 # Pull the extension installer (handles all system libs automatically).
