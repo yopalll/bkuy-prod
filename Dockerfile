@@ -59,7 +59,7 @@ RUN install-php-extensions \
         exif \
         pcntl \
         opcache \
-        redis \
+        redis-6.1.0 \
  && apt-get update \
  && apt-get install -y --no-install-recommends default-mysql-client gosu \
  && rm -rf /var/lib/apt/lists/*
