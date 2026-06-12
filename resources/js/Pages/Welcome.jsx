@@ -1,15 +1,8 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import BrandLogo from '@/Components/BrandLogo';
+import { Head } from '@inertiajs/react';
+import AppHeader from '@/Components/AppHeader';
+import AppFooter from '@/Components/AppFooter';
 
-// Aturan navigasi di halaman ini:
-// - <Link> hanya untuk Inertia pages: /login, /register
-// - <a href> untuk Blade routes: /home, /dashboard (supaya tidak "page dalam page")
-
-// Konversi langsung dari landing_page_welcome/code.html (desain Vascha & Quinsha)
 export default function Welcome() {
-    const { auth } = usePage().props;
-    const user = auth?.user;
-
     return (
         <>
             <Head title="BelajarKUY — Belajar Skill Baru" />
@@ -18,50 +11,7 @@ export default function Welcome() {
                 className="text-on-background font-body-md antialiased min-h-screen flex flex-col"
                 style={{ backgroundColor: '#FCF8F1' }}
             >
-                {/* ===== TopNavBar ===== */}
-                <header className="bg-surface shadow-sm sticky top-0 z-50">
-                    <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-md max-w-7xl mx-auto">
-                        {/* Brand */}
-                        <a href="/home">
-                            <BrandLogo size="lg" />
-                        </a>
-
-                        {/* Navigation Links (Desktop) */}
-                        <nav className="hidden md:flex gap-lg">
-                            <a href="/home" className="text-on-surface-variant hover:text-primary-container transition-colors font-label-md text-label-md py-2">Kategori</a>
-                            <a href="/home" className="text-on-surface-variant hover:text-primary-container transition-colors font-label-md text-label-md py-2">Kursus Saya</a>
-                            <a href="/home" className="text-on-surface-variant hover:text-primary-container transition-colors font-label-md text-label-md py-2">Instruktur</a>
-                            <a href="/home" className="text-on-surface-variant hover:text-primary-container transition-colors font-label-md text-label-md py-2">Jadilah Instruktur</a>
-                        </nav>
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-sm">
-                            {user ? (
-                                <a
-                                    href="/dashboard"
-                                    className="font-label-md text-label-md text-on-primary bg-primary hover:opacity-90 px-4 py-2 rounded-lg transition-colors shadow-sm"
-                                >
-                                    Dashboard
-                                </a>
-                            ) : (
-                                <>
-                                    <Link
-                                        href="/login"
-                                        className="hidden md:block font-label-md text-label-md text-primary bg-surface border-2 border-primary hover:bg-surface-variant px-4 py-2 rounded-lg transition-colors"
-                                    >
-                                        Masuk
-                                    </Link>
-                                    <Link
-                                        href="/register"
-                                        className="font-label-md text-label-md text-on-primary bg-primary hover:opacity-90 px-4 py-2 rounded-lg transition-colors shadow-sm"
-                                    >
-                                        Daftar
-                                    </Link>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </header>
+                <AppHeader />
 
                 {/* ===== Main ===== */}
                 <main className="flex-grow">
@@ -254,38 +204,7 @@ export default function Welcome() {
                     </section>
                 </main>
 
-                {/* ===== Footer ===== */}
-                <footer className="bg-tertiary text-tertiary-fixed font-body-md text-body-md border-t border-outline-variant">
-                    <div className="w-full py-xl px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-7xl mx-auto">
-                        <div className="flex flex-col gap-sm col-span-1">
-                            <div className="flex items-center gap-2">
-                                <img
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT3KH1r1c7ZmumLRrzMRaea-4Nub7I_QpCPtNqeNeBIi2383fGN4Fas2Sr8Q5gyyTLWAYvu6nBaUKyA_JUp7iND1keVnFigeLE2lL9sK2pR-4nQPAOA-jKhXnt4aez_iN1DdO89SSgF3iERm47auSmMMH8mdBw9-TuXaeGpQL6WKefcdzQFOxfjSiYNBLbn_rT3ENy7qVrVFSx3LLE6eTrawoLg85uqnIflQScuqw9XX55A70eqkI2WB7WC3rkFuD4WvQYQ--FYw"
-                                    alt="BelajarKUY Logo"
-                                    className="h-8 w-auto brightness-0 invert"
-                                />
-                            </div>
-                            <p className="text-tertiary-fixed-dim opacity-80 mt-2">
-                                © {new Date().getFullYear()} BelajarKUY. Belajar skill baru, KUY!
-                            </p>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <h4 className="font-label-md text-label-md text-secondary-container font-bold mb-2">Company</h4>
-                            <a href="#" className="text-tertiary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors">About Us</a>
-                            <a href="#" className="text-tertiary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors">Contact</a>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <h4 className="font-label-md text-label-md text-secondary-container font-bold mb-2">Explore</h4>
-                            <a href="/home" className="text-tertiary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors">Kategori</a>
-                            <a href="#" className="text-tertiary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors">Jadilah Instruktur</a>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <h4 className="font-label-md text-label-md text-secondary-container font-bold mb-2">Legal</h4>
-                            <a href="#" className="text-tertiary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors">Kebijakan Privasi</a>
-                            <a href="#" className="text-tertiary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors">Syarat &amp; Ketentuan</a>
-                        </div>
-                    </div>
-                </footer>
+                <AppFooter />
             </div>
         </>
     );
