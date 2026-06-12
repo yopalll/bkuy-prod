@@ -452,6 +452,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
 
     if (editing) {
         return (
+        <>
             <form onSubmit={handleUpdate} className="px-5 py-4 bg-primary-fixed/5 space-y-3">
                 {/* Judul */}
                 <div className="space-y-1">
@@ -569,6 +570,8 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
                     </button>
                 </div>
             </form>
+            {previewUrl && <VideoPreviewModal url={previewUrl} title={lecture.title} onClose={() => setPreviewUrl(null)} />}
+        </>
         );
     }
 
