@@ -32,7 +32,7 @@ class UpdateCourseRequest extends FormRequest
             'discount'       => ['nullable', 'integer', 'min:0', 'max:100'],
             'featured'       => ['boolean'],
             'bestseller'     => ['boolean'],
-            'thumbnail'      => ['nullable', 'image', 'max:2048'],
+            'thumbnail'      => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,mp4,webm,mov', 'max:51200'],
         ];
     }
 
@@ -45,8 +45,8 @@ class UpdateCourseRequest extends FormRequest
             'price.required'       => 'Harga wajib diisi.',
             'price.numeric'        => 'Harga harus berupa angka.',
             'discount.max'         => 'Diskon maksimal 100%.',
-            'thumbnail.image'      => 'Thumbnail harus berupa gambar.',
-            'thumbnail.max'        => 'Ukuran thumbnail maksimal 2MB.',
+            'thumbnail.mimes'      => 'Thumbnail harus berupa gambar (JPG, PNG, WebP) atau video (MP4, WebM, MOV).',
+            'thumbnail.max'        => 'Ukuran thumbnail maksimal 50MB.',
         ];
     }
 

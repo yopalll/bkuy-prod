@@ -88,22 +88,30 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
         }
     }, [data.title]);
 
-    const [preview, setPreview] = useState(course?.thumbnail ?? null);
+    const [preview, setPreview]         = useState(course?.thumbnail ?? null);
+    const [previewIsVideo, setPreviewIsVideo] = useState(() => isVideoUrl(course?.thumbnail));
     const fileInputRef = useRef(null);
+
+    function isVideoUrl(url) {
+        if (!url) return false;
+        return /\.(mp4|webm|mov)(\?|$)/i.test(url) || url.includes('/video/upload/');
+    }
 
     const handleThumbnailChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
         setData('thumbnail', file);
         setPreview(URL.createObjectURL(file));
+        setPreviewIsVideo(file.type.startsWith('video/'));
     };
 
     const handleThumbnailDrop = (e) => {
         e.preventDefault();
         const file = e.dataTransfer.files?.[0];
-        if (!file || !file.type.startsWith('image/')) return;
+        if (!file || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) return;
         setData('thumbnail', file);
         setPreview(URL.createObjectURL(file));
+        setPreviewIsVideo(file.type.startsWith('video/'));
     };
 
     const clearThumbnail = () => {
@@ -533,15 +541,25 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                     >
                                         {preview ? (
                                             <>
-                                                <img
-                                                    src={preview}
-                                                    alt="Preview thumbnail"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                {previewIsVideo ? (
+                                                    <video
+                                                        src={preview}
+                                                        className="w-full h-full object-cover"
+                                                        muted
+                                                        playsInline
+                                                        controls
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        src={preview}
+                                                        alt="Preview thumbnail"
+                                                        className="w-full h-full object-cover bg-white"
+                                                    />
+                                                )}
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                                     <div className="text-center text-white">
                                                         <span className="material-symbols-outlined text-[24px] block mb-1">upload</span>
-                                                        <p className="text-xs font-semibold">Ganti Gambar</p>
+                                                        <p className="text-xs font-semibold">Ganti Media</p>
                                                     </div>
                                                 </div>
                                             </>
@@ -549,10 +567,10 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                                                 <span className="material-symbols-outlined text-[32px] text-outline-variant mb-3">upload</span>
                                                 <p className="text-sm font-semibold text-on-surface-variant">
-                                                    Klik atau seret gambar ke sini
+                                                    Klik atau seret file ke sini
                                                 </p>
                                                 <p className="text-xs text-on-surface-variant/60 mt-1">
-                                                    PNG, JPG, WebP · Maks. 2MB · Rasio 16:9 disarankan
+                                                    Foto: JPG, PNG, WebP · Maks. 2MB<br/>Video: MP4, WebM, MOV · Maks. 50MB
                                                 </p>
                                             </div>
                                         )}
@@ -561,7 +579,7 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                     <input
                                         ref={fileInputRef}
                                         type="file"
-                                        accept="image/*"
+                                        accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
                                         className="hidden"
                                         onChange={handleThumbnailChange}
                                     />

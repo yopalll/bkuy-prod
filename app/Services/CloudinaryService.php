@@ -26,7 +26,8 @@ class CloudinaryService
     {
         try {
             $response = $this->cloudinary->uploadApi()->upload($file->getRealPath(), [
-                'folder' => $folder,
+                'folder'        => $folder,
+                'resource_type' => 'auto',
             ]);
 
             return [

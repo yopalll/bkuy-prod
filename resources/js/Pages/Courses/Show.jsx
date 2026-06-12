@@ -485,20 +485,30 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                                         allowFullScreen
                                     />
                                 </div>
+                            ) : course.thumbnail && /\.(mp4|webm|mov)(\?|$)/i.test(course.thumbnail) ? (
+                                <div className="relative aspect-video bg-black overflow-hidden">
+                                    <video
+                                        className="w-full h-full object-cover"
+                                        src={course.thumbnail}
+                                        controls
+                                        playsInline
+                                    />
+                                </div>
                             ) : (
-                                <div className="relative bg-primary aspect-video flex items-center justify-center overflow-hidden">
-                                    {course.thumbnail && (
+                                <div className="relative aspect-video overflow-hidden bg-surface-container-low">
+                                    {course.thumbnail ? (
                                         <img
-                                            className="absolute inset-0 w-full h-full object-cover opacity-60"
+                                            className="w-full h-full object-cover"
                                             src={course.thumbnail}
                                             alt={course.title}
                                             onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                         />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center gap-sm text-on-surface-variant">
+                                            <span className="material-symbols-outlined text-[48px]" style={{ fontVariationSettings: "'FILL' 0" }}>play_disabled</span>
+                                            <p className="font-caption text-caption">Belum ada video pratinjau</p>
+                                        </div>
                                     )}
-                                    <div className="relative z-10 flex flex-col items-center gap-sm text-on-primary/70">
-                                        <span className="material-symbols-outlined text-[48px]" style={{ fontVariationSettings: "'FILL' 0" }}>play_disabled</span>
-                                        <p className="font-caption text-caption text-on-primary/60">Belum ada video pratinjau</p>
-                                    </div>
                                 </div>
                             )}
 
