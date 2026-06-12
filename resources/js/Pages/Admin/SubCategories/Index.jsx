@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 function Modal({ title, onClose, children }) {
@@ -23,6 +24,7 @@ function Modal({ title, onClose, children }) {
 export default function SubCategoriesIndex({ subCategories, categories = [], subCategory: editInit = null }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editItem, setEditItem] = useState(editInit);
+    const [dialog, setDialog] = useState(null);
 
     const createForm = useForm({ name: '', category_id: '' });
     const editForm   = useForm({ name: editItem?.name ?? '', category_id: editItem?.category_id ?? '', _method: 'PATCH' });
@@ -42,8 +44,12 @@ export default function SubCategoriesIndex({ subCategories, categories = [], sub
     }
 
     function handleDelete(sub) {
-        if (!confirm(`Hapus sub-kategori "${sub.name}"?`)) return;
-        router.delete(`/admin/sub-categories/${sub.id}`);
+        setDialog({
+            title: 'Hapus Sub-Kategori',
+            message: `Hapus sub-kategori "${sub.name}"?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(`/admin/sub-categories/${sub.id}`),
+        });
     }
 
     function openEdit(sub) {
@@ -198,6 +204,7 @@ export default function SubCategoriesIndex({ subCategories, categories = [], sub
                     </form>
                 </Modal>
             )}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }

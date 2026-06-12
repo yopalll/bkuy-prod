@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 function Modal({ title, onClose, children }) {
@@ -23,6 +24,7 @@ function Modal({ title, onClose, children }) {
 export default function PartnersIndex({ partners, editPartner = null }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editItem, setEditItem] = useState(editPartner);
+    const [dialog, setDialog] = useState(null);
 
     const createForm = useForm({ name: '', url: '', logo: null, order_position: 0 });
     const editForm   = useForm({ name: editItem?.name ?? '', url: editItem?.url ?? '', logo: null, order_position: editItem?.order_position ?? 0, _method: 'PATCH' });
@@ -36,8 +38,12 @@ export default function PartnersIndex({ partners, editPartner = null }) {
         editForm.post(`/admin/partners/${editItem.id}`, { forceFormData: true, onSuccess: () => setEditItem(null) });
     }
     function handleDelete(p) {
-        if (!confirm(`Hapus partner "${p.name}"?`)) return;
-        router.delete(`/admin/partners/${p.id}`);
+        setDialog({
+            title: 'Hapus Partner',
+            message: `Hapus partner "${p.name}"?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(`/admin/partners/${p.id}`),
+        });
     }
     function openEdit(p) {
         setEditItem(p);
@@ -141,6 +147,7 @@ export default function PartnersIndex({ partners, editPartner = null }) {
             {editItem && <Modal title={`Edit: ${editItem.name}`} onClose={() => setEditItem(null)}>
                 <PartnerForm form={editForm} onSubmit={handleEdit} label="Perbarui" editItem={editItem} />
             </Modal>}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }

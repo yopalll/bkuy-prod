@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 function Modal({ title, onClose, children }) {
@@ -35,6 +36,7 @@ export default function SlidersIndex({ sliders, editSlider = null }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editItem, setEditItem] = useState(editSlider);
     const [toggling, setToggling] = useState(null);
+    const [dialog, setDialog] = useState(null);
 
     const createForm = useForm({ title: '', subtitle: '', image: null, order_position: 0 });
     const editForm   = useForm({ title: editItem?.title ?? '', subtitle: editItem?.subtitle ?? '', image: null, order_position: editItem?.order_position ?? 0, _method: 'PATCH' });
@@ -48,8 +50,12 @@ export default function SlidersIndex({ sliders, editSlider = null }) {
         editForm.post(`/admin/sliders/${editItem.id}`, { forceFormData: true, onSuccess: () => setEditItem(null) });
     }
     function handleDelete(slider) {
-        if (!confirm(`Hapus slider "${slider.title}"?`)) return;
-        router.delete(`/admin/sliders/${slider.id}`);
+        setDialog({
+            title: 'Hapus Slider',
+            message: `Hapus slider "${slider.title}"?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(`/admin/sliders/${slider.id}`),
+        });
     }
     function openEdit(s) {
         setEditItem(s);
@@ -159,6 +165,7 @@ export default function SlidersIndex({ sliders, editSlider = null }) {
 
             {showCreate && <Modal title="Tambah Slider" onClose={() => setShowCreate(false)}><SliderForm form={createForm} onSubmit={handleCreate} label="Simpan" /></Modal>}
             {editItem && <Modal title={`Edit: ${editItem.title}`} onClose={() => setEditItem(null)}><SliderForm form={editForm} onSubmit={handleEdit} label="Perbarui" /></Modal>}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }

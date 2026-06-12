@@ -1,6 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 const ROLE_CONFIG = {
@@ -15,6 +16,7 @@ export default function UsersIndex({ users, filters = {} }) {
     const [roleFilter, setRoleFilter] = useState(filters.role ?? '');
     const [editingId, setEditingId] = useState(null);
     const [newRole, setNewRole] = useState('');
+    const [dialog, setDialog] = useState(null);
 
     function applyFilters(overrides = {}) {
         const params = {
@@ -41,10 +43,14 @@ export default function UsersIndex({ users, filters = {} }) {
 
     function submitRoleChange(user) {
         if (newRole === user.role) { cancelEdit(); return; }
-        if (!confirm(`Ubah role "${user.name}" dari "${user.role}" ke "${newRole}"?`)) return;
-        router.patch(route('admin.users.update-role', user.id), { role: newRole }, {
-            onSuccess: cancelEdit,
-            preserveState: true,
+        setDialog({
+            title: 'Ubah Role Pengguna',
+            message: `Ubah role "${user.name}" dari "${user.role}" ke "${newRole}"?`,
+            icon: 'manage_accounts', variant: 'warning', confirmLabel: 'Ubah Role',
+            onConfirm: () => router.patch(route('admin.users.update-role', user.id), { role: newRole }, {
+                onSuccess: cancelEdit,
+                preserveState: true,
+            }),
         });
     }
 
@@ -209,6 +215,8 @@ export default function UsersIndex({ users, filters = {} }) {
 
                 <Pagination data={users} preserveState={true} />
             </div>
+
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }

@@ -1,6 +1,7 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import InstructorLayout from '@/Layouts/InstructorLayout';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 const SOURCE_TYPE_OPTIONS = [
     { value: 'youtube', icon: 'smart_display', label: 'YouTube',      color: 'text-red-500' },
@@ -37,6 +38,7 @@ export default function Curriculum({ course, sections: initialSections = [] }) {
         Object.fromEntries(initialSections.map((s) => [s.id, true]))
     );
     const [flash, setFlash] = useState(null);
+    const [dialog, setDialog] = useState(null);
 
     const reloadPage = () => router.reload({ only: ['sections'] });
 
@@ -66,9 +68,13 @@ export default function Curriculum({ course, sections: initialSections = [] }) {
     );
 
     const handleSubmitForReview = () => {
-        if (!confirm('Ajukan kursus ini untuk ditinjau admin? Pastikan kurikulum sudah lengkap.')) return;
-        router.post(route('instructor.courses.submit', course.id), {}, {
-            onSuccess: () => showFlash('success', 'Kursus berhasil diajukan untuk ditinjau admin.'),
+        setDialog({
+            title: 'Ajukan untuk Ditinjau',
+            message: 'Pastikan kurikulum sudah lengkap sebelum diajukan ke admin.',
+            icon: 'send', variant: 'primary', confirmLabel: 'Ajukan',
+            onConfirm: () => router.post(route('instructor.courses.submit', course.id), {}, {
+                onSuccess: () => showFlash('success', 'Kursus berhasil diajukan untuk ditinjau admin.'),
+            }),
         });
     };
 
@@ -241,6 +247,7 @@ export default function Curriculum({ course, sections: initialSections = [] }) {
                 }
                 .animate-slide-in { animation: slide-in 0.25s ease-out; }
             `}</style>
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </InstructorLayout>
     );
 }
@@ -252,6 +259,7 @@ function SectionCard({ section, sectionIndex, courseId, isOpen, onToggle, onRelo
     const [editingTitle, setEditingTitle] = useState(false);
     const [titleValue, setTitleValue] = useState(section.title);
     const [addingLecture, setAddingLecture] = useState(false);
+    const [dialog, setDialog] = useState(null);
 
     const handleUpdateTitle = () => {
         if (!titleValue.trim()) return;
@@ -266,17 +274,22 @@ function SectionCard({ section, sectionIndex, courseId, isOpen, onToggle, onRelo
     };
 
     const handleDeleteSection = () => {
-        if (!confirm(`Hapus section "${section.title}" beserta semua lecture-nya?`)) return;
-        router.delete(
-            route('instructor.courses.sections.destroy', { course: courseId, section: section.id }),
-            {
-                onSuccess: () => { onReload(); onFlash('success', 'Section dihapus.'); },
-                onError: () => onFlash('error', 'Gagal menghapus section.'),
-            }
-        );
+        setDialog({
+            title: 'Hapus Section',
+            message: `Hapus "${section.title}" beserta semua lecture-nya?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(
+                route('instructor.courses.sections.destroy', { course: courseId, section: section.id }),
+                {
+                    onSuccess: () => { onReload(); onFlash('success', 'Section dihapus.'); },
+                    onError: () => onFlash('error', 'Gagal menghapus section.'),
+                }
+            ),
+        });
     };
 
     return (
+        <>
         <div className="bg-surface rounded-2xl border border-surface-variant shadow-sm overflow-hidden">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-surface-variant/50">
                 <span className="material-symbols-outlined text-[18px] text-outline-variant flex-shrink-0 cursor-grab">drag_indicator</span>
@@ -366,6 +379,8 @@ function SectionCard({ section, sectionIndex, courseId, isOpen, onToggle, onRelo
                 </div>
             )}
         </div>
+        {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
+        </>
     );
 }
 
@@ -394,6 +409,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
     const [editSourceType, setEditSourceType] = useState(currentSourceType);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [previewLoading, setPreviewLoading] = useState(false);
+    const [dialog, setDialog] = useState(null);
 
     async function handlePreview() {
         setPreviewLoading(true);
@@ -440,14 +456,18 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
     };
 
     const handleDelete = () => {
-        if (!confirm(`Hapus lecture "${lecture.title}"?`)) return;
-        router.delete(
-            route('instructor.courses.sections.lectures.destroy', { course: courseId, section: sectionId, lecture: lecture.id }),
-            {
-                onSuccess: () => { onReload(); onFlash('success', 'Lecture dihapus.'); },
-                onError: () => onFlash('error', 'Gagal menghapus lecture.'),
-            }
-        );
+        setDialog({
+            title: 'Hapus Lecture',
+            message: `Hapus "${lecture.title}"?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(
+                route('instructor.courses.sections.lectures.destroy', { course: courseId, section: sectionId, lecture: lecture.id }),
+                {
+                    onSuccess: () => { onReload(); onFlash('success', 'Lecture dihapus.'); },
+                    onError: () => onFlash('error', 'Gagal menghapus lecture.'),
+                }
+            ),
+        });
     };
 
     if (editing) {
@@ -623,6 +643,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
             </div>
         </div>
         {previewUrl && <VideoPreviewModal url={previewUrl} title={lecture.title} onClose={() => setPreviewUrl(null)} />}
+        {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </>
     );
 }

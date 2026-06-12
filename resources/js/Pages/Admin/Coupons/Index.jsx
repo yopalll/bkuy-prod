@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 function Modal({ title, onClose, children }) {
@@ -30,6 +31,7 @@ export default function CouponsIndex({ coupons, filters = {} }) {
     const [form, setForm] = useState(EMPTY_FORM);
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+    const [dialog, setDialog] = useState(null);
 
     function applyFilters(overrides = {}) {
         router.get('/admin/coupons', { search, scope: scopeFilter, ...overrides }, { preserveState: true, replace: true });
@@ -79,8 +81,12 @@ export default function CouponsIndex({ coupons, filters = {} }) {
     }
 
     function handleDelete(coupon) {
-        if (!confirm(`Hapus kupon "${coupon.code}"? Aksi ini tidak bisa dibatalkan.`)) return;
-        router.delete(route('admin.coupons.destroy', coupon.id));
+        setDialog({
+            title: 'Hapus Kupon',
+            message: `Hapus kupon "${coupon.code}"? Aksi ini tidak bisa dibatalkan.`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(route('admin.coupons.destroy', coupon.id)),
+        });
     }
 
     function handleToggle(coupon) {
@@ -338,6 +344,7 @@ export default function CouponsIndex({ coupons, filters = {} }) {
                     <CouponForm />
                 </Modal>
             )}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }

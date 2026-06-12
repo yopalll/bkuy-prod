@@ -3,6 +3,7 @@ import { useState } from 'react';
 import InstructorLayout from '@/Layouts/InstructorLayout';
 import Badge from '@/Components/Badge';
 import EmptyState from '@/Components/EmptyState';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 // Layar: manajemen_kursus_instruktur/code.html (Vascha & Quinsha).
 // Route: instructor.courses.index → GET /instructor/courses
@@ -11,6 +12,7 @@ export default function Index({ courses = [] }) {
     const [submitTarget, setSubmitTarget] = useState(null);
     const [agreed, setAgreed]           = useState(false);
     const [submitting, setSubmitting]   = useState(false);
+    const [dialog, setDialog]           = useState(null);
 
     const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
 
@@ -22,10 +24,16 @@ export default function Index({ courses = [] }) {
     };
 
     const handleDelete = (course) => {
-        if (!confirm(`Hapus kursus "${course.title}"? Tindakan ini tidak bisa dibatalkan.`)) return;
-        setDeletingId(course.id);
-        router.delete(route('instructor.courses.destroy', course.id), {
-            onFinish: () => setDeletingId(null),
+        setDialog({
+            title: 'Hapus Kursus',
+            message: `Hapus "${course.title}"? Tindakan ini tidak bisa dibatalkan.`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => {
+                setDeletingId(course.id);
+                router.delete(route('instructor.courses.destroy', course.id), {
+                    onFinish: () => setDeletingId(null),
+                });
+            },
         });
     };
 
@@ -319,6 +327,8 @@ export default function Index({ courses = [] }) {
                     </div>
                 </div>
             )}
+
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </InstructorLayout>
     );
 }

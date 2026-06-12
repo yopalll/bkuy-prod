@@ -1,6 +1,7 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import InstructorLayout from '@/Layouts/InstructorLayout';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 // Layar: informasi_dasar_kursus (Vascha & Quinsha)
 // Route: instructor.courses.create → GET /instructor/courses/create
@@ -13,6 +14,7 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
     const [goalInput, setGoalInput]     = useState('');
     const [goalLoading, setGoalLoading] = useState(false);
     const [goalError, setGoalError]     = useState('');
+    const [dialog, setDialog]           = useState(null);
 
     function getCsrf() {
         return decodeURIComponent(
@@ -130,8 +132,12 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
     };
 
     const handleSubmitForReview = () => {
-        if (!confirm('Ajukan kursus ini untuk ditinjau admin?')) return;
-        router.post(route('instructor.courses.submit', course.id));
+        setDialog({
+            title: 'Ajukan untuk Ditinjau',
+            message: 'Kursus akan dikirim ke admin untuk ditinjau.',
+            icon: 'send', variant: 'primary', confirmLabel: 'Ajukan',
+            onConfirm: () => router.post(route('instructor.courses.submit', course.id)),
+        });
     };
 
     const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
@@ -652,6 +658,7 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                     </div>
                 </form>
             </div>
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </InstructorLayout>
     );
 }

@@ -1,6 +1,7 @@
 import InstructorLayout from '@/Layouts/InstructorLayout';
 import { Head, router, usePage, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 // Layar: manajemen_kupon_diskon (Vascha & Quinsha)
 // Route: GET /instructor/coupons → instructor.coupons.index
@@ -246,7 +247,7 @@ function CouponForm({ courses, editing, onClose }) {
 }
 
 /* ─── CouponRow ─── */
-function CouponRow({ coupon, onEdit, onDelete, onToggle }) {
+function CouponRow({ coupon, onEdit, onDelete, onToggle, onDeleteRequest }) {
     const [toggling, setToggling] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
@@ -258,9 +259,7 @@ function CouponRow({ coupon, onEdit, onDelete, onToggle }) {
     }
 
     function handleDelete() {
-        if (!confirm(`Hapus kupon "${coupon.code}"?`)) return;
-        setDeleting(true);
-        onDelete(coupon.id);
+        onDeleteRequest(coupon, () => { setDeleting(true); onDelete(coupon.id); });
     }
 
     const usageLabel = coupon.max_usage
@@ -366,6 +365,16 @@ export default function CouponsIndex({ coupons: initialCoupons, courses }) {
     const [coupons, setCoupons] = useState(initialCoupons ?? []);
     const [showForm, setShowForm]   = useState(false);
     const [editing, setEditing]     = useState(null);
+    const [dialog, setDialog]       = useState(null);
+
+    function requestDelete(coupon, doDelete) {
+        setDialog({
+            title: 'Hapus Kupon',
+            message: `Hapus kupon "${coupon.code}"?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: doDelete,
+        });
+    }
 
     function openCreate() {
         setEditing(null);
@@ -500,6 +509,7 @@ export default function CouponsIndex({ coupons: initialCoupons, courses }) {
                                             onEdit={openEdit}
                                             onDelete={handleDelete}
                                             onToggle={handleToggle}
+                                            onDeleteRequest={requestDelete}
                                         />
                                     ))}
                                 </tbody>
@@ -525,6 +535,7 @@ export default function CouponsIndex({ coupons: initialCoupons, courses }) {
                     onClose={handleClose}
                 />
             )}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </InstructorLayout>
     );
 }

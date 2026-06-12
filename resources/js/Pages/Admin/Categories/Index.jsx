@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 function Modal({ title, onClose, children }) {
@@ -37,6 +38,7 @@ export default function CategoriesIndex({ categories, editCategory = null }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editItem, setEditItem] = useState(editCategory);
     const [toggling, setToggling] = useState(null);
+    const [dialog, setDialog] = useState(null);
 
     const createForm = useForm({ name: '', image: null });
     const editForm = useForm({ name: editItem?.name ?? '', image: null, _method: 'PATCH' });
@@ -58,8 +60,12 @@ export default function CategoriesIndex({ categories, editCategory = null }) {
     }
 
     function handleDelete(category) {
-        if (!confirm(`Hapus kategori "${category.name}"? Data yang terhubung mungkin terpengaruh.`)) return;
-        router.delete(`/admin/categories/${category.id}`);
+        setDialog({
+            title: 'Hapus Kategori',
+            message: `Hapus "${category.name}"? Data yang terhubung mungkin terpengaruh.`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(`/admin/categories/${category.id}`),
+        });
     }
 
     function handleToggle(category) {
@@ -235,6 +241,7 @@ export default function CategoriesIndex({ categories, editCategory = null }) {
                     </form>
                 </Modal>
             )}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }

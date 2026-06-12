@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 const STATUS_CONFIG = {
     pending_review: { label: 'Pending Review', cls: 'bg-warning/10 text-warning border-warning/30' },
@@ -222,14 +223,14 @@ function RejectModal({ course, onClose }) {
 
 export default function CourseShow({ course }) {
     const cfg = STATUS_CONFIG[course.status] ?? { label: course.status, cls: 'bg-surface-variant text-on-surface-variant border-outline-variant' };
-    const [rejectOpen, setRejectOpen] = useState(false);
+    const [rejectOpen, setRejectOpen]   = useState(false);
+    const [approveOpen, setApproveOpen] = useState(false);
 
     const totalLectures = course.sections?.reduce((s, sec) => s + (sec.lectures?.length ?? 0), 0) ?? 0;
     const totalMinutes  = course.sections?.reduce((s, sec) =>
         s + (sec.lectures?.reduce((ls, l) => ls + (l.duration ?? 0), 0) ?? 0), 0) ?? 0;
 
     function approve() {
-        if (!confirm('Setujui dan publikasikan kursus ini?')) return;
         router.patch(`/admin/courses/${course.id}/status`, { status: 'active' }, { preserveScroll: true });
     }
 
@@ -328,7 +329,7 @@ export default function CourseShow({ course }) {
                         <h2 className="font-headline-md text-headline-md text-on-surface mb-lg">Aksi Moderasi</h2>
                         <div className="space-y-sm">
                             {course.status !== 'active' && (
-                                <button id="btn-setujui-kursus" onClick={approve}
+                                <button id="btn-setujui-kursus" onClick={() => setApproveOpen(true)}
                                     className="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-md rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-sm">
                                     <span className="material-symbols-outlined text-[20px]">check_circle</span>
                                     Setujui & Publikasikan
@@ -386,6 +387,16 @@ export default function CourseShow({ course }) {
             </div>
 
             {rejectOpen && <RejectModal course={course} onClose={() => setRejectOpen(false)} />}
+            <ConfirmDialog
+                open={approveOpen}
+                onClose={() => setApproveOpen(false)}
+                onConfirm={approve}
+                title="Setujui & Publikasikan"
+                message={`Kursus "${course.title}" akan dipublikasikan ke platform.`}
+                icon="check_circle"
+                variant="primary"
+                confirmLabel="Setujui"
+            />
         </AdminLayout>
     );
 }

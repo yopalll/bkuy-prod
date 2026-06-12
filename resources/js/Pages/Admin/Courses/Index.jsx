@@ -1,6 +1,7 @@
 import { Head, router, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 const STATUS_CONFIG = {
@@ -22,10 +23,9 @@ function StatusBadge({ status }) {
 
 export default function CoursesIndex({ courses }) {
     const [activeTab, setActiveTab] = useState('all');
+    const [dialog, setDialog] = useState(null);
 
     function updateStatus(course, status) {
-        const label = status === 'active' ? 'menyetujui' : 'menolak';
-        if (!confirm(`Yakin ${label} kursus "${course.title}"?`)) return;
         router.patch(`/admin/courses/${course.id}/status`, { status });
     }
 
@@ -121,7 +121,12 @@ export default function CoursesIndex({ courses }) {
                         <div className="flex xl:flex-col justify-end xl:justify-center gap-sm shrink-0 border-t xl:border-t-0 xl:border-l border-surface-variant pt-md xl:pt-0 xl:pl-lg mt-md xl:mt-0">
                             {course.status === 'pending_review' && (
                                 <button
-                                    onClick={() => updateStatus(course, 'active')}
+                                    onClick={() => setDialog({
+                                        title: 'Setujui Kursus',
+                                        message: `Publikasikan kursus "${course.title}"?`,
+                                        icon: 'check_circle', variant: 'primary', confirmLabel: 'Setujui',
+                                        onConfirm: () => updateStatus(course, 'active'),
+                                    })}
                                     className="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-xs"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -130,7 +135,12 @@ export default function CoursesIndex({ courses }) {
                             )}
                             {course.status === 'active' && (
                                 <button
-                                    onClick={() => updateStatus(course, 'inactive')}
+                                    onClick={() => setDialog({
+                                        title: 'Nonaktifkan Kursus',
+                                        message: `Kursus "${course.title}" akan disembunyikan dari platform.`,
+                                        icon: 'cancel', variant: 'danger', confirmLabel: 'Nonaktifkan',
+                                        onConfirm: () => updateStatus(course, 'inactive'),
+                                    })}
                                     className="bg-error text-on-error font-label-md text-label-md px-lg py-sm rounded-lg hover:opacity-90 transition-colors flex items-center justify-center gap-xs"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">cancel</span>
@@ -139,7 +149,12 @@ export default function CoursesIndex({ courses }) {
                             )}
                             {course.status === 'inactive' && (
                                 <button
-                                    onClick={() => updateStatus(course, 'active')}
+                                    onClick={() => setDialog({
+                                        title: 'Aktifkan Kursus',
+                                        message: `Publikasikan kembali kursus "${course.title}"?`,
+                                        icon: 'check_circle', variant: 'primary', confirmLabel: 'Aktifkan',
+                                        onConfirm: () => updateStatus(course, 'active'),
+                                    })}
                                     className="bg-success text-white font-label-md text-label-md px-lg py-sm rounded-lg hover:opacity-90 transition-colors flex items-center justify-center gap-xs"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -154,13 +169,13 @@ export default function CoursesIndex({ courses }) {
                                 Detail
                             </Link>
                             {course.status === 'pending_review' && (
-                                <button
-                                    onClick={() => updateStatus(course, 'inactive')}
+                                <Link
+                                    href={`/admin/courses/${course.id}`}
                                     className="text-error font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-error-container transition-colors flex items-center justify-center gap-xs"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">cancel</span>
                                     Tolak
-                                </button>
+                                </Link>
                             )}
                         </div>
                     </div>
@@ -168,6 +183,10 @@ export default function CoursesIndex({ courses }) {
             </div>
 
             <Pagination data={courses} />
+
+            {dialog && (
+                <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />
+            )}
         </AdminLayout>
     );
 }

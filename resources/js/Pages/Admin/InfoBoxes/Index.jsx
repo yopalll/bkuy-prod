@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Admin/Pagination';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { useState } from 'react';
 
 function Modal({ title, onClose, children }) {
@@ -21,6 +22,7 @@ function Modal({ title, onClose, children }) {
 export default function InfoBoxesIndex({ infoBoxes, editInfoBox = null }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editItem, setEditItem] = useState(editInfoBox);
+    const [dialog, setDialog] = useState(null);
 
     const createForm = useForm({ title: '', description: '', icon: '', order_position: 0 });
     const editForm   = useForm({ title: editItem?.title ?? '', description: editItem?.description ?? '', icon: editItem?.icon ?? '', order_position: editItem?.order_position ?? 0, _method: 'PATCH' });
@@ -34,8 +36,12 @@ export default function InfoBoxesIndex({ infoBoxes, editInfoBox = null }) {
         editForm.post(`/admin/info-boxes/${editItem.id}`, { onSuccess: () => setEditItem(null) });
     }
     function handleDelete(ib) {
-        if (!confirm(`Hapus info box "${ib.title}"?`)) return;
-        router.delete(`/admin/info-boxes/${ib.id}`);
+        setDialog({
+            title: 'Hapus Info Box',
+            message: `Hapus info box "${ib.title}"?`,
+            icon: 'delete', variant: 'danger', confirmLabel: 'Hapus',
+            onConfirm: () => router.delete(`/admin/info-boxes/${ib.id}`),
+        });
     }
     function openEdit(ib) {
         setEditItem(ib);
@@ -136,6 +142,7 @@ export default function InfoBoxesIndex({ infoBoxes, editInfoBox = null }) {
             {editItem && <Modal title={`Edit: ${editItem.title}`} onClose={() => setEditItem(null)}>
                 <InfoBoxForm form={editForm} onSubmit={handleEdit} label="Perbarui" onCancel={() => setEditItem(null)} />
             </Modal>}
+            {dialog && <ConfirmDialog open onClose={() => setDialog(null)} {...dialog} />}
         </AdminLayout>
     );
 }
