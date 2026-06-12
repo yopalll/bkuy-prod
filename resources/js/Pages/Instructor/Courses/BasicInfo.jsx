@@ -442,7 +442,18 @@ export default function BasicInfo({ course, categories = [], subcategories = [] 
                                 </div>
                             </div>
 
-                            {/* Section: Yang Akan Anda Pelajari (hanya saat edit) */}
+                            {/* Section: Yang Akan Anda Pelajari */}
+                            {!isEditing && (
+                                <div className="bg-surface rounded-2xl p-lg md:p-xl border border-primary/5 shadow-sm">
+                                    <div className="flex items-center gap-sm mb-md">
+                                        <span className="text-lg">🎯</span>
+                                        <h2 className="font-headline-md text-headline-md text-on-surface">Yang Akan Anda Pelajari</h2>
+                                    </div>
+                                    <p className="font-body-md text-body-md text-on-surface-variant">
+                                        Simpan kursus terlebih dahulu, lalu kamu bisa menambahkan poin pembelajaran di halaman edit.
+                                    </p>
+                                </div>
+                            )}
                             {isEditing && (
                                 <div className="bg-surface rounded-2xl p-lg md:p-xl border border-primary/5 shadow-sm overflow-hidden">
                                     <div className="flex items-center gap-sm mb-md">
