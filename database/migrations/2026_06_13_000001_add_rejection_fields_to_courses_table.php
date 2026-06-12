@@ -9,9 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            $table->text('rejection_reason')->nullable()->after('status');
-            $table->text('rejection_suggestion')->nullable()->after('rejection_reason');
-            $table->timestamp('reviewed_at')->nullable()->after('rejection_suggestion');
+            if (!Schema::hasColumn('courses', 'rejection_reason')) {
+                $table->text('rejection_reason')->nullable()->after('status');
+            }
+            if (!Schema::hasColumn('courses', 'rejection_suggestion')) {
+                $table->text('rejection_suggestion')->nullable()->after('rejection_reason');
+            }
+            if (!Schema::hasColumn('courses', 'reviewed_at')) {
+                $table->timestamp('reviewed_at')->nullable()->after('rejection_suggestion');
+            }
         });
     }
 
