@@ -29,7 +29,7 @@ class Course extends Model
         'status',
     ];
 
-    protected $appends = ['discounted_price', 'average_rating'];
+    protected $appends = ['discounted_price', 'average_rating', 'thumbnail_url'];
 
     protected function casts(): array
     {
@@ -116,6 +116,11 @@ class Course extends Model
     }
 
     // ========================== ACCESSORS ============================
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        return $this->thumbnail ?: null;
+    }
 
     /**
      * Harga setelah diskon: price - (price * discount / 100).
