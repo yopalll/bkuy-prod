@@ -372,10 +372,42 @@ function SectionCard({ section, sectionIndex, courseId, isOpen, onToggle, onRelo
 /* ─────────────────────────────────────────────────────────────
    LectureRow
 ───────────────────────────────────────────────────────────── */
+function VideoPreviewModal({ url, title, onClose }) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+            <div className="bg-surface rounded-2xl overflow-hidden w-full max-w-3xl shadow-2xl" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between px-lg py-md border-b border-outline-variant">
+                    <p className="font-label-md text-label-md text-on-surface truncate">{title}</p>
+                    <button onClick={onClose} className="p-1 rounded-lg hover:bg-surface-variant transition-colors">
+                        <span className="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                </div>
+                <video src={url} controls autoPlay className="w-full aspect-video bg-black" />
+            </div>
+        </div>
+    );
+}
+
 function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFlash }) {
     const [editing, setEditing] = useState(false);
     const currentSourceType = lecture.source_type ?? 'youtube';
     const [editSourceType, setEditSourceType] = useState(currentSourceType);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewLoading, setPreviewLoading] = useState(false);
+
+    async function handlePreview() {
+        setPreviewLoading(true);
+        try {
+            const res = await fetch(route('instructor.courses.lectures.preview-url', { course: courseId, lecture: lecture.id }));
+            const json = await res.json();
+            if (json.url) setPreviewUrl(json.url);
+            else onFlash('error', json.error ?? 'Gagal memuat video.');
+        } catch {
+            onFlash('error', 'Gagal memuat video.');
+        } finally {
+            setPreviewLoading(false);
+        }
+    }
 
     const { data, setData, patch, processing, errors, progress } = useForm({
         title:        lecture.title,
@@ -457,10 +489,16 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
                             <span className="font-normal text-on-surface-variant normal-case tracking-normal ml-1">(mp4, webm, mov — maks 500MB)</span>
                         </label>
                         {currentSourceType === 'gcs' && lecture.has_video && (
-                            <p className="text-xs text-success flex items-center gap-1 mb-1">
-                                <span className="material-symbols-outlined text-[12px]">check_circle</span>
-                                Video tersimpan — upload baru untuk mengganti
-                            </p>
+                            <div className="flex items-center gap-2 mb-1">
+                                <p className="text-xs text-success flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[12px]">check_circle</span>
+                                    Video tersimpan — upload baru untuk mengganti
+                                </p>
+                                <button type="button" onClick={handlePreview} disabled={previewLoading}
+                                    className="text-xs text-primary underline hover:no-underline disabled:opacity-50">
+                                    {previewLoading ? 'Memuat...' : 'Preview'}
+                                </button>
+                            </div>
                         )}
                         <input type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime"
                             onChange={async (e) => {
@@ -567,6 +605,11 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
             </div>
 
             <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                {currentSourceType === 'gcs' && lecture.has_video && (
+                    <button onClick={handlePreview} disabled={previewLoading} className="p-1.5 rounded-lg text-on-surface-variant hover:text-success hover:bg-success/10 transition-colors" title="Preview video">
+                        <span className="material-symbols-outlined text-[14px]">{previewLoading ? 'hourglass_empty' : 'play_circle'}</span>
+                    </button>
+                )}
                 <button onClick={() => setEditing(true)} className="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary-fixed/20 transition-colors" title="Edit lecture">
                     <span className="material-symbols-outlined text-[14px]">edit</span>
                 </button>
@@ -575,6 +618,7 @@ function LectureRow({ lecture, lectureIndex, courseId, sectionId, onReload, onFl
                 </button>
             </div>
         </div>
+        {previewUrl && <VideoPreviewModal url={previewUrl} title={lecture.title} onClose={() => setPreviewUrl(null)} />}
     );
 }
 
@@ -810,13 +854,16 @@ function formatDuration(totalMinutes) {
 
 function detectVideoDuration(file) {
     return new Promise((resolve) => {
+        const url = URL.createObjectURL(file);
         const video = document.createElement('video');
         video.preload = 'metadata';
         video.onloadedmetadata = () => {
-            URL.revokeObjectURL(video.src);
-            resolve(Math.round(video.duration / 60));
+            URL.revokeObjectURL(url);
+            const secs = video.duration;
+            resolve(isFinite(secs) && secs > 0 ? Math.max(1, Math.round(secs / 60)) : 0);
         };
-        video.onerror = () => resolve(0);
-        video.src = URL.createObjectURL(file);
+        video.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
+        video.src = url;
+        video.load();
     });
 }

@@ -136,6 +136,7 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('instructor')
     Route::patch('courses/{course}/sections/{section}/lectures/{lecture}', [InstructorLectureController::class, 'update'])->name('courses.sections.lectures.update');
     Route::delete('courses/{course}/sections/{section}/lectures/{lecture}', [InstructorLectureController::class, 'destroy'])->name('courses.sections.lectures.destroy');
     Route::post('courses/{course}/sections/{section}/lectures/reorder', [InstructorLectureController::class, 'reorder'])->name('courses.sections.lectures.reorder');
+    Route::get('courses/{course}/lectures/{lecture}/preview-url', [InstructorLectureController::class, 'previewUrl'])->name('courses.lectures.preview-url');
 
     // Goals (Yang Akan Anda Pelajari)
     Route::post('courses/{course}/goals', [InstructorCourseGoalController::class, 'store'])->name('courses.goals.store');

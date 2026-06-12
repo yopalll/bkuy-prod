@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\CourseLecture;
 use App\Models\CourseSection;
 use App\Services\GcsVideoService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -187,6 +188,23 @@ class LectureController extends Controller
             ->each(fn ($l, $i) => $l->update(['sort_order' => $i + 1]));
 
         return back()->with('success', 'Lecture berhasil dihapus.');
+    }
+
+    public function previewUrl(Course $course, CourseLecture $lecture): JsonResponse
+    {
+        $this->authorizedCourse($course->id);
+        abort_unless(
+            $lecture->section()->where('course_id', $course->id)->exists(),
+            403
+        );
+        abort_unless($lecture->source_type === 'gcs' && $lecture->video_path, 404);
+
+        if (!GcsVideoService::isConfigured()) {
+            return response()->json(['error' => 'GCS belum dikonfigurasi.'], 503);
+        }
+
+        $url = app(GcsVideoService::class)->signedUrl($lecture->video_path);
+        return response()->json(['url' => $url]);
     }
 
     public function reorder(Request $request, Course $course, CourseSection $section): RedirectResponse
