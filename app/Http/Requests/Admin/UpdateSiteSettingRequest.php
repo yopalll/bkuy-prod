@@ -24,7 +24,10 @@ class UpdateSiteSettingRequest extends FormRequest
             'instagram' => ['nullable', 'url', 'max:255'],
             'twitter' => ['nullable', 'url', 'max:255'],
             'youtube' => ['nullable', 'url', 'max:255'],
-            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
+            'logo'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
+            'logo_rocket'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
+            'logo_text_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
+            'favicon'         => ['nullable', 'file', 'mimes:jpeg,png,jpg,webp,ico,svg', 'max:512'],
         ];
     }
 }

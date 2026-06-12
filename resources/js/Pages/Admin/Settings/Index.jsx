@@ -3,18 +3,21 @@ import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function SettingsIndex({ settings = {} }) {
     const { data, setData, post, processing, errors } = useForm({
-        site_name:     settings.site_name     ?? '',
-        tagline:       settings.tagline       ?? '',
-        email:         settings.email         ?? '',
-        phone:         settings.phone         ?? '',
-        address:       settings.address       ?? '',
-        facebook:      settings.facebook      ?? '',
-        instagram:     settings.instagram     ?? '',
-        twitter:       settings.twitter       ?? '',
-        youtube:       settings.youtube       ?? '',
-        footer_text:   settings.footer_text   ?? '',
-        logo:          null,
-        _method:       'PUT',
+        site_name:        settings.site_name     ?? '',
+        tagline:          settings.tagline       ?? '',
+        email:            settings.email         ?? '',
+        phone:            settings.phone         ?? '',
+        address:          settings.address       ?? '',
+        facebook:         settings.facebook      ?? '',
+        instagram:        settings.instagram     ?? '',
+        twitter:          settings.twitter       ?? '',
+        youtube:          settings.youtube       ?? '',
+        footer_text:      settings.footer_text   ?? '',
+        logo:             null,
+        logo_rocket:      null,
+        logo_text_image:  null,
+        favicon:          null,
+        _method:          'PUT',
     });
 
     function handleSubmit(e) {
@@ -71,14 +74,64 @@ export default function SettingsIndex({ settings = {} }) {
                                 <label className="font-label-md text-label-md text-on-surface block">Footer Text</label>
                                 <input type="text" value={data.footer_text} onChange={e => setData('footer_text', e.target.value)} className={inputCls} placeholder="© 2026 BelajarKUY. All rights reserved." />
                             </div>
-                            <div className="md:col-span-2 space-y-xs">
-                                <label className="font-label-md text-label-md text-on-surface block">Logo Situs</label>
-                                {settings.logo && (
-                                    <img src={settings.logo} alt="Logo saat ini" className="h-12 object-contain rounded mb-xs" />
+                            {/* Logo Rocket */}
+                            <div className="space-y-xs">
+                                <label className="font-label-md text-label-md text-on-surface block">Logo Rocket</label>
+                                <p className="font-caption text-caption text-on-surface-variant">Gambar ikon/rocket di sebelah kiri nama brand.</p>
+                                {settings.logo_rocket && (
+                                    <img src={settings.logo_rocket} alt="Logo rocket" className="h-10 object-contain rounded mb-xs bg-surface-variant p-1" />
                                 )}
-                                <label className="flex items-center gap-sm bg-background-subtle border-2 border-dashed border-outline-variant hover:border-primary rounded-lg py-md px-md cursor-pointer transition-colors">
+                                <label className="flex items-center gap-sm bg-background-subtle border-2 border-dashed border-outline-variant hover:border-primary rounded-lg py-sm px-md cursor-pointer transition-colors">
                                     <span className="material-symbols-outlined text-[18px] text-on-surface-variant">upload</span>
-                                    <span className="font-body-md text-body-md text-on-surface-variant">
+                                    <span className="font-body-md text-body-md text-on-surface-variant truncate">
+                                        {data.logo_rocket ? data.logo_rocket.name : 'Upload gambar rocket…'}
+                                    </span>
+                                    <input type="file" accept="image/*" className="hidden" onChange={e => setData('logo_rocket', e.target.files[0])} />
+                                </label>
+                            </div>
+
+                            {/* Logo Text */}
+                            <div className="space-y-xs">
+                                <label className="font-label-md text-label-md text-on-surface block">Logo Teks (Tulisan)</label>
+                                <p className="font-caption text-caption text-on-surface-variant">Gambar teks "BelajarKUY!" — gunakan PNG transparan.</p>
+                                {settings.logo_text_image && (
+                                    <img src={settings.logo_text_image} alt="Logo teks" className="h-10 object-contain rounded mb-xs bg-surface-variant p-1" />
+                                )}
+                                <label className="flex items-center gap-sm bg-background-subtle border-2 border-dashed border-outline-variant hover:border-primary rounded-lg py-sm px-md cursor-pointer transition-colors">
+                                    <span className="material-symbols-outlined text-[18px] text-on-surface-variant">upload</span>
+                                    <span className="font-body-md text-body-md text-on-surface-variant truncate">
+                                        {data.logo_text_image ? data.logo_text_image.name : 'Upload gambar teks…'}
+                                    </span>
+                                    <input type="file" accept="image/*" className="hidden" onChange={e => setData('logo_text_image', e.target.files[0])} />
+                                </label>
+                            </div>
+
+                            {/* Favicon */}
+                            <div className="space-y-xs">
+                                <label className="font-label-md text-label-md text-on-surface block">Favicon</label>
+                                <p className="font-caption text-caption text-on-surface-variant">Ikon tab browser. Gunakan PNG/ICO ukuran 32×32 atau 64×64.</p>
+                                {settings.favicon && (
+                                    <img src={settings.favicon} alt="Favicon" className="h-8 w-8 object-contain rounded mb-xs bg-surface-variant p-1" />
+                                )}
+                                <label className="flex items-center gap-sm bg-background-subtle border-2 border-dashed border-outline-variant hover:border-primary rounded-lg py-sm px-md cursor-pointer transition-colors">
+                                    <span className="material-symbols-outlined text-[18px] text-on-surface-variant">upload</span>
+                                    <span className="font-body-md text-body-md text-on-surface-variant truncate">
+                                        {data.favicon ? data.favicon.name : 'Upload favicon…'}
+                                    </span>
+                                    <input type="file" accept="image/png,image/x-icon,image/svg+xml,image/jpeg,image/webp" className="hidden" onChange={e => setData('favicon', e.target.files[0])} />
+                                </label>
+                            </div>
+
+                            {/* Logo lama (fallback) */}
+                            <div className="space-y-xs">
+                                <label className="font-label-md text-label-md text-on-surface block">Logo Lama (Opsional)</label>
+                                <p className="font-caption text-caption text-on-surface-variant">Logo tunggal sebagai fallback jika rocket/teks belum diset.</p>
+                                {settings.logo && (
+                                    <img src={settings.logo} alt="Logo lama" className="h-10 object-contain rounded mb-xs bg-surface-variant p-1" />
+                                )}
+                                <label className="flex items-center gap-sm bg-background-subtle border-2 border-dashed border-outline-variant hover:border-primary rounded-lg py-sm px-md cursor-pointer transition-colors">
+                                    <span className="material-symbols-outlined text-[18px] text-on-surface-variant">upload</span>
+                                    <span className="font-body-md text-body-md text-on-surface-variant truncate">
                                         {data.logo ? data.logo.name : 'Ganti logo (opsional)…'}
                                     </span>
                                     <input type="file" accept="image/*" className="hidden" onChange={e => setData('logo', e.target.files[0])} />

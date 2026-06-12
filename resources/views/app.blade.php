@@ -6,9 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
-    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/favicon.svg') }}">
+    @php($favicon = \App\Models\SiteInfo::get('favicon'))
+    @if($favicon)
+        <link rel="icon" href="{{ $favicon }}">
+        <link rel="apple-touch-icon" href="{{ $favicon }}">
+    @else
+        <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+        <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/favicon.svg') }}">
+    @endif
 
     <title inertia>{{ config('app.name', 'BelajarKUY') }}</title>
 

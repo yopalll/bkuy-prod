@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SiteInfo;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -51,6 +52,9 @@ class HandleInertiaRequests extends Middleware
             'unreadNotificationsCount' => fn () => $request->user()
                 ? $request->user()->unreadNotifications()->count()
                 : 0,
+            'siteInfo' => fn () => SiteInfo::pluck('value', 'key')
+                ->only(['site_name', 'tagline', 'logo', 'logo_rocket', 'logo_text_image', 'favicon', 'footer_text', 'facebook', 'instagram', 'twitter', 'youtube', 'email', 'phone', 'address'])
+                ->toArray(),
         ];
     }
 }

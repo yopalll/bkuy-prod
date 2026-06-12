@@ -27,28 +27,28 @@ class AdminSiteSettingController extends Controller
     {
         $data = $request->validated();
 
-        // Handle Image Upload first
-        if ($request->hasFile('logo')) {
-            $oldPublicId = SiteInfo::get('logo_public_id');
-            if ($oldPublicId) {
-                $this->cloudinaryService->delete($oldPublicId);
-            }
+        // File fields yang di-upload ke Cloudinary
+        foreach (['logo', 'logo_rocket', 'logo_text_image', 'favicon'] as $field) {
+            if ($request->hasFile($field)) {
+                $oldPublicId = SiteInfo::get("{$field}_public_id");
+                if ($oldPublicId) {
+                    $this->cloudinaryService->delete($oldPublicId);
+                }
 
-            $uploadResult = $this->cloudinaryService->upload($request->file('logo'), 'settings');
-            
-            if (!$uploadResult) {
-                return redirect()->back()->with('error', 'Gagal mengunggah logo ke server.')->withInput();
-            }
+                $uploadResult = $this->cloudinaryService->upload($request->file($field), 'settings');
 
-            // Remove logo from loop data and update manually to include public_id
-            unset($data['logo']);
-            SiteInfo::updateOrCreate(['key' => 'logo'], ['value' => $uploadResult['url']]);
-            SiteInfo::updateOrCreate(['key' => 'logo_public_id'], ['value' => $uploadResult['public_id']]);
+                if (!$uploadResult) {
+                    return redirect()->back()->with('error', "Gagal mengunggah {$field}.")->withInput();
+                }
+
+                SiteInfo::updateOrCreate(['key' => $field], ['value' => $uploadResult['url']]);
+                SiteInfo::updateOrCreate(['key' => "{$field}_public_id"], ['value' => $uploadResult['public_id']]);
+            }
+            unset($data[$field]);
         }
 
-        // Loop through the rest of the text settings
+        // Simpan field teks
         foreach ($data as $key => $value) {
-            // Null values are stored as empty strings or null
             SiteInfo::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
