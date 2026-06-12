@@ -30,8 +30,14 @@ class AdminCourseController extends Controller
      */
     public function show(Course $course)
     {
-        $course->load(['instructor', 'category', 'subCategory']);
-        
+        $course->load([
+            'instructor',
+            'category',
+            'subCategory',
+            'goals',
+            'sections.lectures',
+        ]);
+
         return Inertia::render('Admin/Courses/Show', compact('course'));
     }
 
