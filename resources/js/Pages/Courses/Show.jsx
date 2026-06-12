@@ -8,7 +8,24 @@ import EmptyState from '@/Components/EmptyState';
 
 // Layar: detail_kursus_fullstack_web_dev/code.html (Vascha & Quinsha).
 // Props dari CourseDetailController@show.
-export default function Show({ course, relatedCourses = [], showReviewForm = false, hasPendingReview = false, inCart = false, isWishlisted = false, isEnrolled = false }) {
+const COURSE_REPORT_REASONS = [
+    'Konten menyesatkan',
+    'Hak cipta',
+    'Konten tidak pantas',
+    'Informasi salah',
+    'Spam',
+    'Lainnya',
+];
+
+const REVIEW_REPORT_REASONS = [
+    'Spam',
+    'Konten tidak pantas',
+    'Informasi palsu',
+    'Ujaran kebencian',
+    'Lainnya',
+];
+
+export default function Show({ course, relatedCourses = [], showReviewForm = false, hasPendingReview = false, inCart = false, isWishlisted = false, isEnrolled = false, hasReported = false }) {
     const { t } = useTranslation();
     const { auth } = usePage().props;
     const isInstructor = auth?.user?.role === 'instructor';
@@ -19,6 +36,8 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
     const [cartLoading, setCartLoading]     = useState(false);
     const [wishLoading, setWishLoading]     = useState(false);
     const [shareCopied, setShareCopied]     = useState(false);
+    const [showCourseReportModal, setShowCourseReportModal] = useState(false);
+    const [reportingReview, setReportingReview] = useState(null);
 
     function getCsrf() {
         return decodeURIComponent(
@@ -95,6 +114,30 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
     }
 
     const { data, setData, post, processing, errors, reset } = useForm({ rating: 5, comment: '' });
+
+    const {
+        data: crData, setData: setCrData, post: postCourseReport,
+        processing: crProcessing, errors: crErrors, reset: resetCr,
+    } = useForm({ reason: '', detail: '' });
+
+    const {
+        data: rrData, setData: setRrData, post: postReviewReport,
+        processing: rrProcessing, errors: rrErrors, reset: resetRr,
+    } = useForm({ reason: '' });
+
+    function handleCourseReport(e) {
+        e.preventDefault();
+        postCourseReport(route('course.report.store', course.id), {
+            onSuccess: () => { resetCr(); setShowCourseReportModal(false); },
+        });
+    }
+
+    function handleReviewReport(e) {
+        e.preventDefault();
+        postReviewReport(route('review.report', reportingReview.id), {
+            onSuccess: () => { resetRr(); setReportingReview(null); },
+        });
+    }
 
     const rupiah = (n) => 'Rp ' + Number(n ?? 0).toLocaleString('id-ID');
 
@@ -454,9 +497,20 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-1 bg-secondary-fixed/20 px-sm py-xs rounded-lg">
-                                                    <span className="font-caption text-caption font-bold text-on-surface">{review.rating}.0</span>
-                                                    <span className="material-symbols-outlined text-secondary-container text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                                                <div className="flex items-center gap-sm">
+                                                    <div className="flex items-center gap-1 bg-secondary-fixed/20 px-sm py-xs rounded-lg">
+                                                        <span className="font-caption text-caption font-bold text-on-surface">{review.rating}.0</span>
+                                                        <span className="material-symbols-outlined text-secondary-container text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                                                    </div>
+                                                    {auth?.user && auth.user.id !== review.user?.id && (
+                                                        <button
+                                                            onClick={() => { resetRr(); setReportingReview(review); }}
+                                                            className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/5 transition-colors"
+                                                            title="Laporkan ulasan ini"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[16px]">flag</span>
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                             <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-line">
@@ -589,6 +643,25 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
 
                                 <p className="text-center font-caption text-caption text-on-surface-variant">{t('course.money_back')}</p>
 
+                                {auth?.user && !isInstructor && (
+                                    <div className="border-t border-surface-variant pt-sm">
+                                        {hasReported ? (
+                                            <p className="flex items-center justify-center gap-1.5 font-caption text-caption text-on-surface-variant/60 py-1">
+                                                <span className="material-symbols-outlined text-[14px]">flag</span>
+                                                Kursus ini sudah dilaporkan
+                                            </p>
+                                        ) : (
+                                            <button
+                                                onClick={() => { resetCr(); setShowCourseReportModal(true); }}
+                                                className="w-full flex items-center justify-center gap-1.5 font-caption text-caption py-2 px-lg rounded-lg text-on-surface-variant hover:text-error hover:bg-error/5 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-[14px]">flag</span>
+                                                Laporkan kursus ini
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+
                                 {/* Includes */}
                                 <div className="border-t border-surface-variant pt-md">
                                     <h4 className="font-label-md text-label-md text-on-background mb-md">{t('course.includes_label')}</h4>
@@ -622,6 +695,126 @@ export default function Show({ course, relatedCourses = [], showReviewForm = fal
                     </section>
                 )}
             </div>
+            {/* ─── MODAL: LAPORKAN KURSUS ─── */}
+            {showCourseReportModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowCourseReportModal(false)}>
+                    <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-error text-[20px]">flag</span>
+                                <h2 className="font-bold text-on-surface">Laporkan Kursus</h2>
+                            </div>
+                            <button onClick={() => setShowCourseReportModal(false)} className="p-1 text-on-surface-variant hover:text-error">
+                                <span className="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </div>
+                        <form onSubmit={handleCourseReport} className="p-6 space-y-4">
+                            <p className="font-body-md text-body-md text-on-surface-variant">
+                                Pilih alasan mengapa kamu melaporkan kursus ini. Laporan kamu akan ditinjau oleh tim kami.
+                            </p>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block">Alasan Laporan *</label>
+                                {COURSE_REPORT_REASONS.map((reason) => (
+                                    <label key={reason} className="flex items-center gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                                        <input
+                                            type="radio"
+                                            name="course_report_reason"
+                                            value={reason}
+                                            checked={crData.reason === reason}
+                                            onChange={(e) => setCrData('reason', e.target.value)}
+                                            className="accent-primary"
+                                        />
+                                        <span className="font-body-md text-body-md text-on-surface">{reason}</span>
+                                    </label>
+                                ))}
+                                {crErrors.reason && <p className="font-caption text-caption text-error">{crErrors.reason}</p>}
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">Detail Tambahan (opsional)</label>
+                                <textarea
+                                    rows={3}
+                                    value={crData.detail}
+                                    onChange={(e) => setCrData('detail', e.target.value)}
+                                    placeholder="Jelaskan lebih lanjut alasan laporanmu..."
+                                    className="w-full border border-outline-variant bg-surface-container-low rounded-xl px-3 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary transition-colors placeholder:text-outline resize-none"
+                                />
+                                {crErrors.detail && <p className="font-caption text-caption text-error">{crErrors.detail}</p>}
+                            </div>
+                            <div className="flex gap-3 pt-1">
+                                <button
+                                    type="submit"
+                                    disabled={crProcessing || !crData.reason}
+                                    className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+                                >
+                                    {crProcessing ? 'Mengirim...' : 'Kirim Laporan'}
+                                </button>
+                                <button type="button" onClick={() => setShowCourseReportModal(false)} className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm hover:bg-surface-container-low">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── MODAL: LAPORKAN ULASAN ─── */}
+            {reportingReview && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setReportingReview(null)}>
+                    <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-error text-[20px]">flag</span>
+                                <h2 className="font-bold text-on-surface">Laporkan Ulasan</h2>
+                            </div>
+                            <button onClick={() => setReportingReview(null)} className="p-1 text-on-surface-variant hover:text-error">
+                                <span className="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </div>
+                        <form onSubmit={handleReviewReport} className="p-6 space-y-4">
+                            <div className="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant">
+                                <img
+                                    className="h-8 w-8 rounded-full object-cover border border-primary-fixed shrink-0"
+                                    src={reportingReview.user?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(reportingReview.user?.name ?? 'U')}&background=300033&color=fff`}
+                                    alt={reportingReview.user?.name}
+                                />
+                                <div>
+                                    <p className="font-label-md text-label-md text-on-surface">{reportingReview.user?.name}</p>
+                                    <p className="font-caption text-caption text-on-surface-variant line-clamp-1">{reportingReview.comment ?? 'Tidak ada komentar'}</p>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block">Alasan Laporan *</label>
+                                {REVIEW_REPORT_REASONS.map((reason) => (
+                                    <label key={reason} className="flex items-center gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                                        <input
+                                            type="radio"
+                                            name="review_report_reason"
+                                            value={reason}
+                                            checked={rrData.reason === reason}
+                                            onChange={(e) => setRrData('reason', e.target.value)}
+                                            className="accent-primary"
+                                        />
+                                        <span className="font-body-md text-body-md text-on-surface">{reason}</span>
+                                    </label>
+                                ))}
+                                {rrErrors.reason && <p className="font-caption text-caption text-error">{rrErrors.reason}</p>}
+                            </div>
+                            <div className="flex gap-3 pt-1">
+                                <button
+                                    type="submit"
+                                    disabled={rrProcessing || !rrData.reason}
+                                    className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+                                >
+                                    {rrProcessing ? 'Mengirim...' : 'Kirim Laporan'}
+                                </button>
+                                <button type="button" onClick={() => setReportingReview(null)} className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm hover:bg-surface-container-low">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }
