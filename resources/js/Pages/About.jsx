@@ -7,13 +7,25 @@ const TEAM = [
         role: 'Project Manager & Full-Stack Developer',
         initials: 'YV',
         color: 'bg-primary',
-        tasks: ['Koordinasi tim & manajemen sprint', 'Integrasi Midtrans (checkout & enrollment)', 'Email notifikasi & sertifikat', 'Deployment VPS + Docker'],
+        github: 'https://github.com/yopalll',
+        tasks: [
+            'Koordinasi tim, manajemen sprint & arsitektur proyek',
+            'Admin panel: review kursus, video, & sistem reject dengan feedback',
+            'Integrasi Midtrans (checkout, enrollment, & invoice email)',
+            'Helpdesk sistem percakapan thread + upload gambar',
+            'Email notifikasi & sertifikat (via Resend)',
+            'Google Cloud Storage (GCS) & auto-detect durasi video',
+            'Dynamic branding: logo, favicon & teks dari admin panel',
+            'Halaman statis, footer rebrand & sistem laporan',
+            'Deployment VPS + Docker (PHP 8.4, Redis, CI/CD)',
+        ],
     },
     {
         name: 'Albariqi Tarigan',
         role: 'Backend Developer — Auth & Player',
         initials: 'AT',
         color: 'bg-secondary',
+        github: 'https://github.com/albariqitarigan',
         tasks: ['Sistem autentikasi (email + Google OAuth)', 'Course Player & tracking progres', 'Manajemen sesi & keamanan akun'],
     },
     {
@@ -21,6 +33,7 @@ const TEAM = [
         role: 'Backend Developer — Commerce',
         initials: 'RN',
         color: 'bg-success',
+        github: 'https://github.com/rayysrgh',
         tasks: ['Sistem keranjang belanja & wishlist', 'Manajemen kupon diskon', 'Alur transaksi & riwayat pesanan'],
     },
     {
@@ -28,6 +41,7 @@ const TEAM = [
         role: 'Frontend Developer — UI/UX',
         initials: 'VU',
         color: 'bg-warning',
+        github: 'https://github.com/vaschau-rgb',
         tasks: ['Desain sistem & brand identity BelajarKUY', 'Landing page & halaman publik', 'Komponen UI yang konsisten'],
     },
     {
@@ -35,7 +49,16 @@ const TEAM = [
         role: 'Frontend Developer — Admin Panel',
         initials: 'QI',
         color: 'bg-tertiary',
+        github: 'https://github.com/uqxinn',
         tasks: ['Panel admin manajemen kursus & pengguna', 'Migrasi blade → React Inertia', 'Dashboard analitik instruktur'],
+    },
+    {
+        name: 'Viter Moldy',
+        role: 'Database Consultant',
+        initials: 'VM',
+        color: 'bg-error',
+        github: 'https://github.com/vitermoldy',
+        tasks: ['Konsultasi desain skema database', 'Optimasi relasi & query performa', 'Review migrasi & integritas data'],
     },
 ];
 
@@ -67,7 +90,7 @@ export default function About() {
                 <div className="text-center mb-xl">
                     <h2 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-4">Cerita Kami</h2>
                     <p className="text-base text-on-surface-variant leading-relaxed">
-                        BelajarKUY lahir dari semangat 5 mahasiswa yang ingin membuktikan bahwa proyek akademik bisa setara dengan produk nyata. Kami membangun platform marketplace e-learning berbasis teknologi modern — mulai dari autentikasi, sistem pembayaran, hingga course player berbasis video — dalam satu semester penuh.
+                        BelajarKUY lahir dari semangat mahasiswa yang ingin membuktikan bahwa proyek akademik bisa setara dengan produk nyata. Kami membangun platform marketplace e-learning berbasis teknologi modern — mulai dari autentikasi, sistem pembayaran, hingga course player berbasis video — dalam satu semester penuh.
                     </p>
                     <p className="text-base text-on-surface-variant leading-relaxed mt-4">
                         Nama "BelajarKUY" mencerminkan semangat kami: <em>yuk belajar!</em> — mengajak siapa saja untuk terus bertumbuh dengan cara yang menyenangkan dan terjangkau.
@@ -97,7 +120,7 @@ export default function About() {
             <section className="max-w-5xl mx-auto px-margin-mobile md:px-margin-desktop py-xl">
                 <h2 className="font-headline-sm text-headline-sm font-bold text-on-surface text-center mb-xl">Tim Pengembang</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-                    {TEAM.map(({ name, role, initials, color, tasks }) => (
+                    {TEAM.map(({ name, role, initials, color, github, tasks }) => (
                         <div key={name} className="bg-surface border border-outline-variant rounded-3xl p-6 flex flex-col gap-4">
                             <div className="flex items-center gap-4">
                                 <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center shrink-0`}>
@@ -106,6 +129,10 @@ export default function About() {
                                 <div>
                                     <h3 className="font-bold text-on-surface">{name}</h3>
                                     <p className="text-xs text-on-surface-variant mt-0.5">{role}</p>
+                                    <a href={github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.3-1.23 3.3-1.23.64 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                        {github.replace('https://github.com/', '')}
+                                    </a>
                                 </div>
                             </div>
                             <ul className="space-y-1.5">
